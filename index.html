@@ -460,7 +460,7 @@ span.pill.bad{background:#fde6e3;color:var(--bad)} span.pill.good{background:#e1
 .sev .who{display:flex;gap:10px;align-items:center}.sev img{width:56px;height:56px;border-radius:12px;background:#e9f6ec}
 .sopt{display:block;width:100%;text-align:left;margin-top:6px;border:2px solid var(--line);border-radius:12px;background:#fff;padding:7px 10px;font:inherit;color:inherit;cursor:pointer}
 .sopt b{font-size:14px}.sopt small{display:block;font-weight:700}.sopt:hover{border-color:var(--mint)}
-.rl{display:flex;gap:9px;align-items:flex-start;border:2px solid var(--line);border-radius:14px;background:#fff;padding:8px 10px;margin-bottom:7px;cursor:pointer}
+.rl{-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;display:flex;gap:9px;align-items:flex-start;border:2px solid var(--line);border-radius:14px;background:#fff;padding:8px 10px;margin-bottom:7px;cursor:pointer}
 .rl.on{border-color:var(--mint);background:#f2fbf5}.rl .sw{flex:none;width:38px;height:22px;border-radius:12px;background:#ddd;position:relative;margin-top:2px}
 .rl .sw:after{content:'';position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 1px 2px #0003;transition:left .15s}
 .rl.on .sw{background:var(--good)}.rl.on .sw:after{left:19px}.rl small{display:block;font-weight:700}
@@ -3216,7 +3216,8 @@ function moodHTML(s){ const m=moodOf(s), v=Math.round(s.mood??70), days=Math.max
   return `<div class="mbar"><i style="width:${v}%;background:${m.c}"></i></div><div style="font-size:13px"><b>${m.ic} ${m.n}</b> <span class="muted">${v}/100</span>${s.off===S.day?' · 🏠 nghỉ phép hôm nay':''}</div>
     <div class="muted" style="font-size:12px">${m.d}${s.low?` (${s.low}/3 đêm)`:''} · 🤝 Gắn bó ${days} ngày</div>`; }
 function stfToolsHTML(){ const n=(S.rules||[]).length;
-  return `<div class="stf-tools"><button onclick="openRules()">📋 Nội quy (${n}/${RULE_MAX})</button><button onclick="openParty()" ${S.staff.length?'':'disabled'}>🎉 Liên hoan</button></div>${S.stfEv?`<div id="stfEvBox2">${stfEvHTML()}</div>`:''}`; }
+  const act=(S.rules||[]).map(id=>RULES.find(r=>r.id===id)).filter(Boolean);
+  return `${act.length?`<div class="muted" style="font-size:13px;margin-bottom:6px">📋 Đang áp dụng: <b style="color:var(--ink)">${act.map(r=>r.ic+' '+r.n).join(' · ')}</b></div>`:''}<div class="stf-tools"><button onclick="openRules()">📋 Nội quy (${n}/${RULE_MAX})</button><button onclick="openParty()" ${S.staff.length?'':'disabled'}>🎉 Liên hoan</button></div>${S.stfEv?`<div id="stfEvBox2">${stfEvHTML()}</div>`:''}`; }
 // mỗi đêm: mệt theo lượng khách, hồi dần về 65, cộng trừ theo nội quy; chán quá lâu thì nghỉ việc
 function staffNight(r){ const out={cost:0,costLbl:'',notes:[]};
   if(S.stfEv) S.stfEv=null;
@@ -3278,14 +3279,21 @@ window.stfDecide=function(i){ const e=S.stfEv; if(!e) return; const s=S.staff.fi
   ['stfEvBox','stfEvBox2'].forEach(id=>{ const el=$('#'+id); if(el) el.innerHTML=done; });
   autosaveSoft(); renderHeader(); if(activeTab==='staff') renderStaff(); };
 // Nội quy: tối đa 3 điều, đổi 1 lần mỗi 7 ngày (lần đầu tự do)
-window.openRules=function(){ const on=S.rules||[], lock=S.rulesDay&&S.day-S.rulesDay<7;
-  modal(`<h3>📋 Nội quy tiệm</h3><p class="muted" style="font-size:13px">Chọn tối đa ${RULE_MAX} điều. Mỗi điều có lợi có hại. ${lock?`<b>Đã đổi gần đây, đổi tiếp được sau ${7-(S.day-S.rulesDay)} ngày.</b>`:'Lưu xong thì 7 ngày sau mới đổi tiếp được.'}</p>
-    <div id="rlList">${RULES.map(r=>`<div class="rl ${on.includes(r.id)?'on':''}" data-rl="${r.id}"><span class="sw"></span><div><b>${r.ic} ${r.n}</b><small class="good">✓ ${r.pro}</small><small class="bad">✗ ${r.con}</small></div></div>`).join('')}</div>
-    <div class="row"><button onclick="closeModal()">Đóng</button>${lock?'':'<button class="primary" onclick="saveRules()">Lưu nội quy</button>'}</div>`);
-  if(!lock) $('#rlList').onclick=ev=>{ const d=ev.target.closest('[data-rl]'); if(!d) return; if(!d.classList.contains('on')&&$$('#rlList .rl.on').length>=RULE_MAX){ toast(`Tối đa ${RULE_MAX} điều`); return; } d.classList.toggle('on'); }; };
-window.saveRules=function(){ const nw=$$('#rlList .rl.on').map(d=>d.dataset.rl), old=S.rules||[];
-  if(nw.join()!==old.join()){ S.rules=nw; if(old.length||nw.length) S.rulesDay=S.day; toast('📋 Đã lưu nội quy'); }
-  closeModal(); autosaveSoft(); refreshAll(); };
+// Nội quy: tối đa 3 điều; trong ngày vừa lưu vẫn sửa thoải mái, sau đó 7 ngày mới đổi lại
+const rulesLock=()=>S.rulesDay!=null&&S.rulesDay!==S.day&&S.day-S.rulesDay<7?7-(S.day-S.rulesDay):0;
+window.openRules=function(){ const on=S.rules||[], lock=rulesLock();
+  modal(`<h3>📋 Nội quy tiệm</h3><p class="muted" style="font-size:13px">Bấm vào từng điều để bật/tắt (tối đa ${RULE_MAX} điều), rồi bấm <b>Lưu nội quy</b>. Trong ngày lưu vẫn sửa được, sau đó 7 ngày mới đổi lại.</p>
+    <div id="rlList">${RULES.map(r=>`<div class="rl ${on.includes(r.id)?'on':''}" data-rl="${r.id}" style="${lock?'opacity:.75':''}"><span class="sw"></span><div><b>${r.ic} ${r.n}</b><small class="good">✓ ${r.pro}</small><small class="bad">✗ ${r.con}</small></div></div>`).join('')}</div>
+    <div id="rlNote" class="${lock?'warn':'muted'}" style="font-size:13px;font-weight:800;margin:4px 0 2px;position:sticky;bottom:-18px;background:var(--page);padding:6px 0">${lock?`🔒 Đang áp dụng ${on.length} điều. Còn ${lock} ngày nữa mới đổi được.`:`Đang chọn <span id="rlCnt">${on.length}</span>/${RULE_MAX} điều.`}</div>
+    <div class="row"><button onclick="closeModal()">Đóng</button>${lock?'':'<button class="primary" onclick="saveRules()">💾 Lưu nội quy</button>'}</div>`);
+  $('#rlList').onclick=ev=>{ const d=ev.target.closest('[data-rl]'); if(!d) return; const note=$('#rlNote');
+    if(lock){ note.innerHTML=`🔒 Còn ${lock} ngày nữa mới đổi được nội quy.`; toast(`🔒 Còn ${lock} ngày nữa mới đổi được nội quy`); return; }
+    if(!d.classList.contains('on')&&$$('#rlList .rl.on').length>=RULE_MAX){ note.className='bad'; note.innerHTML=`Đã đủ ${RULE_MAX} điều. Tắt bớt 1 điều trước rồi mới bật điều khác.`; return; }
+    d.classList.toggle('on'); note.className='muted'; note.innerHTML=`Đang chọn ${$$('#rlList .rl.on').length}/${RULE_MAX} điều. Nhớ bấm <b>Lưu nội quy</b>.`; }; };
+window.saveRules=function(){ if(rulesLock()) return closeModal(); const nw=$$('#rlList .rl.on').map(d=>d.dataset.rl), old=S.rules||[];
+  if(nw.join()!==old.join()){ S.rules=nw; S.rulesDay=S.day; }
+  closeModal(); autosaveSoft(); refreshAll();
+  toast(nw.length?`📋 Đã áp dụng: ${nw.map(id=>RULES.find(r=>r.id===id).ic).join(' ')}`:'📋 Tiệm không dùng nội quy nào'); };
 // Liên hoan
 const PARTY=[
   {id:'tea',ic:'🧋',n:'Trà sữa',cost:2e6,close:0,m:10,bg:'linear-gradient(#ffe9f0,#ffd3e0 55%,#f0b7c8 55%)',mid:'🧋',say:'"Trà sữa full topping! Cảm ơn chị chủ!"'},
