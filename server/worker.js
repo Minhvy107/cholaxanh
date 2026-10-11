@@ -101,8 +101,8 @@ async function leaderboard(req, env, path, url) {
       worth: Math.max(0, Math.min(cap, Math.round(Number(b.worth) || 0))),
       rep: Math.max(0, Math.min(100, Math.round(Number(b.rep) || 0))),
       stars: Math.max(0, Math.min(5, Math.round((Number(b.stars) || 0) * 10) / 10)), at: now,
-      frame: ['hang'].includes(b.frame) ? b.frame : '',
-      title: ['haggle', 'kind', 'smart', 'streak', 'lucky', 'hand', 'star', 'trust', 'rich', 'old', 'mil', 'wolf', 'uno', 'boom', 'quiz', 'xom', 'book', 'cat', 'king', 'mart', 'gift', 'thief', 'hmking', 'tycoon'].includes(b.title) ? b.title : '',
+      frame: ['hang', 'rose'].includes(b.frame) ? b.frame : '',
+      title: ['haggle', 'kind', 'smart', 'streak', 'lucky', 'hand', 'star', 'trust', 'rich', 'old', 'mil', 'wolf', 'uno', 'boom', 'quiz', 'xom', 'book', 'cat', 'king', 'mart', 'gift', 'thief', 'hmking', 'tycoon', 'hongcho'].includes(b.title) ? b.title : '',
     };
     // Tiết kiệm lượt ghi KV (gói miễn phí chỉ 1.000 lượt/ngày, cần để dành cho nạp tiền): mỗi tiệm tối đa 1 lần / LB_GAP
     const rankIn = async key => JSON.parse((await env.ORDERS.get(key)) || '[]').findIndex(r => r.pid === pid) + 1;
