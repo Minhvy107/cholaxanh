@@ -4359,7 +4359,9 @@ function loop(now){
       if(R.ff){ let n=0; while(R&&!R.paused&&n<3000){ simStep(0.25); n++; } }
       else { let m=dt/MS_PER_MIN*speed; while(R&&!R.paused&&m>0){ const s=Math.min(0.25,m); simStep(s); m-=s; } }
     }
-    if(activeTab==='store'){ drawStage(now); if(R&&R.cur) renderOrder(); }
+    // đang mở bảng (modal) thì cảnh tiệm phía sau chỉ vẽ ~8 khung/giây, để máy yếu bấm trong bảng không bị lag
+    const mOpen=$('#modal').classList.contains('show');
+    if(activeTab==='store'&&(!mOpen||now-(loop.lastDraw||0)>120)){ loop.lastDraw=now; drawStage(now); if(R&&R.cur) renderOrder(); }
     uiT+=dt; thiefTick(dt);
     if(uiT>300){ uiT=0; renderHeader();
       if(R){ if(activeTab==='store') renderLive(); else if(activeTab==='kho') renderKho();
