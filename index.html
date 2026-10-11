@@ -68,6 +68,29 @@ html[data-theme="moon"] .chips button{background:#fff8ea;border-color:#e3c88f;co
 html[data-theme="moon"] .chips button.on,html[data-theme="moon"] button.on{background:#9e2b2b;border-color:#f2c94c;color:#ffe9a8}
 html[data-theme="moon"] button.primary,html[data-theme="moon"] .pill{background:#b8322f;border-color:#7a2e2e;color:#fff3d6;box-shadow:0 3px 0 #7a2e2e}
 html[data-theme="moon"] .modal .box{background:#fffaf0;border-color:#7a2e2e;box-shadow:0 0 0 3px #f2c94c,0 6px 0 rgba(90,58,50,.3)}
+html[data-theme="flower"]{--bg:#ffd6e5;--page:#fff5f8;--panel:#fff;--panel2:#ffeef4;--line:#f6c3d4;--brand:#ec6f98;--brand2:#d9577f;--brandDk:#b8456a;--mint:#f6a5c0;--muted:#a07a8a;--ink:#5a3344}
+html[data-theme="flower"] body{background:#ffd6e5 radial-gradient(circle,rgba(255,255,255,.6) 2px,transparent 2.5px) 0 0/22px 22px}
+html[data-theme="flower"] #tab-store,html[data-theme="flower"] .tab{background:#fff5f8 radial-gradient(circle at 20px 20px,rgba(246,165,192,.18) 6px,transparent 7px) 0 0/70px 70px}
+html[data-theme="flower"] #hdr{background:linear-gradient(180deg,#fff0f6,#ffe0ec);box-shadow:0 2px 0 #f6a5c0}
+html[data-theme="flower"] .pausebtn{background:#fff;color:#ec6f98;border-color:#f6a5c0;box-shadow:0 0 0 4px rgba(246,165,192,.3)}
+html[data-theme="flower"] .sign{background:#ff8fb3;color:#fff;border:2px solid #b8456a;box-shadow:0 3px 0 #b8456a;text-shadow:0 1px 0 rgba(0,0,0,.15)}
+html[data-theme="flower"] .cats button{background:#fff;border-color:#f6c3d4;color:#b8456a}
+html[data-theme="flower"] .cats button.on{background:#ec6f98;border-color:#b8456a;color:#fff;box-shadow:0 3px 0 #b8456a}
+html[data-theme="flower"] .tray{background:radial-gradient(circle at 50% 110%,rgba(255,255,255,.5),transparent 60%),repeating-linear-gradient(90deg,#ffd3e2 0 22px,#ffc6da 22px 44px);border:3px solid #e7709a;box-shadow:0 0 0 2px #fff,inset 0 0 0 3px #ffe9f1;color:#8a3a5a}
+html[data-theme="flower"] .tray .muted,html[data-theme="flower"] .tray .tempty{color:#b8456a}
+html[data-theme="flower"] .tray .owner{border-color:#ff8fb3}
+html[data-theme="flower"] .tray .ttotal{color:#8a3a5a;background:#fff;border-color:#f6a5c0}
+html[data-theme="flower"] .bins{background:#ffe3ee repeating-linear-gradient(45deg,rgba(255,255,255,.55) 0 6px,transparent 6px 12px);border:3px solid #e7709a;box-shadow:0 0 0 2px #fff,inset 0 2px 0 rgba(184,69,106,.12)}
+html[data-theme="flower"] .bin{background:linear-gradient(#fff,#fff0f5);border:3px solid #f6a5c0;border-radius:14px}
+html[data-theme="flower"] .bin::before{content:"🌸";position:absolute;left:6px;top:4px;font-size:12px;opacity:.8}
+html[data-theme="flower"] .bin:hover:not(:disabled){border-color:#ec6f98}
+html[data-theme="flower"] .bin .nm{color:#8a3a5a}
+html[data-theme="flower"] .bin .pr{color:#c06a8a}
+html[data-theme="flower"] .bin .cnt{background:#ff8fb3;color:#fff;border-color:#fff;box-shadow:0 2px 0 #b8456a}
+html[data-theme="flower"] .bnav{background:#fff0f6;border-top:3px solid #f6a5c0}
+html[data-theme="flower"] .bnav button{color:#b8456a}
+html[data-theme="flower"] .bnav button.on{background:#ffd3e2;color:#8a3a5a}
+html[data-theme="flower"] h3.sec{color:#b8456a}
 html[data-theme="moon"] .awning{height:18px;background:#4a2a1e;border-top:3px solid #f2c94c;border-bottom:3px solid #f2c94c}
 html[data-theme="moon"] .awning::after{height:12px;background:radial-gradient(circle at 9px 0,#7a2e2e 8px,#5b3a33 8.5px 9.5px,transparent 10px) 0 0/18px 12px repeat-x}
 *{box-sizing:border-box}
@@ -125,6 +148,7 @@ a.btn.primary{background:#0068ff;border-color:#0052cc;color:#fff;box-shadow:0 3p
 .ps-cell .st{position:absolute;top:3px;right:4px;font-size:12px}.ps-cell .st.go{top:auto;bottom:-8px;right:auto;background:#e5738f;color:#fff;border-radius:8px;padding:0 6px;font-size:10px}
 .ps-xp{display:grid;grid-template-columns:1fr auto;gap:3px 10px;margin:6px 0}
 .lb tr.fr-hang td{background:linear-gradient(90deg,#3a2d63,#6b4fa3);color:#fff}.lb tr.fr-hang td:first-child{border-radius:12px 0 0 12px}.lb tr.fr-hang td:last-child{border-radius:0 12px 12px 0}
+.lb tr.fr-rose td{background:linear-gradient(90deg,#ffd6e5,#fff0f6)}.lb tr.fr-rose td:first-child{border-radius:12px 0 0 12px}.lb tr.fr-rose td:last-child{border-radius:0 12px 12px 0}.lb tr.fr-rose{outline:2px solid #ff8fb3}.lb tr.fr-rose .frt{color:#d6336c}
 .lb tr.fr-hang{outline:2px solid #f2c94c}.lb tr.fr-hang small{color:#e5dcff}.lb .frt{font:800 10.5px var(--body);color:#f2c94c;letter-spacing:.5px}
 .supinfo{white-space:pre-wrap;word-break:break-word;background:var(--panel2);border:2px dashed var(--line);border-radius:12px;padding:8px 10px;font-size:12px;max-height:160px;overflow:auto;margin:6px 0 10px}
 button.primary:hover:not(:disabled){background:var(--brand2);border-color:var(--brandDk)}
@@ -482,6 +506,7 @@ span.pill.bad{background:#fde6e3;color:var(--bad)} span.pill.good{background:#e1
 .tp-bar{height:9px;border-radius:6px;background:#f3d4d1;overflow:hidden;margin:4px 0 8px}.tp-bar i{display:block;height:100%;width:100%;background:#e5534b;transition:width .1s linear}
 .tp-go{display:block;width:100%;border:0;border-radius:14px;padding:11px;font:900 19px var(--display);color:#fff;background:#e5534b;box-shadow:0 4px 0 #9e2b2b;cursor:pointer}
 .hm-ban{margin:-4px -4px 10px;border-radius:16px;height:118px;position:relative;overflow:hidden;color:#fff;background:radial-gradient(circle at 80% 32%,#ffe9a0 0 12%,transparent 13%),radial-gradient(circle at 80% 32%,rgba(255,233,160,.35),transparent 40%),linear-gradient(135deg,#5a3796,#2a1b3d);border:2px solid #f2c94c}
+.hm-ban.w2 img{width:96px}.hm-ban.w2{background:radial-gradient(circle at 82% 30%,#fff 0 10%,transparent 11%),linear-gradient(135deg,#ff8fb3,#ffc9a8);border-color:#fff}.hm-ban.w2 h3{color:#fff;text-shadow:0 2px 0 #c2185b}.hm-ban.w2 p{color:#fff}.hm-ban.w2 .t{background:#c2185b}
 .hm-ban h3{margin:10px 12px 0;color:#ffd166;font-size:21px;text-shadow:0 2px 0 #7a2e00}.hm-ban p{margin:2px 12px;font-size:11.5px;line-height:1.3;color:#e7d8ff;max-width:56%;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
 .hm-ban .t{position:absolute;left:12px;bottom:8px;background:#ff6b35;border-radius:20px;padding:1px 9px;font-size:11px;font-weight:800}
 .hm-ban img{position:absolute;right:2px;bottom:-6px;width:118px}
@@ -808,6 +833,8 @@ const CATS = {
   uong:    {name:'Đồ uống',       icon:'🥤', e:1.5},
   donglanh:{name:'Đông lạnh',     icon:'🧊', e:1.5, lock:'freezer'},
   hm:      {name:'Halloween',     icon:'🎃', e:1.6, lock:'hm'},
+  w20:     {name:'Quà 20/10',     icon:'💐', e:1.5, lock:'w20'},
+  mp20:    {name:'Mỹ phẩm 20/10', icon:'💄', e:1.3, lock:'w20'},
   hoa:     {name:'Hóa phẩm',      icon:'🧺', e:1.2},
   canhan:  {name:'Chăm sóc cá nhân', icon:'🧴', e:1.2},
   an:      {name:'Đồ ăn sẵn',     icon:'🥪', e:1.6, nw:1},
@@ -881,6 +908,32 @@ const LINES={
   pet:{icon:'🐾',name:'Thú cưng',cost:8e6,tier:1,desc:'Thức ăn, cát vệ sinh, đồ chơi cho chó mèo.'},
   mypham:{icon:'💄',name:'Mỹ phẩm',cost:20e6,tier:3,desc:'Son, sữa rửa mặt, kem chống nắng, nước hoa. Lãi mỗi món cao.'}};
 /* 🎃 Hộp mù Bí Ngô: sản phẩm độc quyền (có ảnh). need: món hộp mù cần có, hoặc 'done' = đủ bộ. Lời như hàng thường cùng loại. */
+/* 💐 Hộp mù 20/10: 4 sản phẩm rơi từ hộp + 19 mỹ phẩm độc quyền (đủ 100/100 món) */
+const W2C=(id,name,cost,ref,img)=>({...P('w2m_'+id,name,'món','💄','mp20',cost,ref,999,4),img,need:'done20'});
+PRODUCTS.push(
+  {...P('w2p_bohoa','Bó hoa hồng','bó','🌹','w20',35000,50000,3,4),img:'w20/s_bohoa.webp',need:'w:s_bohoa'},
+  {...P('w2p_hopqua','Hộp quà thắt nơ','hộp','🎁','w20',60000,85000,999,3),img:'w20/s_hopqua.webp',need:'w:s_hopqua'},
+  {...P('w2p_banhkem','Bánh kem dâu','cái','🍰','w20',90000,130000,2,3),img:'w20/s_banhkem.webp',need:'w:s_banhkem'},
+  {...P('w2p_thiep','Thiệp 20/10','tấm','💌','w20',10000,15000,999,4),img:'w20/s_thiep.webp',need:'w:s_thiep'},
+  W2C('nuochoa_kc','Nước hoa Kim Cương Hồng',196000,280000,'w20/m1.webp'),
+  W2C('nuochoa_pl','Nước hoa Pha Lê 20/10',182000,260000,'w20/m2.webp'),
+  W2C('son_do','Son thỏi Đỏ Tim',84000,120000,'w20/m3.webp'),
+  W2C('son_kem','Son kem Hoa Đào',77000,110000,'w20/m4.webp'),
+  W2C('phan_nuoc','Phấn nước Nơ Hồng',126000,180000,'w20/m5.webp'),
+  W2C('bang_mat','Bảng mắt Hoàng Hôn',140000,200000,'w20/m6.webp'),
+  W2C('kem_duong','Kem dưỡng Mây Hồng',112000,160000,'w20/m7.webp'),
+  W2C('srm','Sữa rửa mặt Tulip',63000,90000,'w20/m8.webp'),
+  W2C('mat_na','Mặt nạ Hoa Hồng',28000,40000,'w20/m9.webp'),
+  W2C('sua_tam','Sữa tắm Tulip',91000,130000,'w20/m10.webp'),
+  W2C('bo_co','Bộ cọ trang điểm',154000,220000,'w20/m11.webp'),
+  W2C('guong','Gương tim cầm tay',105000,150000,'w20/m12.webp'),
+  W2C('son_mong','Sơn móng Nơ Tim',49000,70000,'w20/m13.webp'),
+  W2C('son_bong','Son bóng Trái Tim',66000,95000,'w20/m14.webp'),
+  W2C('phan_ma','Phấn má Hoa Mai',98000,140000,'w20/m15.webp'),
+  W2C('mi_gia','Mi giả Nơ Hồng',42000,60000,'w20/m16.webp'),
+  W2C('son_vang','Son thỏi Tim Vàng',80000,115000,'w20/m17.webp'),
+  W2C('son_duong','Son dưỡng Tulip',59000,85000,'w20/m18.webp'),
+  W2C('phan_ngoc','Phấn ngọc trai',119000,170000,'w20/m19.webp'));
 const HMV=(id,name,unit,cost,ref,life)=>({...P('hm_'+id,name,unit,'🎃','hm',cost,ref,life,3),img:'hm/v_'+id+'.webp',need:'done'});
 PRODUCTS.push(
   {...P('hm_cupcake','Cupcake Phù Thủy','cái','🧁','hm',14000,20000,4,4),img:'hm/st6.webp',need:'st6'},
@@ -1041,15 +1094,15 @@ const netWorth=()=>S.money+invValue()+(typeof cpAssets==='function'?cpAssets():0
 const isFresh=p=>p.life<=4;
 const lifeOf=p=>p.life+(isFresh(p)?S.eq.fridge:0);
 const lineOn=k=>!!(S&&S.lines&&S.lines[k]);
-const catLocked=cat=>{ if(CATS[cat].nw) return !lineOn(cat); const l=CATS[cat].lock; if(l==='hm') return !PRODUCTS.some(p=>p.cat==='hm'&&hmHasP(p)); return !!l&&!S.eq[l]; };
-const hmHasP=p=>!p.need||(p.need==='done'?!!(S.hm&&S.hm.done):!!(S.hm&&S.hm.own&&S.hm.own[p.need]));
+const catLocked=cat=>{ if(CATS[cat].nw) return !lineOn(cat); const l=CATS[cat].lock; if(l==='hm'||l==='w20') return !PRODUCTS.some(p=>p.cat===cat&&hmHasP(p)); return !!l&&!S.eq[l]; };
+const hmHasP=p=>!p.need||(p.need==='done'?!!(S.hm&&S.hm.done):p.need==='done20'?!!(S.w20&&S.w20.done):p.need.startsWith('w:')?!!(S.w20&&S.w20.own&&S.w20.own[p.need.slice(2)]):!!(S.hm&&S.hm.own&&S.hm.own[p.need]));
 const pOpen=p=>!catLocked(p.cat)&&hmHasP(p)&&(!p.nw||lineOn(p.nw));
 // ảnh hoặc biểu tượng sản phẩm (HTML)
 const pic=(p,cls='pim')=>p.img?`<img class="${cls}" src="${p.img}" alt="">`:p.icon;
 const dowOf=d=>(d-1)%7;
 const isWeekend=d=>dowOf(d)>=5;
 const staffOf=role=>S.staff.filter(s=>s.role===role&&s.off!==S.day);
-function demMult(p){ const ev=S.event||{}; let m=wxDem(p.cat)*(ev.dem?.[p.id]??1)*(ev.demCat?.[p.cat]??1)*(festOn()&&festDef().cat.includes(p.cat)?1.5:1); for(const sv of SERVICES) if(S.svc[sv.id]&&sv.demCat?.[p.cat]) m*=sv.demCat[p.cat]; return m; }
+function demMult(p){ const ev=S.event||{}; let m=(p.cat==='mp20'&&(()=>{ const d=vnDay(); return d>='2026-10-18'&&d<='2026-10-24'; })()?2:1)*wxDem(p.cat)*(ev.dem?.[p.id]??1)*(ev.demCat?.[p.cat]??1)*(festOn()&&festDef().cat.includes(p.cat)?1.5:1); for(const sv of SERVICES) if(S.svc[sv.id]&&sv.demCat?.[p.cat]) m*=sv.demCat[p.cat]; return m; }
 function priceFactor(p,price){ return clamp(Math.pow(S.market[p.id].ref/price,CATS[p.cat].e),0,3); }
 function adsBoost(){ return Math.min(0.8,S.ads.reduce((a,x)=>a+(ADS.find(d=>d.id===x.id)?.cust||0),0)); }
 function dailyBase(){
@@ -1078,11 +1131,14 @@ function drawBust(g,x,y,r,L,o={}){
   const maid=L.outfit==='maid';
   g.save(); g.lineJoin='round'; g.lineCap='round'; g.lineWidth=lw; g.strokeStyle=OL;
   if(L.tail) curlyTail(g,x,y,r,L.hair,lw);
-  const HX=HAIR_STY[L.hs];
+  const HX=L.wH?null:HAIR_STY[L.hs], WH=L.wH&&hmI(L.wH[0]);
+  const drawWH=clip=>{ if(!WH) return; const [,wr,ox,oy]=L.wH, W=r*wr; if(clip){ g.save(); g.beginPath(); g.rect(x-r*4,y-r*4,r*8,r*4.92); g.clip(); } g.drawImage(WH,x+ox*r,y+oy*r,W,W*WH.naturalHeight/WH.naturalWidth); if(clip) g.restore(); };
+  if(L.wH&&L.wH[4]) drawWH(false);
   if(HX&&HX.behind){ HX.behind(g,x,y,r,L,lw); g.lineWidth=lw; g.strokeStyle=OL; }
   // thân
-  const hmBody=L.hmB&&hmI(L.hmB);
-  if(hmBody){ const W=r*3.08, H=W*hmBody.naturalHeight/hmBody.naturalWidth; g.drawImage(hmBody,x-W/2,y+0.92*r-W*52/120,W,H); }
+  const hmBody=L.hmB&&hmI(L.hmB), wBA=Array.isArray(L.wB)?L.wB:[L.wB,2.55,0.88], wBody=L.wB&&hmI(wBA[0]);
+  if(wBody){ g.fillStyle=L.skin; g.fillRect(x-r*0.27,y+r*0.75,r*0.54,r*0.7); const W=r*wBA[1]; g.save(); g.beginPath(); g.rect(x-r*3,y+r*Math.min(0.86,wBA[2]),r*6,r*4); g.clip(); g.drawImage(wBody,x-W/2,y+r*wBA[2],W,W*wBody.naturalHeight/wBody.naturalWidth); g.restore(); }
+  else if(hmBody){ const W=r*3.08, H=W*hmBody.naturalHeight/hmBody.naturalWidth; g.drawImage(hmBody,x-W/2,y+0.92*r-W*52/120,W,H); }
   else if(maid) maidBody(g,x,y,r,lw,L.gc);
   else if(ETH[L.outfit]) ethnicBody(g,x,y,r,lw,L.outfit);
   else {
@@ -1095,17 +1151,20 @@ function drawBust(g,x,y,r,L,o={}){
   // tóc sau
   if(HX&&HX.back) HX.back(g,x,y,r,L,lw);
   g.fillStyle=L.hair;
+  if(!L.wH){
   if(L.hs==='long'){ rr(g,x-r*1.12,y-r*0.4,r*2.24,r*1.9,r*0.7); g.fill(); g.stroke(); }
   if(L.hs==='bob'){ rr(g,x-r*1.14,y-r*0.45,r*2.28,r*1.2,r*0.6); g.fill(); g.stroke(); }
   if(L.hs==='pony'){ ell(g,x+r*1.05,y+r*0.25,r*0.32,r*0.6,-0.3); g.fill(); g.stroke(); }
   if(L.hs==='pig'){ for(const s of [-1,1]){ ell(g,x+s*r*1.08,y+r*0.45,r*0.3,r*0.42); g.fill(); g.stroke(); } }
   if(L.hs==='bun'&&!L.cap&&!L.hat){ ell(g,x,y-r*1.02,r*0.36,r*0.32); g.fill(); g.stroke(); }
+  }
   // tai + đầu
   g.fillStyle=L.skin;
-  for(const s of [-1,1]){ ell(g,x+s*r*0.95,y+r*0.12,r*0.2,r*0.24); g.fill(); g.stroke(); }
+  if(!L.wH) for(const s of [-1,1]){ ell(g,x+s*r*0.95,y+r*0.12,r*0.2,r*0.24); g.fill(); g.stroke(); }
   ell(g,x,y,r,r*0.94); g.fill(); g.stroke();
   // tóc trước / mũ
-  if(L.cap){
+  if(L.wH){ drawWH(!!L.wH[4]); }
+  else if(L.cap){
     const c1=L.cap, c2=L.cap2||shade(L.cap,30);
     g.fillStyle=L.hair; ell(g,x-r*0.78,y+r*0.05,r*0.22,r*0.3); g.fill(); ell(g,x+r*0.78,y+r*0.05,r*0.22,r*0.3); g.fill();
     g.beginPath(); g.moveTo(x-r*1.04,y-r*0.12); g.arc(x,y-r*0.12,r*1.04,Math.PI,0); g.closePath();
@@ -1135,11 +1194,14 @@ function drawBust(g,x,y,r,L,o={}){
   }
   if(L.hat) drawHat(g,x,y,r,L.hat,lw,L.hair);
   if(L.hmH){ const [k,ax,ay,wu,wr,ty]=L.hmH, im=hmI(k); if(im){ const u=r*wr/wu, W=im.naturalWidth/im.naturalWidth*120*u; g.drawImage(im,x-ax*u,y+ty*r-ay*u,W,W*im.naturalHeight/im.naturalWidth); } }
+  if(L.wHat){ const [k,wr,ox,top]=L.wHat, im=hmI(k); if(im){ const W=r*wr; g.drawImage(im,x+ox*r-W/2,y+top*r,W,W*im.naturalHeight/im.naturalWidth); } }
+  const wPart=(P,def)=>{ if(!P) return false; const im=hmI(P[0]); if(!im) return def; const W=r*P[1], H=W*im.naturalHeight/im.naturalWidth; g.drawImage(im,x+(P[3]||0)*r-W/2,y+P[2]*r-H/2,W,H); return true; };
   if(L.bow){ g.fillStyle=L.bow; for(const s of [-1,1]){ g.beginPath(); g.moveTo(x-r*0.55,y-r*0.78); g.lineTo(x-r*0.55+s*r*0.36,y-r*0.95); g.lineTo(x-r*0.55+s*r*0.36,y-r*0.6); g.closePath(); g.fill(); g.stroke(); } ell(g,x-r*0.55,y-r*0.78,r*0.08,r*0.08); g.fill(); g.stroke(); }
   // mắt anime
   const ey=y+r*0.22, ex=r*0.4, erx=r*0.17, ery=r*0.22;
-  const closed=o.blink||o.sleep||mood==='happy', hmEye=L.hmE&&hmI(L.hmE);
-  if(hmEye){ hmFace(g,hmEye,x,ey,r*0.8/56,[0,8,100,76],[50,46]); }
+  const closed=o.blink||o.sleep||mood==='happy', hmEye=(L.hmE&&hmI(L.hmE))||(L.wE&&wPart(L.wE,true));
+  if(L.wE){}
+  else if(hmEye){ hmFace(g,hmEye,x,ey,r*0.8/56,[0,8,100,76],[50,46]); }
   else if(closed){
     g.lineWidth=lw*1.3; g.strokeStyle='#2a1812';
     for(const s of [-1,1]){ g.beginPath(); if(mood==='happy'&&!o.sleep) g.arc(x+s*ex,ey+r*0.07,r*0.14,Math.PI*1.1,Math.PI*1.9); else { g.moveTo(x+s*ex-r*0.15,ey); g.quadraticCurveTo(x+s*ex,ey+r*0.1,x+s*ex+r*0.15,ey); } g.stroke();
@@ -1176,7 +1238,8 @@ function drawBust(g,x,y,r,L,o={}){
   // miệng
   g.strokeStyle='#7a2f35'; g.lineWidth=lw*0.8;
   const hmMouth=L.hmM&&hmI(L.hmM);
-  if(hmMouth){ hmFace(g,hmMouth,x,y+r*0.64,r*0.017,[14,18,72,64],[50,50]); g.strokeStyle='#7a2f35'; }
+  if(L.wM){ wPart(L.wM,true); g.strokeStyle='#7a2f35'; }
+  else if(hmMouth){ hmFace(g,hmMouth,x,y+r*0.64,r*0.017,[14,18,72,64],[50,50]); g.strokeStyle='#7a2f35'; }
   else if(mood==='angry'||mood==='annoyed'){ g.beginPath(); g.moveTo(x-r*0.12,y+r*0.66); g.quadraticCurveTo(x,y+r*0.54,x+r*0.12,y+r*0.66); g.stroke(); }
   else { const mw=mood==='happy'?0.18:0.12, md=mood==='happy'?0.86:0.76;
     g.fillStyle='#b8444f'; g.beginPath(); g.moveTo(x-r*mw,y+r*0.6); g.quadraticCurveTo(x,y+r*0.63,x+r*mw,y+r*0.6); g.quadraticCurveTo(x,y+r*md,x-r*mw,y+r*0.6); g.closePath(); g.fill(); g.stroke();
@@ -1187,6 +1250,7 @@ function drawBust(g,x,y,r,L,o={}){
   if(L.clip){ g.font=`${r*0.42}px system-ui`; g.textAlign='center'; g.textBaseline='middle'; g.fillText(L.clip,x+r*0.6,y-r*0.72); }
   cuteAcc(g,x,y,r,L,lw);
   if(L.hmA){ const im=hmI(L.hmA); if(im) hmFace(g,im,x,ey,r*0.8/44,[0,10,100,80],[50,48]); }
+  if(L.wA) wPart(L.wA,true);
   if(mood==='angry'){ g.font=`${r*0.4}px sans-serif`; g.textAlign='center'; g.textBaseline='middle'; g.fillText('💢',x+r*0.8,y-r*0.75); }
   g.restore();
 }
@@ -1389,7 +1453,7 @@ function shade(hex,amt){ const n=parseInt(hex.slice(1),16); const f=c=>clamp(c+a
 const avCache=new Map();
 // 🎃 ảnh hộp mù cho canvas: tải khi cần, tải xong thì vẽ lại
 const HMI={};
-function hmI(k){ let im=HMI[k]; if(!im){ im=HMI[k]=new Image(); im.onload=()=>{ avCache.clear(); _sbg=null; clearTimeout(hmI._t); hmI._t=setTimeout(()=>{ if(S){ try{ refreshAll(); if(activeTab==='wardrobe') drawWardrobePreview(); }catch(e){} } },60); }; im.src=(k.startsWith('hm/')?k:'hm/'+k+'.webp'); }
+function hmI(k){ let im=HMI[k]; if(!im){ im=HMI[k]=new Image(); im.onload=()=>{ avCache.clear(); _sbg=null; clearTimeout(hmI._t); hmI._t=setTimeout(()=>{ if(S){ try{ refreshAll(); if(activeTab==='wardrobe') drawWardrobePreview(); }catch(e){} } },60); }; im.src=(k.includes('.')?k:k.includes('/')?k+'.webp':'hm/'+k+'.webp'); }
   return im.complete&&im.naturalWidth?im:null; }
 function hmFace(g,im,cx,cy,u,vb,anc){ g.drawImage(im,cx+(vb[0]-anc[0])*u,cy+(vb[1]-anc[1])*u,vb[2]*u,vb[3]*u); }
 function avatar(L){
@@ -1678,7 +1742,7 @@ function tapProduct(id){
   const bump=cls=>{ sfx(cls==='pop'?'pick':'nope'); if(el){ el.classList.remove('pop','nope'); void el.offsetWidth; el.classList.add(cls); } };
   if(!R){ toast('Tiệm chưa mở cửa. Bấm "Mở cửa" để bắt đầu bán.'); return; }
   const c=R.cur, p=PMAP[id];
-  if(!pOpen(p)){ toast(p.cat==='hm'?'🔒 Mở từ sự kiện 🎃 Hộp mù Bí Ngô':p.nw&&!lineOn(p.nw)?'🔒 Mở ở Kho → 🆕 Ngành hàng mới':'🔒 Cần mua Tủ đông ở tab Nâng cấp'); bump('nope'); return; }
+  if(!pOpen(p)){ toast(p.cat==='hm'?'🔒 Mở từ sự kiện 🎃 Hộp mù Bí Ngô':CATS[p.cat].lock==='w20'?'🔒 Mở từ sự kiện 💐 Hộp mù 20/10':p.nw&&!lineOn(p.nw)?'🔒 Mở ở Kho → 🆕 Ngành hàng mới':'🔒 Cần mua Tủ đông ở tab Nâng cấp'); bump('nope'); return; }
   if(!c||c.stage!=='order'){ toast(c?'Đã đủ hàng, bấm "Nhận tiền" nhé':'Chưa có khách ở quầy'); bump('nope'); return; }
   const w=c.want.find(w=>w.id===id&&!w.out&&w.got<w.q);
   if(!w){ c.waited+=0.8; say(c,pick([`Ơ, ${selfOf(c)} đâu có mua ${p.name.toLowerCase()}…`,'Lấy nhầm rồi em ơi!','Không phải món này đâu!']),10); c.mood='annoyed'; bump('nope'); renderLive(); return; }
@@ -2351,6 +2415,40 @@ function cuteAcc(g,x,y,r,L,lw){
   g.restore();
 }
 
+/* 🌷 Nền tiệm Phố Hoa 20/10 (món Bí ẩn hộp mù 20/10) */
+function flowerStageBg(g,w,h){
+  const OLc='#6b3a4a';
+  // tường hồng + giấy dán tường trái tim/hoa nhí
+  const wall=g.createLinearGradient(0,0,0,h); wall.addColorStop(0,'#ffe3ee'); wall.addColorStop(1,'#ffd0e0'); g.fillStyle=wall; g.fillRect(0,0,w,h);
+  for(let y=26;y<h-60;y+=22) for(let x=((y/22)%2)*11;x<w;x+=22){ g.fillStyle='rgba(255,255,255,.55)'; g.beginPath(); g.moveTo(x,y+3); g.bezierCurveTo(x-4,y-1,x-2,y-4,x,y-2); g.bezierCurveTo(x+2,y-4,x+4,y-1,x,y+3); g.fill(); }
+  const floorY=h-34, shelfR=w*0.73, top=30, levels=4, lh=(floorY-top)/levels;
+  // kệ trắng viền hồng
+  g.fillStyle='#fff7fa'; g.fillRect(4,top,shelfR-8,floorY-top); g.strokeStyle=OLc; g.lineWidth=2; g.strokeRect(4,top,shelfR-8,floorY-top);
+  const bays=3, bw=(shelfR-8)/bays, GOODS=[['🌹','💐','🌷','🌸','🎀','🌺'],['💄','💅','🧴','🪞','💋','🌸'],['🎁','🍰','🍫','💌','🧸','🍬']];
+  for(let b=0;b<bays;b++){ const x0=4+b*bw;
+    for(let lv=0;lv<levels;lv++){ const yb=top+(lv+1)*lh, set=GOODS[(b+lv)%3], n=Math.max(3,Math.floor((bw-10)/17)); g.font='16px system-ui'; g.textAlign='center';
+      for(let k=0;k<n;k++) g.fillText(set[(k+lv*2+b)%set.length],x0+10+k*((bw-20)/(n-1||1)),yb-5);
+      g.fillStyle='#f6a5c0'; g.fillRect(x0+2,yb-4,bw-4,6); g.strokeStyle=OLc; g.lineWidth=1.5; g.strokeRect(x0+2,yb-4,bw-4,6);
+      g.fillStyle='#fff'; for(let k=0;k<3;k++) g.fillRect(x0+12+k*(bw-30)/2,yb-3,12,4); }
+    g.fillStyle='#f48fb1'; g.fillRect(x0,top,5,floorY-top); g.strokeRect(x0,top,5,floorY-top); }
+  g.fillStyle='#f48fb1'; g.fillRect(shelfR-9,top,5,floorY-top); g.strokeRect(shelfR-9,top,5,floorY-top);
+  g.fillStyle='#e7709a'; g.fillRect(0,top-8,shelfR,10); g.strokeRect(0,top-8,shelfR,10);
+  // dây hoa hồng trên nóc kệ
+  g.strokeStyle='#5d9b4f'; g.lineWidth=2.5; g.beginPath(); for(let x=0;x<=shelfR;x+=24){ g.quadraticCurveTo(x-12,top+6,x,top-2); } g.stroke();
+  for(let x=10;x<shelfR;x+=24){ g.font='12px system-ui'; g.fillText(['🌹','🌸','🌷'][(x/24|0)%3],x,top+6); }
+  // tủ hoa tươi (thay tủ mát)
+  const fx=shelfR+6, fw=w-fx-6, fy=18; g.fillStyle='#fff'; g.strokeStyle=OLc; g.lineWidth=2; rr(g,fx,fy,fw,floorY-fy+4,8); g.fill(); g.stroke();
+  g.fillStyle='#ff7fa8'; rr(g,fx,fy,fw,16,8); g.fill(); g.stroke(); g.fillStyle='#fff'; g.font='800 10px "Baloo 2",sans-serif'; g.textAlign='center'; g.fillText('🌷 TỦ HOA TƯƠI',fx+fw/2,fy+12);
+  g.fillStyle='#fff0f6'; rr(g,fx+6,fy+22,fw-12,floorY-fy-24,5); g.fill(); g.stroke();
+  const fl=['🌹','🌷','💐','🌸','🌺','🌼'];
+  for(let r=0;r<4;r++){ const yy=fy+22+(r+1)*(floorY-fy-24)/4.3; g.fillStyle='#f9c6d8'; g.fillRect(fx+8,yy,fw-16,3); g.font='15px system-ui'; const n=Math.max(2,Math.floor((fw-16)/17)); for(let k=0;k<n;k++) g.fillText(fl[(k+r)%fl.length],fx+14+k*((fw-28)/(n-1||1)),yy-2); }
+  // sàn gỗ hồng nhạt
+  g.fillStyle='#f3c1cf'; g.fillRect(0,h-60,w,26); g.strokeStyle='rgba(255,255,255,.6)'; g.lineWidth=1; for(let x=0;x<w;x+=30){ g.beginPath(); g.moveTo(x,h-60); g.lineTo(x,h-34); g.stroke(); }
+  // bảng tên
+  const nm=(S?S.name:'Tạp hóa Lá Xanh').toUpperCase(), pw=Math.min(w*0.5,240); g.fillStyle='#ff7fa8'; g.strokeStyle=OLc; g.lineWidth=2.5; g.beginPath(); g.roundRect(w/2-pw/2-w*0.12,2,pw,22,8); g.fill(); g.stroke();
+  g.fillStyle='#fff'; g.font='800 12px "Baloo 2",sans-serif'; g.fillText('🌹 '+nm+' 🌹',w/2-w*0.12,18,pw-10);
+
+}
 let _sbg=null;
 function stageBg(w,h,d){
   const key=w+'x'+h+'@'+d+(S?S.name:'')+(curTheme()||'')+(S&&S.tier||0);
@@ -2358,7 +2456,7 @@ function stageBg(w,h,d){
   const c=document.createElement('canvas'); c.width=Math.round(w*d); c.height=Math.round(h*d);
   const g=c.getContext('2d'); g.setTransform(d,0,0,d,0,0); g.lineJoin='round'; g.lineCap='round';
   // tường
-  const MT=curTheme()==='moon'; if(MT){ moonStageBg(g,w,h); _sbg={key,c}; return c; } const wall=g.createLinearGradient(0,0,0,h); wall.addColorStop(0,MT?'#ece4ff':'#f1f8ef'); wall.addColorStop(1,MT?'#d9cdf5':'#e2efdf'); g.fillStyle=wall; g.fillRect(0,0,w,h);
+  const MT=curTheme()==='moon'; if(MT){ moonStageBg(g,w,h); _sbg={key,c}; return c; } if(curTheme()==='flower'){ flowerStageBg(g,w,h); _sbg={key,c}; return c; } const wall=g.createLinearGradient(0,0,0,h); wall.addColorStop(0,MT?'#ece4ff':'#f1f8ef'); wall.addColorStop(1,MT?'#d9cdf5':'#e2efdf'); g.fillStyle=wall; g.fillRect(0,0,w,h);
   g.fillStyle='#d7e9d6'; g.fillRect(0,h-60,w,26);
   const floorY=h-34, shelfR=w*0.73;
   // kệ gỗ nhiều tầng
@@ -2593,6 +2691,105 @@ const WARDROBE=[
   {id:'hm_cat',slot:'cat',name:'Mèo Phù Thủy',img:'hm/catwitch.webp',price:0,ev:'hm',cat:'witch'},
   {id:'hm_st11',slot:'pet',name:'Thỏ Ma Bông',img:'hm/st11.webp',price:0,ev:'hm',hmP:'st11'},
   {id:'hm_st10',slot:'theme',name:'Đêm Trăng Bí Ngô',img:'hm/st10.webp',price:0,ev:'hm',theme:'moon'},
+  // 💐 Hộp mù 20/10 (ev:'w20' → chỉ có từ hộp mù)
+  {id:'w2_h1',slot:'hair',name:'Tóc ngắn tơ rối',img:'w20/h1.webp',price:0,ev:'w20',wH:['w20/h1',3.31,-1.472,-2.053,0],hc0:'rgb(122,90,80)'},
+  {id:'w2_h2',slot:'hair',name:'Búi củ tỏi nơ trắng',img:'w20/h2.webp',price:0,ev:'w20',wH:['w20/h2',3.104,-1.36,-2.123,0],hc0:'rgb(221,192,177)'},
+  {id:'w2_h3',slot:'hair',name:'Xõa dài nơ to hồng',img:'w20/h3.webp',price:0,ev:'w20',wH:['w20/h3',3.527,-1.606,-2.002,0],hc0:'rgb(241,181,189)'},
+  {id:'w2_h4',slot:'hair',name:'Đuôi ngựa xoăn đen',img:'w20/h4.webp',price:0,ev:'w20',wH:['w20/h4',3.333,-1.433,-1.887,0],hc0:'rgb(83,74,77)'},
+  {id:'w2_h5',slot:'hair',name:'Nửa búi nơ tím',img:'w20/h5.webp',price:0,ev:'w20',wH:['w20/h5',3.816,-1.633,-2.029,0],hc0:'rgb(202,177,226)'},
+  {id:'w2_h6',slot:'hair',name:'Hai búi tròn xanh',img:'w20/h6.webp',price:0,ev:'w20',wH:['w20/h6',3.29,-1.47,-1.84,0],hc0:'rgb(193,208,236)'},
+  {id:'w2_h7',slot:'hair',name:'Hai búi nơ đỏ',img:'w20/h7.webp',price:0,ev:'w20',wH:['w20/h7',3.459,-1.524,-1.755,0],hc0:'rgb(118,79,70)'},
+  {id:'w2_h8',slot:'hair',name:'Xoăn vàng tết viền hoa',img:'w20/h8.webp',price:0,ev:'w20',wH:['w20/h8',3.687,-1.656,-1.645,0],hc0:'rgb(240,212,186)'},
+  {id:'w2_h9',slot:'hair',name:'Hai bím hồng',img:'w20/h9.webp',price:0,ev:'w20',wH:['w20/h9',2.952,-1.351,-1.561,0],hc0:'rgb(242,182,189)'},
+  {id:'w2_h10',slot:'hair',name:'Đuôi ngựa nơ đỏ',img:'w20/h10.webp',price:0,ev:'w20',wH:['w20/h10',3.528,-1.316,-1.942,0],hc0:'rgb(89,75,78)'},
+  {id:'w2_h11',slot:'hair',name:'Xõa nâu cài hoa',img:'w20/h11.webp',price:0,ev:'w20',wH:['w20/h11',3.668,-1.68,-1.574,0],hc0:'rgb(185,145,124)'},
+  {id:'w2_h12',slot:'hair',name:'Bạch kim nơ xanh',img:'w20/h12.webp',price:0,ev:'w20',wH:['w20/h12',3.521,-1.559,-1.603,0],hc0:'rgb(215,214,228)'},
+  {id:'w2_h13',slot:'hair',name:'Đuôi ngựa lệch xanh',img:'w20/h13.webp',price:0,ev:'w20',wH:['w20/h13',3.857,-1.429,-1.971,0],hc0:'rgb(174,192,231)'},
+  {id:'w2_h14',slot:'hair',name:'Búi đỉnh tím',img:'w20/h14.webp',price:0,ev:'w20',wH:['w20/h14',3.043,-1.4,-1.929,0],hc0:'rgb(150,112,170)'},
+  {id:'w2_h15',slot:'hair',name:'Búi thấp cài hoa',img:'w20/h15.webp',price:0,ev:'w20',wH:['w20/h15',3.5,-1.442,-1.578,0],hc0:'rgb(95,83,82)'},
+  {id:'w2_h16',slot:'hair',name:'Đuôi ngựa lệch nơ trắng',img:'w20/h16.webp',price:0,ev:'w20',wH:['w20/h16',3.529,-2.275,-2.21,0],hc0:'rgb(242,184,190)'},
+  {id:'w2_h17',slot:'hair',name:'Hai bím vàng nơ cam',img:'w20/h17.webp',price:0,ev:'w20',wH:['w20/h17',4.032,-1.722,-1.602,0],hc0:'rgb(237,200,155)'},
+  {id:'w2_h18',slot:'hair',name:'Tết viền xanh lá',img:'w20/h18.webp',price:0,ev:'w20',wH:['w20/h18',3.654,-1.61,-1.728,0],hc0:'rgb(177,193,150)'},
+  {id:'w2_h19',slot:'hair',name:'Xoăn kem nơ đen',img:'w20/h19.webp',price:0,ev:'w20',wH:['w20/h19',3.652,-1.523,-1.599,0],hc0:'rgb(224,196,174)'},
+  {id:'w2_h20',slot:'hair',name:'Xõa dài đỏ rượu',img:'w20/h20.webp',price:0,ev:'w20',wH:['w20/h20',3.743,-1.584,-1.502,1],hc0:'rgb(166,64,63)'},
+  {id:'w2_h21',slot:'hair',name:'Bạch kim hoa lam',img:'w20/h21.webp',price:0,ev:'w20',wH:['w20/h21',3.406,-1.552,-1.873,0],hc0:'rgb(211,216,232)'},
+  {id:'w2_h22',slot:'hair',name:'Bob hồng kẹp chéo',img:'w20/h22.webp',price:0,ev:'w20',wH:['w20/h22',3.235,-1.434,-1.564,0],hc0:'rgb(241,192,196)'},
+  {id:'w2_h23',slot:'hair',name:'Hai đuôi thấp nơ đen',img:'w20/h23.webp',price:0,ev:'w20',wH:['w20/h23',3.618,-1.67,-1.548,0],hc0:'rgb(112,89,81)'},
+  {id:'w2_h24',slot:'hair',name:'Bob tím cài hoa',img:'w20/h24.webp',price:0,ev:'w20',wH:['w20/h24',3.243,-1.471,-1.629,0],hc0:'rgb(205,186,229)'},
+  {id:'w2_t1',slot:'outfit',name:'Áo trễ vai nơ tim',img:'w20/t1.webp',price:0,ev:'w20',wB:'w20/t1'},
+  {id:'w2_t2',slot:'outfit',name:'Thủy thủ nơ 20/10',img:'w20/t2.webp',price:0,ev:'w20',wB:'w20/t2'},
+  {id:'w2_t3',slot:'outfit',name:'Croptop bèo nơ đỏ',img:'w20/t3.webp',price:0,ev:'w20',wB:'w20/t3'},
+  {id:'w2_t4',slot:'outfit',name:'Sơ mi nơ caro',img:'w20/t4.webp',price:0,ev:'w20',wB:'w20/t4'},
+  {id:'w2_t5',slot:'outfit',name:'Len hồng tulip',img:'w20/t5.webp',price:0,ev:'w20',wB:'w20/t5'},
+  {id:'w2_t6',slot:'outfit',name:'Blouse nơ tim',img:'w20/t6.webp',price:0,ev:'w20',wB:'w20/t6'},
+  {id:'w2_t7',slot:'outfit',name:'Len 20/10 thỏ bông',img:'w20/t7.webp',price:0,ev:'w20',wB:'w20/t7'},
+  {id:'w2_t8',slot:'outfit',name:'Sơ mi nơ đỏ ren',img:'w20/t8.webp',price:0,ev:'w20',wB:'w20/t8'},
+  {id:'w2_t9',slot:'outfit',name:'Trễ vai hoa hồng',img:'w20/t9.webp',price:0,ev:'w20',wB:'w20/t9'},
+  {id:'w2_t10',slot:'outfit',name:'Thủy thủ hồng 20/10',img:'w20/t10.webp',price:0,ev:'w20',wB:'w20/t10'},
+  {id:'w2_t11',slot:'outfit',name:'Cardigan tulip',img:'w20/t11.webp',price:0,ev:'w20',wB:'w20/t11'},
+  {id:'w2_t12',slot:'outfit',name:'Thủy thủ tulip',img:'w20/t12.webp',price:0,ev:'w20',wB:'w20/t12'},
+  {id:'w2_t13',slot:'outfit',name:'Croptop tulip',img:'w20/t13.webp',price:0,ev:'w20',wB:'w20/t13'},
+  {id:'w2_t14',slot:'outfit',name:'Blouse thêu tulip',img:'w20/t14.webp',price:0,ev:'w20',wB:'w20/t14'},
+  {id:'w2_t15',slot:'outfit',name:'Croptop bèo tim',img:'w20/t15.webp',price:0,ev:'w20',wB:'w20/t15'},
+  {id:'w2_t16',slot:'outfit',name:'Thủy thủ bó tulip',img:'w20/t16.webp',price:0,ev:'w20',wB:'w20/t16'},
+  {id:'w2_t17',slot:'outfit',name:'Áo bèo hồng 20/10',img:'w20/t17.webp',price:0,ev:'w20',wB:'w20/t17'},
+  {id:'w2_t18',slot:'outfit',name:'Sơ mi thêu nơ đỏ',img:'w20/t18.webp',price:0,ev:'w20',wB:'w20/t18'},
+  {id:'w2_t19',slot:'outfit',name:'Croptop hai dây nơ',img:'w20/t19.webp',price:0,ev:'w20',wB:'w20/t19'},
+  {id:'w2_t20',slot:'outfit',name:'Blouse thêu tim',img:'w20/t20.webp',price:0,ev:'w20',wB:'w20/t20'},
+  {id:'w2_e1',slot:'eyes',name:'Mắt tim hồng',img:'w20/e1.webp',price:0,ev:'w20',wE:['w20/e1',1.78,0.2,0]},
+  {id:'w2_e2',slot:'eyes',name:'Mắt nâu lấp lánh',img:'w20/e2.webp',price:0,ev:'w20',wE:['w20/e2',1.78,0.2,0]},
+  {id:'w2_e3',slot:'eyes',name:'Mắt tím ngân hà',img:'w20/e3.webp',price:0,ev:'w20',wE:['w20/e3',1.78,0.2,0]},
+  {id:'w2_e4',slot:'eyes',name:'Mắt xanh sao đêm',img:'w20/e4.webp',price:0,ev:'w20',wE:['w20/e4',1.78,0.2,0]},
+  {id:'w2_e5',slot:'eyes',name:'Mắt hổ phách',img:'w20/e5.webp',price:0,ev:'w20',wE:['w20/e5',1.78,0.2,0]},
+  {id:'w2_e6',slot:'eyes',name:'Mắt lục bảo',img:'w20/e6.webp',price:0,ev:'w20',wE:['w20/e6',1.78,0.2,0]},
+  {id:'w2_l1',slot:'mouth',name:'Môi hôn gió tim',img:'w20/l1.webp',price:0,ev:'w20',wM:['w20/l1',0.56,0.6,0]},
+  {id:'w2_l2',slot:'mouth',name:'Môi hé cười',img:'w20/l2.webp',price:0,ev:'w20',wM:['w20/l2',0.56,0.6,0]},
+  {id:'w2_l3',slot:'mouth',name:'Môi mím xinh',img:'w20/l3.webp',price:0,ev:'w20',wM:['w20/l3',0.56,0.6,0]},
+  {id:'w2_l4',slot:'mouth',name:'Môi chúm chím',img:'w20/l4.webp',price:0,ev:'w20',wM:['w20/l4',0.56,0.6,0]},
+  {id:'w2_l5',slot:'mouth',name:'Môi bóng mọng',img:'w20/l5.webp',price:0,ev:'w20',wM:['w20/l5',0.56,0.6,0]},
+  {id:'w2_a1',slot:'pet',name:'Thỏ Ôm Tim',img:'w20/a1.webp',price:0,ev:'w20',hmP:'w20/a1'},
+  {id:'w2_a2',slot:'pet',name:'Mèo Tulip',img:'w20/a2.webp',price:0,ev:'w20',hmP:'w20/a2'},
+  {id:'w2_a3',slot:'pet',name:'Gấu Trúc Nơ Hồng',img:'w20/a3.webp',price:0,ev:'w20',hmP:'w20/a3'},
+  {id:'w2_a4',slot:'pet',name:'Nai Hoa Hồng',img:'w20/a4.webp',price:0,ev:'w20',hmP:'w20/a4'},
+  {id:'w2_a5',slot:'pet',name:'Cú Thiên Thần',img:'w20/a5.webp',price:0,ev:'w20',hmP:'w20/a5'},
+  {id:'w2_a6',slot:'hat',name:'Vòng hoa hồng chuỗi ngọc',img:'w20/a6.webp',price:0,ev:'w20',wHat:['w20/a6',2.5,0,-1.3]},
+  {id:'w2_a7',slot:'hat',name:'Mũ bèo nơ đỏ',img:'w20/a7.webp',price:0,ev:'w20',wHat:['w20/a7',2.7,0.05,-1.5]},
+  {id:'w2_a8',slot:'hat',name:'Nơ cài hoa hồng',img:'w20/a8.webp',price:0,ev:'w20',wHat:['w20/a8',1.25,0.62,-1.25]},
+  {id:'w2_a9',slot:'hat',name:'Cánh bướm nơ',img:'w20/a9.webp',price:0,ev:'w20',wHat:['w20/a9',1.2,-0.62,-1.25]},
+  {id:'w2_a10',slot:'hat',name:'Mũ nồi nơ tim',img:'w20/a10.webp',price:0,ev:'w20',wHat:['w20/a10',2.5,0.05,-1.5]},
+  {id:'w2_a11',slot:'decor',name:'Túi tim nơ đỏ',img:'w20/a11.webp',price:0,ev:'w20',decor:[],hmD:'w20/a11'},
+  {id:'w2_aodaihong',slot:'outfit',name:'Áo dài hồng thêu hoa',img:'w20/s_aodaihong.webp',price:0,ev:'w20',wB:['w20/p_aodaihong',2.75,0.6]},
+  {id:'w2_aodaitrang',slot:'outfit',name:'Áo dài trắng nữ sinh',img:'w20/s_aodaitrang.webp',price:0,ev:'w20',wB:['w20/p_aodaitrang',2.75,0.6]},
+  {id:'w2_vayhoa',slot:'outfit',name:'Váy hoa nhí',img:'w20/s_vayhoa.webp',price:0,ev:'w20',wB:['w20/p_vayhoa',2.75,0.6]},
+  {id:'w2_cardigan',slot:'outfit',name:'Cardigan len hồng',img:'w20/s_cardigan.webp',price:0,ev:'w20',wB:['w20/p_cardigan',2.75,0.6]},
+  {id:'w2_aothun',slot:'outfit',name:'Áo thun "Mẹ là số 1"',img:'w20/s_aothun.webp',price:0,ev:'w20',wB:['w20/p_aothun',2.75,0.6]},
+  {id:'w2_khan',slot:'acc',name:'Khăn lụa choàng cổ',img:'w20/s_khan.webp',price:0,ev:'w20',wA:['w20/p_khan',1.7,1.22,0]},
+  {id:'w2_nonla',slot:'hat',name:'Nón lá kết hoa',img:'w20/s_nonla.webp',price:0,ev:'w20',wHat:['w20/p_nonla',2.7,0,-1.55]},
+  {id:'w2_bangdo',slot:'hat',name:'Băng đô nơ lớn',img:'w20/s_bangdo.webp',price:0,ev:'w20',wHat:['w20/p_bangdo',2.2,0,-1.6]},
+  {id:'w2_kephoa',slot:'hat',name:'Kẹp tóc hoa anh đào',img:'w20/s_kephoa.webp',price:0,ev:'w20',wHat:['w20/p_kephoa',2.1,0,-1.3]},
+  {id:'w2_matlonglanh',slot:'eyes',name:'Mắt long lanh',img:'w20/s_matlonglanh.webp',price:0,ev:'w20',wE:['w20/p_matlonglanh',1.55,0.22,0]},
+  {id:'w2_matcuoi',slot:'eyes',name:'Mắt cong cười',img:'w20/s_matcuoi.webp',price:0,ev:'w20',wE:['w20/p_matcuoi',1.55,0.22,0]},
+  {id:'w2_mieng_son',slot:'mouth',name:'Miệng son đỏ cười',img:'w20/s_mieng_son.webp',price:0,ev:'w20',wM:['w20/p_mieng_son',0.5,0.62,0]},
+  {id:'w2_mieng_hon',slot:'mouth',name:'Miệng chu hôn gió',img:'w20/s_mieng_hon.webp',price:0,ev:'w20',wM:['w20/p_mieng_hon',0.85,0.62,0.18]},
+  {id:'w2_kinhtim',slot:'acc',name:'Kính trái tim',img:'w20/s_kinhtim.webp',price:0,ev:'w20',wA:['w20/p_kinhtim',2.0,0.22,0]},
+  {id:'w2_mahong',slot:'acc',name:'Má hồng phấn',img:'w20/s_mahong.webp',price:0,ev:'w20',wA:['w20/p_mahong',1.9,0.5,0]},
+  {id:'w2_giohoa',slot:'decor',name:'Giỏ hoa trên quầy',img:'w20/s_giohoa.webp',price:0,ev:'w20',decor:[],hmD:'w20/s_giohoa'},
+  {id:'w2_stickertim',slot:'decor',name:'Sticker trái tim',img:'w20/s_stickertim.webp',price:0,ev:'w20',decor:[],hmD:'w20/s_stickertim'},
+  {id:'w2_meohoa',slot:'pet',name:'Mèo ôm bó hoa',img:'w20/s_meohoa.webp',price:0,ev:'w20',hmP:'w20/s_meohoa'},
+  {id:'w2_thiennga',slot:'pet',name:'Thiên Nga Hồng',img:'w20/s_thiennga.webp',price:0,ev:'w20',hmP:'w20/s_thiennga'},
+  {id:'w2_phohoa',slot:'theme',name:'Nền tiệm Phố Hoa 20/10',img:'w20/s_phohoa.webp',icon:'🌷',price:0,ev:'w20',theme:'flower'},
+  {id:'w2_aodaitim',slot:'outfit',name:'Áo dài tím hoa sen',img:'w20/s_aodaitim.webp',price:0,ev:'w20',wB:['w20/p_aodaitim',2.75,0.6]},
+  {id:'w2_yemdao',slot:'outfit',name:'Yếm đào thêu hoa',img:'w20/s_yemdao.webp',price:0,ev:'w20',wB:['w20/p_yemdao',2.75,0.6]},
+  {id:'w2_aobaba',slot:'outfit',name:'Áo bà ba hoa nhí',img:'w20/s_aobaba.webp',price:0,ev:'w20',wB:['w20/p_aobaba',2.75,0.6]},
+  {id:'w2_hoodiethho',slot:'outfit',name:'Hoodie tai thỏ',img:'w20/s_hoodiethho.webp',price:0,ev:'w20',wB:['w20/p_hoodiethho',2.75,0.6]},
+  {id:'w2_vuongmienhoa',slot:'hat',name:'Vương miện hoa',img:'w20/s_vuongmienhoa.webp',price:0,ev:'w20',wHat:['w20/p_vuongmienhoa',2.3,0,-1.3]},
+  {id:'w2_blouse',slot:'outfit',name:'Blouse cổ bèo trắng',img:'w20/s_blouse.webp',price:0,ev:'w20',wB:['w20/p_blouse',2.75,0.6]},
+  {id:'w2_lenthung',slot:'outfit',name:'Áo len vặn thừng',img:'w20/s_lenthung.webp',price:0,ev:'w20',wB:['w20/p_lenthung',2.75,0.6]},
+  {id:'w2_somicaro',slot:'outfit',name:'Sơ mi caro hồng',img:'w20/s_somicaro.webp',price:0,ev:'w20',wB:['w20/p_somicaro',2.75,0.6]},
+  {id:'w2_damyem',slot:'outfit',name:'Đầm yếm jean',img:'w20/s_damyem.webp',price:0,ev:'w20',wB:['w20/p_damyem',2.75,0.6]},
+  {id:'w2_beret',slot:'hat',name:'Mũ nồi đỏ',img:'w20/s_beret.webp',price:0,ev:'w20',wHat:['w20/p_beret',2.4,0.05,-1.6]},
+  {id:'frame_rose',slot:'frame',name:'Khung "Vòng Hoa Hồng"',icon:'🌹',img:'w20/a6.webp',price:0,ev:'w20',frame:'rose'},
+
 ];
 const WMAP=Object.fromEntries(WARDROBE.map(w=>[w.id,w]));
 const SLOTS={hair:'💇 Kiểu tóc',eyes:'👀 Mắt',mouth:'👄 Miệng',haircolor:'🎨 Màu tóc',hat:'👒 Mũ',outfit:'👕 Trang phục',acc:'🎀 Phụ kiện',awning:'🏪 Mái hiên',decor:'🪴 Trang trí quầy',cat:'🐱 Mèo',uniform:'👥 Đồng phục NV',pet:'🐾 Thú cưng',frame:'🏷️ Khung tên',theme:'🖼️ Giao diện'};
@@ -2604,6 +2801,7 @@ function ownerView(over){
   const wear={...(S.wear||DEFAULT_WEAR),...(over||{})}, L={...S.owner,cap:null,cap2:null,hat:null,bow:null,glasses:false,shades:false,apron:null,outfit:null,gc:null,clip:null,mask:false,phones:false,heartglass:false,neckbow:false,stickers:false,lolli:false};
   for(const slot of ['hat','outfit','acc','hair','haircolor','eyes','mouth']){ const it=WMAP[wear[slot]]||WMAP[DEFAULT_WEAR[slot]];
     if(it.hmB) L.hmB=it.hmB; if(it.hmH) L.hmH=it.hmH; if(it.hmE) L.hmE=it.hmE; if(it.hmM) L.hmM=it.hmM; if(it.hmA) L.hmA=it.hmA;
+    if(it.wB) L.wB=it.wB; if(it.wH) L.wH=it.wH; if(it.wHat) L.wHat=it.wHat; if(it.wE) L.wE=it.wE; if(it.wM) L.wM=it.wM; if(it.wA) L.wA=it.wA;
     if(it.hs) L.hs=it.hs; if(it.hc) L.hair=it.hc;
     if(it.cap){ L.cap=it.cap[0]; L.cap2=it.cap[1]; } if(it.hat) L.hat=it.hat; if(it.shirt) L.shirt=it.shirt; if(it.apron) L.apron=it.apron;
     if(it.glasses) L.glasses=true; if(it.bow) L.bow=it.bow; if(it.shades) L.shades=true; if(it.outfit){ L.outfit=it.outfit; L.gc=it.gc||null; } if(it.clip) L.clip=it.clip; if(it.lotus) L.lotus=true; if(it.mask) L.mask=true; if(it.phones) L.phones=true; if(it.accx) L[it.accx]=true; }
@@ -2621,7 +2819,7 @@ function staffLook(s,hairId,hcId){ let L=uniLook(s.look,s.role,wornItem('uniform
   const it=WMAP[hairId!==undefined?hairId:s.hair], hc=WMAP[hcId!==undefined?hcId:s.hc];
   if(it&&it.hs){ L={...L,hs:it.hs,cap:null,tail:false}; if(it.fem) L.f=true; if(it.hcDef&&!(hc&&hc.hc)) L.hair=it.hcDef; }
   if(hc&&hc.hc) L={...L,hair:hc.hc}; return L; }
-function applyAwning(){ const aw=curTheme()==='moon'&&!(S&&S.wear&&S.wear.awning&&S.wear.awning!=='aw_green')?MOON.awning:S?wornItem('awning').aw:['#6fc18a','#ffffff'], st=document.documentElement.style, key=aw.join(',');
+function applyAwning(){ const awDef=!(S&&S.wear&&S.wear.awning&&S.wear.awning!=='aw_green'), aw=curTheme()==='moon'&&awDef?MOON.awning:curTheme()==='flower'&&awDef?['#ee8fa5','#fff6ec']:S?wornItem('awning').aw:['#6fc18a','#ffffff'], st=document.documentElement.style, key=aw.join(',');
   if(applyAwning.k===key) return; applyAwning.k=key; const n=aw.length*32;
   st.setProperty('--awg',`repeating-linear-gradient(90deg,${aw.map((c,i)=>`${c} ${i*32}px ${(i+1)*32}px`).join(',')})`);
   st.setProperty('--aws',aw.map((c,i)=>`radial-gradient(circle at ${i*32+16}px 0,${c} 15px,transparent 16px) 0 0/${n}px 14px repeat-x`).join(',')); }
@@ -2795,7 +2993,7 @@ function drawWardrobePreview(){
   const d=window.devicePixelRatio||1; cv.width=Math.round(w*d); cv.height=Math.round(h*d);
   const g=cv.getContext('2d'); g.setTransform(d,0,0,d,0,0);
   const over=wdPreview?{[WMAP[wdPreview].slot]:wdPreview}:{};
-  const aw=curTheme()==='moon'&&!over.awning&&(!S.wear.awning||S.wear.awning==='aw_green')?MOON.awning:(WMAP[over.awning||S.wear.awning]||WMAP.aw_green).aw, catAcc=(WMAP[over.cat||S.wear.cat]||WMAP.cat_none).cat, uniIt=(WMAP[over.uniform||S.wear.uniform]||WMAP.uni_green);
+  const aw=curTheme()==='moon'&&!over.awning&&(!S.wear.awning||S.wear.awning==='aw_green')?MOON.awning:curTheme()==='flower'&&!over.awning&&(!S.wear.awning||S.wear.awning==='aw_green')?['#ee8fa5','#fff6ec']:(WMAP[over.awning||S.wear.awning]||WMAP.aw_green).aw, catAcc=(WMAP[over.cat||S.wear.cat]||WMAP.cat_none).cat, uniIt=(WMAP[over.uniform||S.wear.uniform]||WMAP.uni_green);
   g.drawImage(stageBg(w,h,d),0,0,w,h);
   const sw=w/10; for(let i=0;i<10;i++){ g.fillStyle=aw[i%aw.length]; g.strokeStyle=OL; g.lineWidth=2; g.beginPath(); g.moveTo(i*sw,0); g.lineTo(i*sw+sw,0); g.lineTo(i*sw+sw,18); g.arc(i*sw+sw/2,18,sw/2,0,Math.PI); g.closePath(); g.fill(); g.stroke(); }
   g.fillStyle='#e7c39c'; g.strokeStyle=OL; g.lineWidth=2.5; rr(g,-4,h-30,w+8,36,6); g.fill(); g.stroke();
@@ -2811,7 +3009,7 @@ function renderWardrobe(){
   $('#wdSlots').innerHTML=Object.entries(SLOTS).map(([k,n])=>`<button data-slot="${k}" class="${wdSlot===k?'on':''}">${n}</button>`).join('');
   $('#wdItems').innerHTML=WARDROBE.filter(w=>w.slot===wdSlot).map(w=>{ const own=owns(w.id), worn=S.wear[w.slot]===w.id;
     return `<div class="wd-item${worn?' worn':''}${wdPreview===w.id?' sel':''}" data-prev="${w.id}">${worn?'<span class="tagw">Đang dùng</span>':''}${w.slot==='hair'||w.slot==='haircolor'?`<img class="thumb" alt="" src="${avatar(ownerView({[w.slot]:w.id,hat:'hat_none',acc:'acc_none'}))}">`:w.img?`<img class="thumb hmth" alt="" src="${w.img}">`:`<span class="ic">${w.icon}</span>`}<span class="nm">${w.name}</span>
-      ${worn?'<button disabled>✓ Đang dùng</button>':own?`<button data-wear="${w.id}">Dùng</button>`:w.ev?(w.ev==='hm'?`<button onclick="openHM()">🎃 Hộp mù</button>`:`<button disabled>${w.ev==='pass'?'🌙 Season Pass':'🎪 Quà sự kiện'}</button>`):`<button class="primary" data-buy="${w.id}" ${S.gems<w.price?'disabled':''}>💎 ${w.price}</button>`}</div>`; }).join('');
+      ${worn?'<button disabled>✓ Đang dùng</button>':own?`<button data-wear="${w.id}">Dùng</button>`:w.ev?(w.ev==='hm'?`<button onclick="openHM()">🎃 Hộp mù</button>`:w.ev==='w20'?`<button onclick="openW2()">💐 Hộp mù 20/10</button>`:`<button disabled>${w.ev==='pass'?'🌙 Season Pass':'🎪 Quà sự kiện'}</button>`):`<button class="primary" data-buy="${w.id}" ${S.gems<w.price?'disabled':''}>💎 ${w.price}</button>`}</div>`; }).join('');
   $('#wdQuests').innerHTML=(S.q||[]).map((q,i)=>{ const Q=QUESTS.find(x=>x.type===q.type), done=q.prog>=q.target;
     return `<div class="quest"><span>${done&&!q.claimed?'✅':q.claimed?'🎁':'⬜'} ${Q.t(q.target)}<br><small class="muted">${q.type==='rev'?fmtS(q.prog)+' / '+fmtS(q.target):q.prog+' / '+q.target}</small></span>
       ${q.claimed?'<span class="muted">Đã nhận</span>':`<button class="sm ${done?'primary':''}" data-claim="${i}" ${done?'':'disabled'}>+${q.reward}💎</button>`}
@@ -2961,8 +3159,8 @@ function drawStage(now){
   if(R&&R.cur){ const c=R.cur, k=clamp((now-c.at)/380,0,1), e=1-Math.pow(1-k,3); drawC(c,-r*2+(w*0.18+r*2)*e,1,c.stage==='pay'?'happy':c.mood); }
   // quầy gỗ
   const MTc=curTheme()==='moon';
-  g.fillStyle=MTc?'#9e2b2b':'#e7c39c'; g.strokeStyle=OL; g.lineWidth=2.5; rr(g,-4,h-34,w+8,40,6); g.fill(); g.stroke();
-  g.fillStyle=MTc?'#f2c94c':'#d4a47a'; g.fillRect(0,h-34,w,6); if(MTc){ for(let k=0;k<3;k++) mcMooncake(g,w*0.26+k*22,h-40,9); }
+  const FLc=curTheme()==='flower'; g.fillStyle=MTc?'#9e2b2b':FLc?'#ffb3cc':'#e7c39c'; g.strokeStyle=OL; g.lineWidth=2.5; rr(g,-4,h-34,w+8,40,6); g.fill(); g.stroke();
+  g.fillStyle=MTc?'#f2c94c':FLc?'#ff8fb3':'#d4a47a'; g.fillRect(0,h-34,w,6); if(FLc){ g.font='13px system-ui'; g.textAlign='center'; for(let x=14;x<w;x+=46) g.fillText(['🌸','🌷','🌹'][(x/46|0)%3],x,h-8); } if(MTc){ for(let k=0;k<3;k++) mcMooncake(g,w*0.26+k*22,h-40,9); }
   g.strokeStyle='rgba(90,58,50,.25)'; g.lineWidth=1.5; for(let x=30;x<w;x+=60){ g.beginPath(); g.moveTo(x,h-22); g.quadraticCurveTo(x+14,h-18,x+28,h-22); g.stroke(); }
   // chậu cây & mèo
   g.font='26px system-ui'; g.textAlign='center'; wornItem('decor').decor.forEach((e2,k)=>g.fillText(e2,w*0.33+k*30,h-30));
@@ -3157,7 +3355,7 @@ function renderKho(){
   for(const ck of CAT_KEYS){
     if(catFilter!=='all'&&catFilter!==ck) continue;
     const c=CATS[ck], locked=catLocked(ck);
-    if(ck==='hm'&&locked) continue;
+    if((ck==='hm'||CATS[ck].lock==='w20')&&locked) continue;
     html+=`<div class="kho-cat">${c.icon} ${c.name}${locked?(c.nw?` <button class="sm primary" onclick="openLines()">🆕 Mở ngành hàng</button>`:' <span class="pill warn">🔒 Cần mua Tủ đông ở tab Nâng cấp tiệm</span>'):''}</div>`;
     if(locked) continue;
     for(const p of PRODUCTS.filter(x=>x.cat===ck&&hmHasP(x)&&(!x.nw||lineOn(x.nw)))){
@@ -3443,7 +3641,7 @@ window.openLeaderboard=function(keep){ const tabs=[['week','📅 Tuần này'],[
     let h='';
     if(d.endsAt) h+=`<div class="lbinfo">⏳ Kết thúc sau <b>${lbLeft(d.endsAt)}</b> · Top 10 nhận thưởng</div>
       <div class="lbrw">${d.rewards.slice(0,4).map((g,i)=>`<span>${i<3?medal(i):'4–10'} <b>${g}💎</b></span>`).join('')}</div>`;
-    const rows=d.list.map((r,i)=>`<tr class="${r.me?'me':''}${r.frame==='hang'?' fr-hang':''}"><td class="rk">${medal(i)}</td><td><b>${esc(r.shop)}</b>${r.me?' <span class="viptag">Bạn</span>':''}${r.frame==='hang'?'<div class="frt">🌙 CHỊ HẰNG · Mùa Trăng Rằm</div>':''}${r.title?' '+titleChip(r.title):''}<br><small class="muted">Ngày ${r.day} · ⭐${r.stars||'–'} · 💚${r.rep}</small></td><td style="text-align:right"><b>${fmtS(r.worth)}</b>${d.rewards&&i<10?`<br><small class="good">+${d.rewards[i]}💎</small>`:''}</td></tr>`).join('');
+    const rows=d.list.map((r,i)=>`<tr class="${r.me?'me':''}${r.frame==='hang'?' fr-hang':r.frame==='rose'?' fr-rose':''}"><td class="rk">${medal(i)}</td><td><b>${esc(r.shop)}</b>${r.me?' <span class="viptag">Bạn</span>':''}${r.frame==='hang'?'<div class="frt">🌙 CHỊ HẰNG · Mùa Trăng Rằm</div>':r.frame==='rose'?'<div class="frt">🌹 VÒNG HOA HỒNG · 20/10</div>':''}${r.title?' '+titleChip(r.title):''}<br><small class="muted">Ngày ${r.day} · ⭐${r.stars||'–'} · 💚${r.rep}</small></td><td style="text-align:right"><b>${fmtS(r.worth)}</b>${d.rewards&&i<10?`<br><small class="good">+${d.rewards[i]}💎</small>`:''}</td></tr>`).join('');
     h+=rows?`<table class="lb">${rows}</table>`:`<p>Chưa có tiệm nào đủ ${LB_MIN_DAY} ngày kinh doanh. Hãy là người đầu tiên! 🎉</p>`;
     if(S&&S.day>=LB_MIN_DAY&&!d.myRank) h+=`<p class="muted" style="font-size:13px">Tiệm của bạn (${fmtS(netWorth())}) chưa vào top ${Math.max(d.total,1)}. Cố lên!</p>`;
     else if(d.myRank>50) h+=`<p class="muted" style="font-size:13px">Bạn đang hạng ${d.myRank}.</p>`;
@@ -3635,6 +3833,182 @@ function hmPopup(){ if(!S||!hmActive()) return false; const H=hmState(); if(H.se
     <div style="display:flex;justify-content:center;gap:8px">${['cl16','st1','fa14'].map(k=>`<img src="${hmImg(k)}" style="width:70px;height:70px;object-fit:contain;background:#f6efff;border-radius:12px;border:2px solid #e3d6f0">`).join('')}</div>
     ${H.free!==vnDay()?'<p style="text-align:center;color:#2f9e5b;font-size:13px;margin:8px 0">🎟️ Hôm nay bạn có 1 hộp miễn phí</p>':''}
     <div class="row"><button onclick="closeModal()">Để sau</button><button class="primary" onclick="openHM()">🎃 Mở hộp ngay</button></div>`); return true; }
+
+/* ====== 💐 HỘP MÙ 20/10 · VƯỜN HOA ======
+   18/10 → 31/10 (giờ VN). Giống Bí Ngô: 20💎/hộp, 180💎/10 hộp, 1 hộp miễn phí mỗi ngày. Bảo hiểm 10 hộp có Hiếm, 150 hộp có Bí ẩn.
+   100 món; đủ 100/100: danh hiệu Bông Hồng Của Chợ + khung Vòng Hoa Hồng + 19 mỹ phẩm độc quyền. */
+const W2_START=Date.UTC(2026,9,18)-7*3600e3, W2_END=Date.UTC(2026,10,1)-7*3600e3;
+const W2_TEST=/w20test/.test(location.search+location.hash);
+const W2_RATE={c:0.65,r:0.28,e:0.06,s:0.01}, W2_SHARD={c:5,r:15,e:40,s:100}, W2_EX={c:20,r:60,e:700,s:1500}, W2_RN={c:'Thường',r:'Hiếm',e:'Cực hiếm',s:'✨ Bí ẩn'};
+const W2_POOL=[ // [mã ảnh trong w20/, độ hiếm, món tủ đồ (hoặc 'p:' sản phẩm)]
+ ['a1','s','w2_a1'],
+ ['a2','s','w2_a2'],
+ ['a3','s','w2_a3'],
+ ['a4','s','w2_a4'],
+ ['a5','s','w2_a5'],
+ ['s_thiennga','s','w2_thiennga'],
+ ['s_meohoa','s','w2_meohoa'],
+ ['s_phohoa','s','w2_phohoa'],
+ ['s_aodaihong','e','w2_aodaihong'],
+ ['s_aodaitrang','e','w2_aodaitrang'],
+ ['s_aodaitim','e','w2_aodaitim'],
+ ['t7','e','w2_t7'],
+ ['t2','e','w2_t2'],
+ ['t10','e','w2_t10'],
+ ['h3','e','w2_h3'],
+ ['h8','e','w2_h8'],
+ ['h12','e','w2_h12'],
+ ['h20','e','w2_h20'],
+ ['h21','e','w2_h21'],
+ ['a6','e','w2_a6'],
+ ['a9','e','w2_a9'],
+ ['a7','e','w2_a7'],
+ ['a10','e','w2_a10'],
+ ['t1','r','w2_t1'],
+ ['t5','r','w2_t5'],
+ ['t9','r','w2_t9'],
+ ['t11','r','w2_t11'],
+ ['t12','r','w2_t12'],
+ ['t13','r','w2_t13'],
+ ['t16','r','w2_t16'],
+ ['t17','r','w2_t17'],
+ ['t14','r','w2_t14'],
+ ['t8','r','w2_t8'],
+ ['h5','r','w2_h5'],
+ ['h6','r','w2_h6'],
+ ['h7','r','w2_h7'],
+ ['h9','r','w2_h9'],
+ ['h10','r','w2_h10'],
+ ['h11','r','w2_h11'],
+ ['h13','r','w2_h13'],
+ ['h16','r','w2_h16'],
+ ['a8','r','w2_a8'],
+ ['a11','r','w2_a11'],
+ ['e1','r','w2_e1'],
+ ['e2','r','w2_e2'],
+ ['e3','r','w2_e3'],
+ ['e4','r','w2_e4'],
+ ['e5','r','w2_e5'],
+ ['e6','r','w2_e6'],
+ ['l5','r','w2_l5'],
+ ['t3','c','w2_t3'],
+ ['t4','c','w2_t4'],
+ ['t6','c','w2_t6'],
+ ['t15','c','w2_t15'],
+ ['t18','c','w2_t18'],
+ ['t19','c','w2_t19'],
+ ['t20','c','w2_t20'],
+ ['h1','c','w2_h1'],
+ ['h2','c','w2_h2'],
+ ['h4','c','w2_h4'],
+ ['h14','c','w2_h14'],
+ ['h15','c','w2_h15'],
+ ['h17','c','w2_h17'],
+ ['h18','c','w2_h18'],
+ ['h19','c','w2_h19'],
+ ['h22','c','w2_h22'],
+ ['h23','c','w2_h23'],
+ ['h24','c','w2_h24'],
+ ['l1','c','w2_l1'],
+ ['l2','c','w2_l2'],
+ ['l3','c','w2_l3'],
+ ['l4','c','w2_l4'],
+ ['s_vayhoa','c','w2_vayhoa'],
+ ['s_cardigan','c','w2_cardigan'],
+ ['s_aothun','c','w2_aothun'],
+ ['s_khan','c','w2_khan'],
+ ['s_nonla','c','w2_nonla'],
+ ['s_bangdo','c','w2_bangdo'],
+ ['s_kephoa','c','w2_kephoa'],
+ ['s_matlonglanh','c','w2_matlonglanh'],
+ ['s_matcuoi','c','w2_matcuoi'],
+ ['s_mieng_son','c','w2_mieng_son'],
+ ['s_mieng_hon','c','w2_mieng_hon'],
+ ['s_kinhtim','c','w2_kinhtim'],
+ ['s_mahong','c','w2_mahong'],
+ ['s_giohoa','c','w2_giohoa'],
+ ['s_stickertim','c','w2_stickertim'],
+ ['s_bohoa','c','p:w2p_bohoa'],
+ ['s_hopqua','c','p:w2p_hopqua'],
+ ['s_banhkem','c','p:w2p_banhkem'],
+ ['s_thiep','c','p:w2p_thiep'],
+ ['s_yemdao','c','w2_yemdao'],
+ ['s_aobaba','c','w2_aobaba'],
+ ['s_hoodiethho','c','w2_hoodiethho'],
+ ['s_vuongmienhoa','c','w2_vuongmienhoa'],
+ ['s_blouse','c','w2_blouse'],
+ ['s_lenthung','c','w2_lenthung'],
+ ['s_somicaro','c','w2_somicaro'],
+ ['s_damyem','c','w2_damyem'],
+ ['s_beret','c','w2_beret']];
+const w2Name=e=>e[2].startsWith('p:')?PMAP[e[2].slice(2)].name:WMAP[e[2]].name;
+const w2Kind=e=>{ if(e[2].startsWith('p:')) return 'Sản phẩm bán được'; const w=WMAP[e[2]]; return {outfit:'Quần áo',hair:'Kiểu tóc',hat:'Mũ / phụ kiện đầu',eyes:'Mắt',mouth:'Môi',acc:'Phụ kiện',decor:'Trang trí quầy',cat:'Mèo',pet:'Linh vật',theme:'Nền tiệm'}[w.slot]||''; };
+const w2Img=k=>'w20/'+k+'.webp';
+function w2Active(ms=Date.now()){ return W2_TEST||(ms>=W2_START&&ms<W2_END); }
+function w2State(){ if(!S.w20) S.w20={own:{},n:0,sinceR:0,sinceS:0,shard:0,free:'',day:'',spent:0,done:false,seen:''}; const H=S.w20; const d=vnDay(); if(H.day!==d){ H.day=d; H.spent=0; } return H; }
+const w2OwnCount=()=>W2_POOL.filter(e=>w2State().own[e[0]]).length;
+function w2Grant(e){ const H=w2State(); H.own[e[0]]=(H.own[e[0]]||0)+1; if(H.own[e[0]]===1&&!e[2].startsWith('p:')) S.owned[e[2]]=true; }
+function w2Roll(){ const H=w2State(); H.n++; H.sinceR++; H.sinceS++;
+  let r; if(H.sinceS>=150) r='s'; else { const x=Math.random(); r=x<W2_RATE.s?'s':x<W2_RATE.s+W2_RATE.e?'e':x<W2_RATE.s+W2_RATE.e+W2_RATE.r?'r':'c'; if(r==='c'&&H.sinceR>=10) r='r'; }
+  if(r!=='c') H.sinceR=0; if(r==='s') H.sinceS=0;
+  const pool=W2_POOL.filter(e=>e[1]===r), e=pool[Math.floor(Math.random()*pool.length)], isNew=!H.own[e[0]]; let shard=0;
+  if(isNew) w2Grant(e); else { H.own[e[0]]++; shard=W2_SHARD[r]; H.shard+=shard; }
+  return {e,isNew,shard}; }
+function w2CheckDone(){ const H=w2State(); if(H.done||w2OwnCount()<W2_POOL.length) return false; H.done=true; S.owned.frame_rose=true; titleCheck(); return true; }
+const w2Cell=(e,own)=>`<div class="hm-it hr-${e[1]} ${own?'':'lk'}" title="${esc(own||e[1]!=='s'?w2Name(e):'???')}"><img src="${w2Img(e[0])}" alt="">${own>1?`<i>x${own}</i>`:''}</div>`;
+window.openW2=function(){ if(!S) return; closeModal(); const H=w2State(); H.seen=vnDay();
+  if(!w2Active()&&!H.n) return modal(`<div class="hm-ban w2"><h3>💐 Hộp mù 20/10</h3><p>Sự kiện 20/10 mở từ 18/10 đến 31/10. Hẹn bạn nhé!</p><img src="${w2Img('a1')}" alt=""></div><div class="row"><button class="primary" onclick="closeModal()">Đã hiểu</button></div>`);
+  const own=w2OwnCount(), free=H.free!==vnDay()&&w2Active(), left=Math.max(0,Math.ceil((W2_END-Date.now())/864e5));
+  const order=[...W2_POOL.filter(e=>e[1]==='c'),...W2_POOL.filter(e=>e[1]==='r'),...W2_POOL.filter(e=>e[1]==='e'),...W2_POOL.filter(e=>e[1]==='s')];
+  modal(`<div class="hm-ban w2"><h3>💐 Hộp mù 20/10</h3><p>Sưu tầm 100 món. Đủ bộ: danh hiệu, khung và 19 mỹ phẩm độc quyền!</p><span class="t">${w2Active()?(W2_TEST&&Date.now()<W2_START?'🧪 Bản chạy thử':`⏳ Còn ${left} ngày`):'Sự kiện đã kết thúc'} · 18/10 → 31/10</span><img src="${w2Img('a1')}" alt=""></div>
+    <div class="row" style="justify-content:space-between;margin:0 0 4px"><b>Bộ sưu tập</b><b style="color:#8a4fd8">${own}/${W2_POOL.length}${H.done?' ✓':''}</b></div>
+    <div class="hm-grid">${order.map(e=>w2Cell(e,H.own[e[0]])).join('')}</div>
+    <div class="hm-leg"><span class="hr-c">Thường 65%</span><span class="hr-r">Hiếm 28%</span><span class="hr-e">Cực hiếm 6%</span><span class="hr-s">✨ Bí ẩn 1%</span></div>
+    <div class="hm-pity"><div>🎯 Hiếm chắc chắn sau <b>${10-H.sinceR}</b> hộp<div class="hm-bar"><i style="width:${H.sinceR*10}%;background:#7cc0ef"></i></div></div><div>✨ Bí ẩn chắc chắn sau <b>${150-H.sinceS}</b> hộp<div class="hm-bar"><i style="width:${H.sinceS/1.5}%;background:#ffb703"></i></div></div></div>
+    <div class="row" style="justify-content:space-between;margin-top:6px;font-size:13px"><span>🧩 Mảnh: <b>${H.shard}</b></span><button class="sm" onclick="w2Exchange()">🧩 Đổi mảnh</button><button class="sm" onclick="w2Rules()">📋 Tỉ lệ & luật</button></div>
+    ${w2Active()?`<div class="hm-btns"><button class="hm-b1" onclick="w2Open(1)">Mở 1 hộp<small>20💎</small></button><button class="hm-b10" onclick="w2Open(10)">Mở 10 hộp<small>180💎</small></button>${free?'<button class="hm-bf" onclick="w2Open(1,true)">🎟️ Mở miễn phí hôm nay</button>':''}</div>`:''}
+    <p class="muted" style="font-size:12px;text-align:center;margin:8px 0 0">💎 Bạn có ${S.gems} · Hôm nay đã dùng ${H.spent}💎 cho hộp mù</p>
+    <div class="row" style="margin-top:6px">${H.done?'<button onclick="w2Done()">💄 Xem thưởng đủ bộ</button>':''}<button class="primary" onclick="closeModal()">Đóng</button></div>`); };
+window.w2Open=function(n,free){ const H=w2State(); if(!w2Active()) return toast('Sự kiện chưa mở');
+  if(free){ if(H.free===vnDay()) return toast('Hôm nay đã mở hộp miễn phí'); H.free=vnDay(); return w2Pull(1,0); }
+  const cost=n===10?180:20; if(S.gems<cost) return modal(`<h3>💎 Chưa đủ kim cương</h3><p>Cần ${cost}💎, bạn đang có ${S.gems}💎.</p><div class="row"><button onclick="openW2()">Quay lại</button><button class="primary" onclick="hmGoTopup()">Nạp 💎</button></div>`);
+  if(n===10) return modal(`<h3>💐 Mở 10 hộp?</h3><p>Dùng <b>180💎</b> để mở 10 hộp mù. Chắc chắn có ít nhất 1 món Hiếm.</p><p class="muted" style="font-size:12.5px">Hôm nay bạn đã dùng ${H.spent}💎 cho hộp mù.</p><div class="row"><button onclick="openW2()">Thôi</button><button class="primary" onclick="w2Pull(10,180)">Mở 10 hộp</button></div>`);
+  w2Pull(1,cost); };
+// mở tab Tủ đồ và cuộn tới khu nạp kim cương
+window.w2Pull=function(n,cost){ const H=w2State(); if(cost){ if(S.gems<cost) return toast('Không đủ 💎'); S.gems-=cost; H.spent+=cost; }
+  const res=[]; for(let i=0;i<n;i++) res.push(w2Roll()); cnt('w2Box',n); const done=w2CheckDone(); autosaveSoft(); refreshAll();
+  const best=res.reduce((a,b)=>'cres'.indexOf(b.e[1])>'cres'.indexOf(a.e[1])?b:a); sfx(best.e[1]==='c'?'coin':'reward');
+  const nx=done?'w2Done()':'openW2()';
+  if(n===1){ const {e,isNew,shard}=res[0], col={c:'#9a8aa8',r:'#2f7fb8',e:'#8a4fd8',s:'#d99a00'}[e[1]];
+    return modal(`<div class="hm-rev"><span class="rk" style="background:${col}">${W2_RN[e[1]].toUpperCase()}${isNew?' · MỚI!':''}</span><br><img src="${w2Img(e[0])}" alt=""><div style="font-weight:800;font-size:17px">${esc(w2Name(e))}</div><div class="muted" style="font-size:12.5px">${w2Kind(e)}${isNew?'':` · trùng → +${shard} 🧩`}</div></div>
+      <div class="row" style="margin-top:10px">${isNew&&!e[2].startsWith('p:')?`<button onclick="w2Wear('${e[2]}')">👗 Dùng ngay</button>`:''}<button onclick="${nx}">${done?'🏆 Xem thưởng':'Xong'}</button>${!done&&w2Active()?'<button class="primary" onclick="w2Open(1)">Mở tiếp · 20💎</button>':''}</div>`); }
+  const nNew=res.filter(x=>x.isNew).length, sh=res.reduce((a,x)=>a+x.shard,0);
+  modal(`<h3 style="text-align:center">🎉 Mở 10 hộp</h3><p class="muted" style="text-align:center;margin:0">${nNew} món mới · Bộ sưu tập ${w2OwnCount()}/${W2_POOL.length}</p>
+    <div class="hm-res">${res.map(({e,isNew,shard},i)=>`<div class="hm-bx hr-${e[1]}" style="animation-delay:${i*60}ms">${isNew?'<span class="nw">MỚI</span>':''}<img src="${w2Img(e[0])}" alt=""><b>${esc(w2Name(e))}</b>${shard?`<span class="dp">+${shard} 🧩</span>`:''}</div>`).join('')}</div>
+    <p style="text-align:center;font-size:13px;margin:4px 0">Món trùng → <b>+${sh} 🧩</b> · đang có ${H.shard} mảnh</p>
+    <div class="row"><button onclick="${nx}">${done?'🏆 Xem thưởng':'Xong'}</button>${!done&&w2Active()?'<button class="primary" onclick="w2Open(10)">Mở tiếp 10 · 180💎</button>':''}</div>`); };
+window.w2Wear=function(id){ const w=WMAP[id]; S.wear[w.slot]=id; autosaveSoft(); refreshAll(); closeModal(); toast('👗 Đã dùng '+w.name); if(w.slot!=='decor'&&w.slot!=='cat'&&w.slot!=='pet'&&w.slot!=='theme') gotoTab('wardrobe'); };
+window.w2Exchange=function(){ const H=w2State(), miss=W2_POOL.filter(e=>!H.own[e[0]]);
+  modal(`<h3>🧩 Đổi mảnh lấy món còn thiếu</h3><p class="muted" style="font-size:12.5px;margin:0">Bạn có <b>${H.shard}</b> mảnh. Món trùng tự đổi thành mảnh.</p>
+    ${miss.length?miss.map(e=>{ const c=W2_EX[e[1]], ok=H.shard>=c; return `<div class="hm-ex hr-${e[1]}"><img src="${w2Img(e[0])}" alt=""><div><b>${e[1]==='s'?'Món bí ẩn ✨':esc(w2Name(e))}</b><br><small>${W2_RN[e[1]]} · ${w2Kind(e)}</small><div class="hm-bar"><i style="width:${Math.min(100,H.shard/c*100)}%;background:#b77cff"></i></div></div><button class="sm ${ok?'primary':''}" ${ok?`onclick="w2Buy('${e[0]}')"`:'disabled'}>${c} 🧩</button></div>`; }).join(''):'<p>🎉 Bạn đã có đủ 100 món!</p>'}
+    <div class="row" style="margin-top:8px"><button class="primary" onclick="openW2()">Quay lại</button></div>`); };
+window.w2Buy=function(k){ const H=w2State(), e=W2_POOL.find(x=>x[0]===k); if(!e||H.own[k]) return; const c=W2_EX[e[1]]; if(H.shard<c) return toast('Chưa đủ mảnh');
+  H.shard-=c; w2Grant(e); sfx('reward'); const done=w2CheckDone(); autosaveSoft(); refreshAll(); toast('🧩 Đã đổi '+w2Name(e)); if(done) w2Done(); else w2Exchange(); };
+window.w2Rules=function(){ modal(`<h3>📋 Tỉ lệ & luật Hộp mù 20/10</h3>
+  <table class="tbl" style="width:100%;font-size:13px"><tr><th>Độ hiếm</th><th>Tỉ lệ</th><th>Số món</th><th>Đổi mảnh</th></tr>${['c','r','e','s'].map(r=>`<tr><td>${W2_RN[r]}</td><td>${(W2_RATE[r]*100).toLocaleString('vi-VN')}%</td><td>${W2_POOL.filter(e=>e[1]===r).length}</td><td>${W2_EX[r]} 🧩</td></tr>`).join('')}</table>
+  <ul style="font-size:13px;padding-left:18px"><li>1 hộp 20💎 · 10 hộp 180💎 · mỗi ngày 1 hộp miễn phí.</li><li>Cứ 10 hộp chắc chắn có ít nhất 1 món Hiếm trở lên.</li><li>Mở đủ 150 hộp chắc chắn có món ✨ Bí ẩn.</li><li>Món trùng thành mảnh: Thường +5, Hiếm +15, Cực hiếm +40, Bí ẩn +100.</li><li>Đủ 100/100 món: danh hiệu 🌹 Bông Hồng Của Chợ, khung "Vòng Hoa Hồng" và mở khóa 19 mỹ phẩm độc quyền để bán.</li><li>Tất cả là đồ ngoại hình, không tăng sức mạnh.</li><li>Không bán lại, không chuyển cho người khác, không đổi ra tiền.</li></ul>
+  <div class="row"><button class="primary" onclick="openW2()">Quay lại</button></div>`); };
+window.w2Done=function(){ const V=PRODUCTS.filter(p=>p.need==='done20');
+  modal(`<div style="text-align:center"><div style="font-size:30px">🏆</div><h3 style="margin:2px 0;color:#c2185b">Hoàn thành bộ 100/100!</h3><p style="margin:0;font-size:13px">Danh hiệu <b style="color:#c2185b">🌹 Bông Hồng Của Chợ</b> và khung <b>"Vòng Hoa Hồng"</b> đã mở.</p>
+    <p style="margin:8px 0 0;font-weight:800">💄 Mở khóa ${V.length} mỹ phẩm độc quyền</p><p class="muted" style="margin:0;font-size:12px">Nhập ở tab 📦 Kho, bán ở quầy 💄 Mỹ phẩm 20/10 · tuần 18–24/10 bán chạy gấp đôi</p>
+    <div class="hm-veg">${V.map(p=>`<img src="${p.img}" alt="" title="${esc(p.name)}">`).join('')}</div>
+    <div class="row"><button onclick="openW2()">Quay lại</button><button class="primary" onclick="closeModal();gotoTab('kho');catFilter='mp20';renderKho()">📦 Nhập hàng</button></div></div>`); };
+// bảng giới thiệu khi sự kiện mở (mỗi ngày 1 lần nếu chưa mở hộp miễn phí)
+function w2Popup(){ if(!S||!w2Active()) return false; const H=w2State(); if(H.seen===vnDay()) return false; H.seen=vnDay();
+  modal(`<div class="hm-ban w2"><h3>💐 Hộp mù 20/10</h3><p>Mừng 20/10! Sưu tầm 100 món: áo, tóc, linh vật, nền tiệm Phố Hoa…</p><span class="t">18/10 → 31/10</span><img src="${w2Img('a1')}" alt=""></div>
+    <div style="display:flex;justify-content:center;gap:8px">${['t2','h3','a3'].map(k=>`<img src="${w2Img(k)}" style="width:70px;height:70px;object-fit:contain;background:#f6efff;border-radius:12px;border:2px solid #e3d6f0">`).join('')}</div>
+    ${H.free!==vnDay()?'<p style="text-align:center;color:#2f9e5b;font-size:13px;margin:8px 0">🎟️ Hôm nay bạn có 1 hộp miễn phí</p>':''}
+    <div class="row"><button onclick="closeModal()">Để sau</button><button class="primary" onclick="openW2()">💐 Mở hộp ngay</button></div>`); return true; }
 
 /* ====== 📱 Cài game như ứng dụng (PWA) ====== */
 let installEvt=null;
@@ -4115,7 +4489,7 @@ function openMenu(){
       ${R&&R.t<R.close?'<button data-m="early">🔒 Đóng cửa sớm</button>':''}
       <div class="mgrid">${[['login','🎁','Quà ngày',loginReady()?'!':''],['wheel','🎡','Vòng quay',wheelFree()?'1':''],['titles','🏅','Danh hiệu',''],['story','📜','Cốt truyện',''],
         ['regs','👵','Khách quen',''],['book','📒','Sổ khách',''],['cat','🐱','Mèo',''],['rival','🏬','Đối thủ',''],
-        ['tier','🏪','Nâng cấp',''],...((S.tier||0)>=3?[['corp','🏢','Tập đoàn',S.corp&&S.corp.news.some(n=>!n.read)?'📰':'']]:[]),['friends','🏘️','Bạn bè',''],['guild','🤝','Hội',''],['fair','🎪','Hội chợ',''],...(hmActive()||(S&&S.hm&&S.hm.n)?[['hm','🎃','Hộp mù',S&&hmActive()&&hmState().free!==vnDay()?'1':'']]:[]),['mp','🎮','Chơi chung',MP&&MP.ws?'●':''],
+        ['tier','🏪','Nâng cấp',''],...((S.tier||0)>=3?[['corp','🏢','Tập đoàn',S.corp&&S.corp.news.some(n=>!n.read)?'📰':'']]:[]),['friends','🏘️','Bạn bè',''],['guild','🤝','Hội',''],['fair','🎪','Hội chợ',''],...(hmActive()||(S&&S.hm&&S.hm.n)?[['hm','🎃','Hộp mù',S&&hmActive()&&hmState().free!==vnDay()?'1':'']]:[]),...(w2Active()||(S&&S.w20&&S.w20.n)?[['w2','💐','Hộp mù 20/10',S&&w2Active()&&w2State().free!==vnDay()?'1':'']]:[]),['mp','🎮','Chơi chung',MP&&MP.ws?'●':''],
         ['news','📢','Có gì mới',newsUnseen()?'MỚI':''],['lb','🏆','Xếp hạng',''],['finance','🏦','Vay & đổi',''],['rename','✏️','Đổi tên tiệm','']]
         .map(([k,ic,t,b])=>`<button data-m="${k}"><span>${ic}</span>${t}${b?`<i>${b}</i>`:''}</button>`).join('')}</div>
       <div class="mgrid mg2">${[owns('theme_moon')?['theme',S.wear.theme==='theme_moon'?'🌙':'🍃','Giao diện mùa',S.wear.theme==='theme_moon'?'Bật':'Tắt']:null,
@@ -4148,6 +4522,7 @@ $('#modalBox').addEventListener('click',e=>{
   else if(m==='titles'){ closeMenu(); openTitles(); }
   else if(m==='fair'){ closeMenu(); openFair(); }
   else if(m==='hm'){ closeMenu(); openHM(); }
+  else if(m==='w2'){ closeMenu(); openW2(); }
   else if(m==='corp'){ closeMenu(); openCorp(); }
   else if(m==='rename'){ closeMenu(); openRename(); }
   else if(m==='friends'){ closeMenu(); openFriends(); } else if(m==='guild'){ closeMenu(); openGuild(); }
@@ -4528,6 +4903,7 @@ const TITLES=[
   {id:'gift',icon:'🎁',name:'Người hào phóng',desc:'Tặng quà bạn bè 30 lần',ok:()=>(S.cnt?.gift||0)>=30,p:()=>[(S.cnt?.gift||0),30]},
   {id:'thief',icon:'🕵️',name:'Thám tử',desc:'Tự tay bắt 10 kẻ trộm',ok:()=>(S.cnt?.thief||0)>=10,p:()=>[Math.min(S.cnt?.thief||0,10),10]},
   {id:'tycoon',icon:'🏢',name:'Ông trùm',desc:'Sở hữu 10 cửa hàng tập đoàn',ok:()=>cpOwned()>=10,p:()=>[cpOwned(),10]},
+  {id:'hongcho',icon:'🌹',name:'Bông Hồng Của Chợ',desc:'Hoàn thành bộ Hộp mù 20/10 (100/100)',ok:()=>!!(S.w20&&S.w20.done),p:()=>[S.w20?W2_POOL.filter(e=>S.w20.own[e[0]]).length:0,100]},
   {id:'hmking',icon:'🎃',name:'Vua Bí Ngô',desc:'Hoàn thành bộ Hộp mù Bí Ngô',ok:()=>!!(S.hm&&S.hm.done),p:()=>[S.hm?HM_POOL.filter(e=>S.hm.own[e[0]]).length:0,24]},
   {id:'mil',icon:'💰',name:'Triệu phú chợ',desc:'Trả lời đúng cả 15 câu Ai là triệu phú',ok:()=>(S.cnt?.milWin||0)>=1,p:()=>[(S.cnt?.milWin||0),1]},
 ];
@@ -4544,7 +4920,7 @@ const titleChip=id=>{ const t=TMAP[id]; return t?`<span class="ttl-chip">${t.ico
 function autoPopups(){ let tries=0; const go=()=>{ const busy=$('#modal').classList.contains('show')||($('#tut')&&!$('#tut').hidden)||R;
     if(busy){ if(++tries<40) setTimeout(go,1500); return; }
     if(newsUnseen()&&!(S.day<=1&&!(S.hist&&S.hist.length))){ openNews(false); tries=0; setTimeout(go,1500); return; }
-    if(hmPopup()){ tries=0; setTimeout(go,1500); return; }
+    if(w2Popup()||hmPopup()){ tries=0; setTimeout(go,1500); return; }
     if(loginReady()&&S.day>1) return openLogin(); };
   setTimeout(go,1200); }
 
@@ -5210,6 +5586,12 @@ window.doRename=function(){ const n=($('#rnName').value||'').replace(/[<>\u0000-
 /* ====== 📢 Bảng cập nhật: báo người chơi game vừa có gì mới ====== */
 // Thêm bản mới lên ĐẦU danh sách. v phải khác nhau; người chơi thấy bảng tự bật 1 lần cho mỗi v mới.
 const CHANGELOG=[
+  {v:'2026-10-18-w20',date:'18/10/2026',title:'💐 Hộp mù 20/10 · Vườn Hoa',items:[
+    ['💐','Sự kiện Hộp mù 20/10 (18/10 → 31/10): sưu tầm 100 món áo, tóc, mắt, môi, mũ, linh vật. Mở ở ☰ Menu → 💐 Hộp mù 20/10','new'],
+    ['✨','Hàng Bí ẩn: 7 linh vật và Nền tiệm Phố Hoa 20/10 (cả tiệm đổi sang tông hồng)','new'],
+    ['🎟️','Mỗi ngày 1 hộp miễn phí. Mỗi 10 hộp chắc chắn có món Hiếm, 150 hộp chắc chắn có món Bí ẩn','new'],
+    ['🏆','Đủ 100/100 món: danh hiệu 🌹 Bông Hồng Của Chợ, khung "Vòng Hoa Hồng" và 19 mỹ phẩm độc quyền để bán','new'],
+    ['💇','Tủ đồ có thêm 24 kiểu tóc và 20 áo vẽ tay mới','new']]},
   {v:'2026-10-04-staff',date:'04/10/2026',title:'🛒 38 món hàng mới & 👥 Chăm sóc nhân viên',items:[
     ['🆕','6 ngành hàng mới: Đồ ăn sẵn, Văn phòng phẩm, Đồ cúng lễ, Gia dụng, Thú cưng, Mỹ phẩm + 8 món thêm cho ngành cũ. Mở ở Kho → 🆕 Ngành hàng mới','new'],
     ['🌕','Ngày Rằm, mùng 1: đồ cúng bán chạy gấp 2–3 lần','new'],
