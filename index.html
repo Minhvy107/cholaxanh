@@ -381,8 +381,11 @@ label.toggle{display:flex;gap:6px;align-items:center;font-size:13px;cursor:point
 /* Tủ đồ */
 .gems{font:800 15px var(--display);background:#eaf4ff;border:2px solid #a9cdf0;color:#2f6aa3;border-radius:999px;padding:2px 12px;display:inline-flex;gap:4px;align-items:center}
 .wd-top{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;margin-bottom:10px}
-#wdCv{width:100%;height:190px;display:block;border-radius:16px;border:2px solid var(--line);background:#fff}
-.wd-items{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+#wdCv{width:100%;height:170px;display:block;border-radius:16px;border:2px solid var(--line);background:#fff}
+.wd-items{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;max-height:calc(100dvh - var(--hdrH,90px) - 330px);min-height:180px;overflow-y:auto;overscroll-behavior:contain;padding:8px 2px 4px;-webkit-overflow-scrolling:touch}
+.wd-dock{position:sticky;top:var(--hdrH,0px);z-index:5;background:var(--page);padding-bottom:6px;border-bottom:2px dashed var(--line);margin-bottom:12px}
+.chips.wd-slots{flex-wrap:nowrap;overflow-x:auto;padding:2px 2px 6px;margin:0;scrollbar-width:none}.wd-slots::-webkit-scrollbar{display:none}.wd-slots button{flex:none;font-size:13px;padding:5px 11px}
+.wd-items .wd-item{padding:6px 2px 4px;border-radius:12px}.wd-items .wd-item .thumb{width:46px;height:46px}.wd-items .wd-item .ic{font-size:24px}.wd-items .wd-item .nm{font-size:10.5px;min-height:25px;line-height:1.15}.wd-items .wd-item button{font-size:11px;padding:1px 4px}
 .wd-item{background:var(--panel);border:2px solid var(--line);border-radius:14px;padding:8px 4px 6px;display:flex;flex-direction:column;align-items:center;gap:2px;text-align:center;cursor:pointer;position:relative}
 .wd-item .ic{font-size:28px;line-height:1.1}
 .wd-item .thumb{width:58px;height:58px;border-radius:50%;background:#fdebd9}
@@ -645,9 +648,11 @@ span.pill.bad{background:#fde6e3;color:var(--bad)} span.pill.good{background:#e1
 
   <section class="tab panel" id="tab-wardrobe">
     <div class="sec-title"><h3 class="sec">👗 Tủ đồ</h3><span class="gems" id="wdGems">💎 0</span></div>
-    <div class="wd-top"><canvas id="wdCv"></canvas></div>
-    <div class="chips" id="wdSlots" style="margin-bottom:10px"></div>
-    <div class="wd-items" id="wdItems"></div>
+    <div class="wd-dock">
+      <div class="wd-top"><canvas id="wdCv"></canvas></div>
+      <div class="chips wd-slots" id="wdSlots"></div>
+      <div class="wd-items" id="wdItems"></div>
+    </div>
     <h3 class="sec" style="margin-top:18px">📋 Nhiệm vụ hôm nay</h3>
     <p class="muted" style="margin:0 0 8px;font-size:13px">Làm xong nhận kim cương. Nhiệm vụ đổi mỗi ngày (theo ngày thật), nhiệm vụ đã xong mà quên nhận sẽ được cộng tự động khi sang ngày mới.</p>
     <div id="wdQuests"></div>
@@ -2763,10 +2768,10 @@ const WARDROBE=[
   {id:'w2_a4',slot:'pet',name:'Nai Hoa Hồng',img:'w20/a4.webp',price:0,ev:'w20',hmP:'w20/a4'},
   {id:'w2_a5',slot:'pet',name:'Cú Thiên Thần',img:'w20/a5.webp',price:0,ev:'w20',hmP:'w20/a5'},
   {id:'w2_a6',slot:'hat',name:'Vòng hoa hồng chuỗi ngọc',img:'w20/a6.webp',price:0,ev:'w20',wHat:['w20/a6',2.5,0,-1.3]},
-  {id:'w2_a7',slot:'hat',name:'Mũ bèo nơ đỏ',img:'w20/a7.webp',price:0,ev:'w20',wHat:['w20/a7',3.2,0.15,-1.95,-0.3,[1.3,-0.5]]},
+  {id:'w2_a7',slot:'hat',name:'Mũ bèo hoa hồng',img:'w20/hat_bonnet.webp',price:0,ev:'w20',wHat:['w20/hat_bonnet',3.0,0,-1.75,0,[1.3,-0.55]]},
   {id:'w2_a8',slot:'hat',name:'Nơ cài hoa hồng',img:'w20/a8.webp',price:0,ev:'w20',wHat:['w20/a8',1.25,0.62,-1.25]},
   {id:'w2_a9',slot:'hat',name:'Cánh bướm nơ',img:'w20/a9.webp',price:0,ev:'w20',wHat:['w20/a9',1.2,-0.62,-1.25]},
-  {id:'w2_a10',slot:'hat',name:'Mũ nồi nơ tim',img:'w20/a10.webp',price:0,ev:'w20',wHat:['w20/a10',3.0,0.12,-2.3,-0.3,[1.25,-0.55]]},
+  {id:'w2_a10',slot:'hat',name:'Mũ nồi nơ tim',img:'w20/hat_cap.webp',price:0,ev:'w20',wHat:['w20/hat_cap',2.55,0.02,-1.85,0,[1.25,-0.55]]},
   {id:'w2_a11',slot:'decor',name:'Túi tim nơ đỏ',img:'w20/a11.webp',price:0,ev:'w20',decor:[],hmD:'w20/a11'},
   {id:'w2_aodaihong',slot:'outfit',name:'Áo dài hồng thêu hoa',img:'w20/s_aodaihong.webp',price:0,ev:'w20',wB:['w20/p_aodaihong',2.75,0.6]},
   {id:'w2_aodaitrang',slot:'outfit',name:'Áo dài trắng nữ sinh',img:'w20/s_aodaitrang.webp',price:0,ev:'w20',wB:['w20/p_aodaitrang',2.75,0.6]},
@@ -3872,8 +3877,8 @@ const W2_POOL=[ // [mã ảnh trong w20/, độ hiếm, món tủ đồ (hoặc 
  ['h21','e','w2_h21'],
  ['a6','e','w2_a6'],
  ['a9','e','w2_a9'],
- ['a7','e','w2_a7'],
- ['a10','e','w2_a10'],
+ ['hat_bonnet','e','w2_a7'],
+ ['hat_cap','e','w2_a10'],
  ['t1','r','w2_t1'],
  ['t5','r','w2_t5'],
  ['t9','r','w2_t9'],
@@ -4476,7 +4481,7 @@ let activeTab='store';
 function renderActive(){ ({pass:renderPass,event:renderEventTab,wardrobe:renderWardrobe,kho:renderKho,staff:renderStaff,reviews:renderReviews,equip:renderEquip,ads:renderAds,svc:renderSvc,report:renderReport})[activeTab]?.(); }
 function refreshAll(){ renderHeader(); renderLive(); renderActive(); }
 function gotoTab(t){
-  activeTab=t;
+  activeTab=t; { const h=document.getElementById('hdr'); if(h) document.documentElement.style.setProperty('--hdrH',h.offsetHeight+'px'); }
   $$('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.tab===t));
   $$('.tab').forEach(s=>s.classList.toggle('show',s.id==='tab-'+t));
   renderActive(); if(t==='store') renderLive();
