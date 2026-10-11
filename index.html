@@ -3031,12 +3031,17 @@ function drawWardrobePreview(){
   const sw=w/10; for(let i=0;i<10;i++){ g.fillStyle=aw[i%aw.length]; g.strokeStyle=OL; g.lineWidth=2; g.beginPath(); g.moveTo(i*sw,0); g.lineTo(i*sw+sw,0); g.lineTo(i*sw+sw,18); g.arc(i*sw+sw/2,18,sw/2,0,Math.PI); g.closePath(); g.fill(); g.stroke(); }
   g.fillStyle='#e7c39c'; g.strokeStyle=OL; g.lineWidth=2.5; rr(g,-4,h-30,w+8,36,6); g.fill(); g.stroke();
   const r=Math.min(44,h*0.22); drawBust(g,w*0.3,h-30-r*1.25,r,ownerView(over),{mood:'happy'});
+  { const D=(WMAP[over.decor||S.wear.decor]||{}).hmD, im=D&&hmI(D); if(im&&im.naturalWidth) drawImgB(g,im,w*0.68,h-28,Math.min(64,h*0.38)); }
   const st=S.staff.find(x=>x.role==='cashier'||x.role==='stocker');
   if(st){ const L=uniLook(st.look,st.role,uniIt); drawBust(g,w*0.56,h-30-r*0.95,r*0.7,L,{}); }
   g.font='24px system-ui'; g.textAlign='center'; g.textBaseline='alphabetic'; (WMAP[over.decor||S.wear.decor]||WMAP.dec_plant).decor.forEach((e2,k)=>g.fillText(e2,w*0.72+k*28,h-26));
   drawCat(g,w-62,h-36,0.9,true,performance.now()/1000,catAcc);
-  if((WMAP[over.pet||S.wear.pet]||{}).pet==='bunny') mcBunny(g,w-118,h-48,0.45);
+  const pet=WMAP[over.pet||S.wear.pet]||{};
+  if(pet.pet==='bunny') mcBunny(g,w-118,h-48,0.45);
+  { const im=pet.hmP&&hmI(pet.hmP); if(im&&im.naturalWidth) drawImgB(g,im,w-124,h-28,Math.min(66,h*0.4)); }
 }
+// vẽ ảnh đứng trên mặt quầy: tâm x, đáy y, cao sz (giữ đúng tỉ lệ ảnh)
+function drawImgB(g,im,cx,bottom,sz){ const W=Math.min(sz*1.25,sz*im.naturalWidth/im.naturalHeight); g.drawImage(im,cx-W/2,bottom-sz,W,sz); }
 function renderWardrobe(){
   $('#wdGems').textContent='💎 '+(S.gems||0);
   $('#wdSlots').innerHTML=Object.entries(SLOTS).map(([k,n])=>`<button data-slot="${k}" class="${wdSlot===k?'on':''}">${n}</button>`).join('');
@@ -3197,10 +3202,10 @@ function drawStage(now){
   g.strokeStyle='rgba(90,58,50,.25)'; g.lineWidth=1.5; for(let x=30;x<w;x+=60){ g.beginPath(); g.moveTo(x,h-22); g.quadraticCurveTo(x+14,h-18,x+28,h-22); g.stroke(); }
   // chậu cây & mèo
   g.font='26px system-ui'; g.textAlign='center'; wornItem('decor').decor.forEach((e2,k)=>g.fillText(e2,w*0.33+k*30,h-30));
-  { const D=wornItem('decor').hmD, im=D&&hmI(D); if(im){ const sz=Math.min(86,h*0.42); g.drawImage(im,w*0.33-sz/2,h-30-sz*0.92,sz,sz); } }
+  { const D=wornItem('decor').hmD, im=D&&hmI(D); if(im&&im.naturalWidth){ const sz=Math.min(86,h*0.42); drawImgB(g,im,w*0.33,h-30+sz*0.08,sz); } }
   drawCat(g,w-70,h-40,0.95,!!(R&&R.cur),t,wornItem('cat').cat);
   if(wornItem('pet').pet==='bunny'){ const k=(now-(window._payHop||-9e9))/650, hop=k>=0&&k<1?Math.sin(k*Math.PI)*16:Math.abs(Math.sin(t*1.3))*1.5; mcBunny(g,w-132,h-50-hop,0.5); }
-  { const Pk=wornItem('pet').hmP, im=Pk&&hmI(Pk); if(im){ const sz=Math.min(78,h*0.38), hop=Math.abs(Math.sin(t*1.6))*3; g.drawImage(im,w-150-sz/2,h-30-sz*0.95-hop,sz,sz); } }
+  { const Pk=wornItem('pet').hmP, im=Pk&&hmI(Pk); if(im&&im.naturalWidth){ const sz=Math.min(78,h*0.38), hop=Math.abs(Math.sin(t*1.6))*3; drawImgB(g,im,w-150,h-30+sz*0.05-hop,sz); } }
   if(night){ g.fillStyle=`rgba(60,40,90,${night*0.22})`; g.fillRect(0,0,w,h); }
   if(R&&R.t<R.blackoutUntil){ g.fillStyle='rgba(0,0,0,.55)'; g.fillRect(0,0,w,h); g.fillStyle='#fff'; g.font='800 26px "Baloo 2",sans-serif'; g.fillText('⚡ CÚP ĐIỆN',w/2,h/2); }
 }
