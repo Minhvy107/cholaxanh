@@ -1126,6 +1126,10 @@ function avgStars(n=40){ const r=S.reviews.slice(0,n); return r.length?r.reduce(
 const OL='#5b3a33';
 function ell(g,x,y,rx,ry,rot=0){ g.beginPath(); g.ellipse(x,y,rx,ry,rot,0,Math.PI*2); }
 function drawBust(g,x,y,r,L,o={}){
+  // 💐 đồ vẽ tay (hộp mù 20/10): khuôn mặt chuyển sang nét mềm cho hợp, mắt/môi mặc định cũng là bản vẽ tay
+  const PNT=k=>k&&!/\/p_/.test(Array.isArray(k)?k[0]:k);
+  const soft=!!(PNT(L.wH)||PNT(L.wE)||PNT(L.wM)||PNT(L.wB)||PNT(L.wHat));
+  if(soft){ L={...L}; if(!L.wE&&!L.hmE) L.wE=['w20/e5',1.55,0.22,0]; if(!L.wM&&!L.hmM) L.wM=['w20/l3',0.55,0.63,0]; }
   const lw=Math.max(1.4,r*0.075), mood=o.mood||L.mood||'normal';
   const isF=L.f!=null?L.f:(['long','bob','bun','pony','pig'].includes(L.hs)||L.hat==='maid'||!!L.bow);
   const maid=L.outfit==='maid';
@@ -1161,7 +1165,8 @@ function drawBust(g,x,y,r,L,o={}){
   // tai + đầu
   g.fillStyle=L.skin;
   if(!L.wH) for(const s of [-1,1]){ ell(g,x+s*r*0.95,y+r*0.12,r*0.2,r*0.24); g.fill(); g.stroke(); }
-  ell(g,x,y,r,r*0.94); g.fill(); g.stroke();
+  if(soft){ const sg=g.createRadialGradient(x-r*0.2,y-r*0.1,r*0.1,x,y,r*1.05); sg.addColorStop(0,shade(L.skin,8)); sg.addColorStop(1,shade(L.skin,-6)); g.fillStyle=sg; ell(g,x,y,r,r*0.94); g.fill(); g.save(); g.strokeStyle='rgba(150,90,80,.55)'; g.lineWidth=lw*0.45; g.stroke(); g.restore(); g.fillStyle=L.skin; }
+  else { ell(g,x,y,r,r*0.94); g.fill(); g.stroke(); }
   // tóc trước / mũ
   if(L.wH){ drawWH(!!L.wH[4]); }
   else if(L.cap){
@@ -1229,10 +1234,11 @@ function drawBust(g,x,y,r,L,o={}){
   if(L.shades){ g.fillStyle='#2b2b36'; for(const sd of [-1,1]){ rr(g,x+sd*ex-r*0.24,ey-r*0.16,r*0.48,r*0.3,r*0.1); g.fill(); g.stroke(); } g.beginPath(); g.moveTo(x-ex+r*0.24,ey-r*0.05); g.lineTo(x+ex-r*0.24,ey-r*0.05); g.stroke(); g.fillStyle='rgba(255,255,255,.5)'; for(const sd of [-1,1]){ rr(g,x+sd*ex-r*0.16,ey-r*0.11,r*0.12,r*0.06,r*0.03); g.fill(); } }
   if(L.glasses){ g.lineWidth=lw*0.7; for(const s of [-1,1]){ ell(g,x+s*ex,ey,r*0.24,r*0.26); g.stroke(); } g.beginPath(); g.moveTo(x-ex+r*0.24,ey); g.lineTo(x+ex-r*0.24,ey); g.stroke(); g.lineWidth=lw; }
   // má hồng
-  g.fillStyle=mood==='angry'?'rgba(240,90,90,.6)':'rgba(247,140,160,.55)';
-  for(const s of [-1,1]){ ell(g,x+s*r*0.64,y+r*0.5,r*0.19,r*0.11); g.fill(); }
+  if(soft){ for(const s of [-1,1]){ const bg=g.createRadialGradient(x+s*r*0.6,y+r*0.48,0,x+s*r*0.6,y+r*0.48,r*0.24); bg.addColorStop(0,'rgba(255,130,155,.45)'); bg.addColorStop(1,'rgba(255,130,155,0)'); g.fillStyle=bg; ell(g,x+s*r*0.6,y+r*0.48,r*0.26,r*0.16); g.fill(); } }
+  else { g.fillStyle=mood==='angry'?'rgba(240,90,90,.6)':'rgba(247,140,160,.55)';
+  for(const s of [-1,1]){ ell(g,x+s*r*0.64,y+r*0.5,r*0.19,r*0.11); g.fill(); } }
   g.strokeStyle='rgba(230,110,130,.8)'; g.lineWidth=lw*0.45;
-  for(const s of [-1,1]) for(let k=-1;k<=1;k++){ g.beginPath(); g.moveTo(x+s*r*0.64+k*r*0.08-r*0.03,y+r*0.54); g.lineTo(x+s*r*0.64+k*r*0.08+r*0.03,y+r*0.46); g.stroke(); }
+  if(!soft) for(const s of [-1,1]) for(let k=-1;k<=1;k++){ g.beginPath(); g.moveTo(x+s*r*0.64+k*r*0.08-r*0.03,y+r*0.54); g.lineTo(x+s*r*0.64+k*r*0.08+r*0.03,y+r*0.46); g.stroke(); }
   // mũi
   g.fillStyle='rgba(200,120,100,.6)'; ell(g,x,y+r*0.44,r*0.025,r*0.018); g.fill();
   // miệng
@@ -2736,12 +2742,12 @@ const WARDROBE=[
   {id:'w2_t18',slot:'outfit',name:'Sơ mi thêu nơ đỏ',img:'w20/t18.webp',price:0,ev:'w20',wB:'w20/t18'},
   {id:'w2_t19',slot:'outfit',name:'Croptop hai dây nơ',img:'w20/t19.webp',price:0,ev:'w20',wB:'w20/t19'},
   {id:'w2_t20',slot:'outfit',name:'Blouse thêu tim',img:'w20/t20.webp',price:0,ev:'w20',wB:'w20/t20'},
-  {id:'w2_e1',slot:'eyes',name:'Mắt tim hồng',img:'w20/e1.webp',price:0,ev:'w20',wE:['w20/e1',2.2,0.18,0]},
-  {id:'w2_e2',slot:'eyes',name:'Mắt nâu lấp lánh',img:'w20/e2.webp',price:0,ev:'w20',wE:['w20/e2',2.2,0.18,0]},
-  {id:'w2_e3',slot:'eyes',name:'Mắt tím ngân hà',img:'w20/e3.webp',price:0,ev:'w20',wE:['w20/e3',2.2,0.18,0]},
-  {id:'w2_e4',slot:'eyes',name:'Mắt xanh sao đêm',img:'w20/e4.webp',price:0,ev:'w20',wE:['w20/e4',2.2,0.18,0]},
-  {id:'w2_e5',slot:'eyes',name:'Mắt hổ phách',img:'w20/e5.webp',price:0,ev:'w20',wE:['w20/e5',2.2,0.18,0]},
-  {id:'w2_e6',slot:'eyes',name:'Mắt lục bảo',img:'w20/e6.webp',price:0,ev:'w20',wE:['w20/e6',2.2,0.18,0]},
+  {id:'w2_e1',slot:'eyes',name:'Mắt tim hồng',img:'w20/e1.webp',price:0,ev:'w20',wE:['w20/e1',1.55,0.22,0]},
+  {id:'w2_e2',slot:'eyes',name:'Mắt nâu lấp lánh',img:'w20/e2.webp',price:0,ev:'w20',wE:['w20/e2',1.55,0.22,0]},
+  {id:'w2_e3',slot:'eyes',name:'Mắt tím ngân hà',img:'w20/e3.webp',price:0,ev:'w20',wE:['w20/e3',1.55,0.22,0]},
+  {id:'w2_e4',slot:'eyes',name:'Mắt xanh sao đêm',img:'w20/e4.webp',price:0,ev:'w20',wE:['w20/e4',1.55,0.22,0]},
+  {id:'w2_e5',slot:'eyes',name:'Mắt hổ phách',img:'w20/e5.webp',price:0,ev:'w20',wE:['w20/e5',1.55,0.22,0]},
+  {id:'w2_e6',slot:'eyes',name:'Mắt lục bảo',img:'w20/e6.webp',price:0,ev:'w20',wE:['w20/e6',1.55,0.22,0]},
   {id:'w2_l1',slot:'mouth',name:'Môi hôn gió tim',img:'w20/l1.webp',price:0,ev:'w20',wM:['w20/l1',0.8,0.63,0]},
   {id:'w2_l2',slot:'mouth',name:'Môi hé cười',img:'w20/l2.webp',price:0,ev:'w20',wM:['w20/l2',0.8,0.63,0]},
   {id:'w2_l3',slot:'mouth',name:'Môi mím xinh',img:'w20/l3.webp',price:0,ev:'w20',wM:['w20/l3',0.8,0.63,0]},
@@ -2753,7 +2759,7 @@ const WARDROBE=[
   {id:'w2_a4',slot:'pet',name:'Nai Hoa Hồng',img:'w20/a4.webp',price:0,ev:'w20',hmP:'w20/a4'},
   {id:'w2_a5',slot:'pet',name:'Cú Thiên Thần',img:'w20/a5.webp',price:0,ev:'w20',hmP:'w20/a5'},
   {id:'w2_a6',slot:'hat',name:'Vòng hoa hồng chuỗi ngọc',img:'w20/a6.webp',price:0,ev:'w20',wHat:['w20/a6',2.5,0,-1.3]},
-  {id:'w2_a7',slot:'hat',name:'Mũ bèo nơ đỏ',img:'w20/a7.webp',price:0,ev:'w20',wHat:['w20/a7',2.5,0.05,-1.75]},
+  {id:'w2_a7',slot:'hat',name:'Mũ bèo nơ đỏ',img:'w20/a7.webp',price:0,ev:'w20',wHat:['w20/a7',2.4,-0.05,-2.0]},
   {id:'w2_a8',slot:'hat',name:'Nơ cài hoa hồng',img:'w20/a8.webp',price:0,ev:'w20',wHat:['w20/a8',1.25,0.62,-1.25]},
   {id:'w2_a9',slot:'hat',name:'Cánh bướm nơ',img:'w20/a9.webp',price:0,ev:'w20',wHat:['w20/a9',1.2,-0.62,-1.25]},
   {id:'w2_a10',slot:'hat',name:'Mũ nồi nơ tim',img:'w20/a10.webp',price:0,ev:'w20',wHat:['w20/a10',2.4,0.05,-1.75]},
