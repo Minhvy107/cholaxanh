@@ -148,7 +148,9 @@ a.btn.primary{background:#0068ff;border-color:#0052cc;color:#fff;box-shadow:0 3p
 .ps-cell .st{position:absolute;top:3px;right:4px;font-size:12px}.ps-cell .st.go{top:auto;bottom:-8px;right:auto;background:#e5738f;color:#fff;border-radius:8px;padding:0 6px;font-size:10px}
 .ps-xp{display:grid;grid-template-columns:1fr auto;gap:3px 10px;margin:6px 0}
 .lb tr.fr-hang td{background:linear-gradient(90deg,#3a2d63,#6b4fa3);color:#fff}.lb tr.fr-hang td:first-child{border-radius:12px 0 0 12px}.lb tr.fr-hang td:last-child{border-radius:0 12px 12px 0}
-.lb tr.fr-rose td{background:linear-gradient(90deg,#ffd6e5,#fff0f6)}.lb tr.fr-rose td:first-child{border-radius:12px 0 0 12px}.lb tr.fr-rose td:last-child{border-radius:0 12px 12px 0}.lb tr.fr-rose{outline:2px solid #ff8fb3}.lb tr.fr-rose .frt{color:#d6336c}
+.lb tr.fr-rose td{background:linear-gradient(90deg,#ffd6e5,#fff0f6)}.lb tr.fr-rose td:first-child{border-radius:12px 0 0 12px}.lb tr.fr-rose td:last-child{border-radius:0 12px 12px 0}.lb tr.fr-rose{outline:2px solid #ff8fb3}.lb tr.fr-rose .frt{color:#d6336c}.lb .frt img{width:22px;height:22px;vertical-align:-6px}
+.tray .owner.fr-rose::after,.obw.fr-rose::after{content:'';position:absolute;inset:-22%;background:url(w20/frame_rose.webp) center/contain no-repeat;pointer-events:none}.tray .owner.fr-rose::after{inset:-15%}
+.obw{position:relative;display:inline-block}
 .lb tr.fr-hang{outline:2px solid #f2c94c}.lb tr.fr-hang small{color:#e5dcff}.lb .frt{font:800 10.5px var(--body);color:#f2c94c;letter-spacing:.5px}
 .supinfo{white-space:pre-wrap;word-break:break-word;background:var(--panel2);border:2px dashed var(--line);border-radius:12px;padding:8px 10px;font-size:12px;max-height:160px;overflow:auto;margin:6px 0 10px}
 button.primary:hover:not(:disabled){background:var(--brand2);border-color:var(--brandDk)}
@@ -913,7 +915,7 @@ const LINES={
   pet:{icon:'🐾',name:'Thú cưng',cost:8e6,tier:1,desc:'Thức ăn, cát vệ sinh, đồ chơi cho chó mèo.'},
   mypham:{icon:'💄',name:'Mỹ phẩm',cost:20e6,tier:3,desc:'Son, sữa rửa mặt, kem chống nắng, nước hoa. Lãi mỗi món cao.'}};
 /* 🎃 Hộp mù Bí Ngô: sản phẩm độc quyền (có ảnh). need: món hộp mù cần có, hoặc 'done' = đủ bộ. Lời như hàng thường cùng loại. */
-/* 💐 Hộp mù 20/10: 4 sản phẩm rơi từ hộp + 19 mỹ phẩm độc quyền (đủ 100/100 món) */
+/* 💐 Hộp mù 20/10: 4 sản phẩm rơi từ hộp + 19 mỹ phẩm độc quyền (sưu tầm đủ 100 món) */
 const W2C=(id,name,cost,ref,img)=>({...P('w2m_'+id,name,'món','💄','mp20',cost,ref,999,4),img,need:'done20'});
 PRODUCTS.push(
   {...P('w2p_bohoa','Bó hoa hồng','bó','🌹','w20',35000,50000,3,4),img:'w20/s_bohoa.webp',need:'w:s_bohoa'},
@@ -1130,6 +1132,7 @@ function avgStars(n=40){ const r=S.reviews.slice(0,n); return r.length?r.reduce(
 /* Vẽ nhân vật chibi (bán thân, viền nâu kiểu vẽ tay) */
 const OL='#5b3a33';
 function ell(g,x,y,rx,ry,rot=0){ g.beginPath(); g.ellipse(x,y,rx,ry,rot,0,Math.PI*2); }
+const capHair=new Map(); // tóc đã cắt phần dưới mũ (theo kích thước)
 function drawBust(g,x,y,r,L,o={}){
   // 💐 đồ vẽ tay (hộp mù 20/10): khuôn mặt chuyển sang nét mềm cho hợp, mắt/môi mặc định cũng là bản vẽ tay
   const PNT=k=>k&&!/\/p_/.test(Array.isArray(k)?k[0]:k);
@@ -1144,8 +1147,15 @@ function drawBust(g,x,y,r,L,o={}){
   const capCut=L.wHat&&L.wHat[5];
   const drawWH=clip=>{ if(!WH) return; const [,wr,ox,oy]=L.wH, W=r*wr; g.save(); if(clip){ g.beginPath(); g.rect(x-r*4,y-r*4,r*8,r*4.92); g.clip(); }
     // đội mũ: ẩn phần tóc phía trên vành mũ (mũ che), để mũ ôm khít đầu với mọi kiểu tóc
-    if(capCut){ const [cw,cy]=capCut; g.beginPath(); g.rect(x-r*4,y-r*4,r*8,r*8); g.ellipse(x,y+cy*r,r*cw,r*1.6,0,Math.PI,0); g.clip('evenodd'); }
-    g.drawImage(WH,x+ox*r,y+oy*r,W,W*WH.naturalHeight/WH.naturalWidth); g.restore(); };
+    const Hh=W*WH.naturalHeight/WH.naturalWidth;
+    if(capCut&&WH.naturalWidth){ // đội mũ: ẩn hết tóc phía trên vành mũ (búi, nơ trên đỉnh); tóc hai bên lộ ra từ dưới vành, mép mờ nhẹ
+      const cy=capCut[1], t=g.getTransform(), k=Math.max(1,Math.hypot(t.a,t.b)), ow=Math.ceil(W*k), oh=Math.ceil(Hh*k), ck=L.wH[0]+'|'+cy+'|'+ow+'x'+oh;
+      let C=capHair.get(ck); if(!C){ C=document.createElement('canvas'); C.width=ow; C.height=oh; const c=C.getContext('2d'); c.drawImage(WH,0,0,ow,oh);
+        const ey=(cy-oy)*r*k, f=0.14*r*k; if(ey>0){ const gr=c.createLinearGradient(0,ey-f,0,ey); gr.addColorStop(0,'#000'); gr.addColorStop(1,'rgba(0,0,0,0)');
+          c.globalCompositeOperation='destination-out'; c.fillStyle='#000'; c.fillRect(0,0,ow,Math.max(0,ey-f)); c.fillStyle=gr; c.fillRect(0,ey-f,ow,f); }
+        if(capHair.size>40) capHair.clear(); capHair.set(ck,C); }
+      g.drawImage(C,x+ox*r,y+oy*r,W,Hh); }
+    else g.drawImage(WH,x+ox*r,y+oy*r,W,Hh); g.restore(); };
   if(L.wH&&L.wH[4]) drawWH(false);
   if(HX&&HX.behind){ HX.behind(g,x,y,r,L,lw); g.lineWidth=lw; g.strokeStyle=OL; }
   // thân
@@ -1952,7 +1962,7 @@ function renderOrder(){
   const r=clamp(1-c.waited/c.patience,0,1), bar=$('#patBar'); bar.style.width=Math.round(r*100)+'%'; bar.style.background=patColor(r);
 }
 function renderTray(){
-  const c=R&&R.cur; let h=`<span class="sign">GIỎ HÀNG</span><button class="owner" data-owner="1" title="Chủ tiệm – mở Tủ đồ"><img src="${avatar(ownerView())}" alt="Chủ tiệm"></button>`;
+  const c=R&&R.cur; let h=`<span class="sign">GIỎ HÀNG</span><button class="owner${ownerFr()}" data-owner="1" title="Chủ tiệm – mở Tủ đồ"><img src="${avatar(ownerView())}" alt="Chủ tiệm"></button>`;
   if(!R) h+='<div class="tempty">Tiệm đang đóng cửa</div>';
   else if(!c) h+=`<div class="tempty">${R.queue.length?'Mời khách tiếp theo…':'Chưa có khách 😴'}</div>`;
   else {
@@ -1997,7 +2007,7 @@ function renderClosed(){
   ov.hidden=false;
   const ev=S.event;
   setHTML(ov,S.over?`<h3>💥 Tiệm đã phá sản</h3><p>Âm tiền 3 ngày liên tiếp. Về màn hình chính để chơi lại.</p><button class="pill" onclick="toHome()">🏠 Màn hình chính</button>`:
-    `<img class="ownerbig" src="${avatar(ownerView())}" alt="Chủ tiệm"><h3>☀️ Sáng ${DOW[dowOf(S.day)]} · Ngày ${S.day}</h3><p>${ev?`${ev.icon} <b>${ev.name}</b> – ${ev.desc}`:isWeekend(S.day)?'🛍️ Cuối tuần, mọi người hay đi chợ nhiều hơn.':'📅 Ngày thường, không có sự kiện đặc biệt.'}</p>
+    `<span class="obw${ownerFr()}"><img class="ownerbig" src="${avatar(ownerView())}" alt="Chủ tiệm"></span><h3>☀️ Sáng ${DOW[dowOf(S.day)]} · Ngày ${S.day}</h3><p>${ev?`${ev.icon} <b>${ev.name}</b> – ${ev.desc}`:isWeekend(S.day)?'🛍️ Cuối tuần, mọi người hay đi chợ nhiều hơn.':'📅 Ngày thường, không có sự kiện đặc biệt.'}</p>
      <button class="pill" id="btnOpen">🔓 Mở cửa (6:30)</button><button class="link" onclick="askDayOff()">😴 Nghỉ hôm nay</button>
      ${wxHTML()}${festLine()}<div class="row" style="justify-content:center;gap:6px;margin:2px 0;flex-wrap:wrap"><button class="sm" onclick="openMarket()">🌅 Chợ đầu mối</button><button class="sm" onclick="openJuice()">🧃 Nước mía${S.juice&&S.juice.own&&S.juice.day!==S.day?' <span class="ntag fix">!</span>':''}</button><button class="sm" onclick="openStory()">📜 Cốt truyện</button></div><p>Nhập hàng ở tab <b>Kho</b> trước khi mở cửa nhé.</p>`);
 }
@@ -2707,30 +2717,40 @@ const WARDROBE=[
   {id:'hm_st11',slot:'pet',name:'Thỏ Ma Bông',img:'hm/st11.webp',price:0,ev:'hm',hmP:'st11'},
   {id:'hm_st10',slot:'theme',name:'Đêm Trăng Bí Ngô',img:'hm/st10.webp',price:0,ev:'hm',theme:'moon'},
   // 💐 Hộp mù 20/10 (ev:'w20' → chỉ có từ hộp mù)
-  {id:'w2_h1',slot:'hair',name:'Tóc ngắn tơ rối',img:'w20/h1.webp',price:0,ev:'w20',wH:['w20/h1',3.31,-1.472,-2.053,0],hc0:'rgb(122,90,80)'},
-  {id:'w2_h2',slot:'hair',name:'Búi củ tỏi nơ trắng',img:'w20/h2.webp',price:0,ev:'w20',wH:['w20/h2',3.104,-1.36,-2.123,0],hc0:'rgb(221,192,177)'},
-  {id:'w2_h3',slot:'hair',name:'Xõa dài nơ to hồng',img:'w20/h3.webp',price:0,ev:'w20',wH:['w20/h3',3.527,-1.606,-2.002,0],hc0:'rgb(241,181,189)'},
-  {id:'w2_h4',slot:'hair',name:'Đuôi ngựa xoăn đen',img:'w20/h4.webp',price:0,ev:'w20',wH:['w20/h4',3.333,-1.433,-1.887,0],hc0:'rgb(83,74,77)'},
-  {id:'w2_h5',slot:'hair',name:'Nửa búi nơ tím',img:'w20/h5.webp',price:0,ev:'w20',wH:['w20/h5',3.816,-1.633,-2.029,0],hc0:'rgb(202,177,226)'},
-  {id:'w2_h6',slot:'hair',name:'Hai búi tròn xanh',img:'w20/h6.webp',price:0,ev:'w20',wH:['w20/h6',3.29,-1.47,-1.84,0],hc0:'rgb(193,208,236)'},
-  {id:'w2_h7',slot:'hair',name:'Hai búi nơ đỏ',img:'w20/h7.webp',price:0,ev:'w20',wH:['w20/h7',3.459,-1.524,-1.755,0],hc0:'rgb(118,79,70)'},
-  {id:'w2_h8',slot:'hair',name:'Xoăn vàng tết viền hoa',img:'w20/h8.webp',price:0,ev:'w20',wH:['w20/h8',3.687,-1.656,-1.645,0],hc0:'rgb(240,212,186)'},
-  {id:'w2_h9',slot:'hair',name:'Hai bím hồng',img:'w20/h9.webp',price:0,ev:'w20',wH:['w20/h9',2.952,-1.351,-1.561,0],hc0:'rgb(242,182,189)'},
-  {id:'w2_h10',slot:'hair',name:'Đuôi ngựa nơ đỏ',img:'w20/h10.webp',price:0,ev:'w20',wH:['w20/h10',3.528,-1.316,-1.942,0],hc0:'rgb(89,75,78)'},
-  {id:'w2_h11',slot:'hair',name:'Xõa nâu cài hoa',img:'w20/h11.webp',price:0,ev:'w20',wH:['w20/h11',3.668,-1.68,-1.574,0],hc0:'rgb(185,145,124)'},
-  {id:'w2_h12',slot:'hair',name:'Bạch kim nơ xanh',img:'w20/h12.webp',price:0,ev:'w20',wH:['w20/h12',3.521,-1.559,-1.603,0],hc0:'rgb(215,214,228)'},
-  {id:'w2_h13',slot:'hair',name:'Đuôi ngựa lệch xanh',img:'w20/h13.webp',price:0,ev:'w20',wH:['w20/h13',3.857,-1.429,-1.971,0],hc0:'rgb(174,192,231)'},
-  {id:'w2_h14',slot:'hair',name:'Búi đỉnh tím',img:'w20/h14.webp',price:0,ev:'w20',wH:['w20/h14',3.043,-1.4,-1.929,0],hc0:'rgb(150,112,170)'},
-  {id:'w2_h15',slot:'hair',name:'Búi thấp cài hoa',img:'w20/h15.webp',price:0,ev:'w20',wH:['w20/h15',3.5,-1.442,-1.578,0],hc0:'rgb(95,83,82)'},
-  {id:'w2_h16',slot:'hair',name:'Đuôi ngựa lệch nơ trắng',img:'w20/h16.webp',price:0,ev:'w20',wH:['w20/h16',3.529,-2.275,-2.21,0],hc0:'rgb(242,184,190)'},
-  {id:'w2_h17',slot:'hair',name:'Hai bím vàng nơ cam',img:'w20/h17.webp',price:0,ev:'w20',wH:['w20/h17',4.032,-1.722,-1.602,0],hc0:'rgb(237,200,155)'},
-  {id:'w2_h18',slot:'hair',name:'Tết viền xanh lá',img:'w20/h18.webp',price:0,ev:'w20',wH:['w20/h18',3.654,-1.61,-1.728,0],hc0:'rgb(177,193,150)'},
-  {id:'w2_h19',slot:'hair',name:'Xoăn kem nơ đen',img:'w20/h19.webp',price:0,ev:'w20',wH:['w20/h19',3.652,-1.523,-1.599,0],hc0:'rgb(224,196,174)'},
-  {id:'w2_h20',slot:'hair',name:'Xõa dài đỏ rượu',img:'w20/h20.webp',price:0,ev:'w20',wH:['w20/h20',3.743,-1.584,-1.502,1],hc0:'rgb(166,64,63)'},
-  {id:'w2_h21',slot:'hair',name:'Bạch kim hoa lam',img:'w20/h21.webp',price:0,ev:'w20',wH:['w20/h21',3.406,-1.552,-1.873,0],hc0:'rgb(211,216,232)'},
-  {id:'w2_h22',slot:'hair',name:'Bob hồng kẹp chéo',img:'w20/h22.webp',price:0,ev:'w20',wH:['w20/h22',3.235,-1.434,-1.564,0],hc0:'rgb(241,192,196)'},
-  {id:'w2_h23',slot:'hair',name:'Hai đuôi thấp nơ đen',img:'w20/h23.webp',price:0,ev:'w20',wH:['w20/h23',3.618,-1.67,-1.548,0],hc0:'rgb(112,89,81)'},
-  {id:'w2_h24',slot:'hair',name:'Bob tím cài hoa',img:'w20/h24.webp',price:0,ev:'w20',wH:['w20/h24',3.243,-1.471,-1.629,0],hc0:'rgb(205,186,229)'},
+  {id:'w2_h1',slot:'hair',name:'Tóc ngắn tơ rối',img:'w20/h1.webp',price:0,ev:'w20',wH:['w20/h1',3.396,-1.517,-2.063,0],hc0:'rgb(116,71,60)'},
+  {id:'w2_h2',slot:'hair',name:'Búi củ tỏi nơ trắng',img:'w20/h2.webp',price:0,ev:'w20',wH:['w20/h2',3.312,-1.481,-2.238,0],hc0:'rgb(233,193,171)'},
+  {id:'w2_h3',slot:'hair',name:'Xõa dài nơ to hồng',img:'w20/h3.webp',price:0,ev:'w20',wH:['w20/h3',3.507,-1.655,-2.001,0],hc0:'rgb(253,176,190)'},
+  {id:'w2_h4',slot:'hair',name:'Đuôi ngựa xoăn đen',img:'w20/h4.webp',price:0,ev:'w20',wH:['w20/h4',3.474,-1.506,-2.032,0],hc0:'rgb(60,50,54)'},
+  {id:'w2_h5',slot:'hair',name:'Nửa búi nơ tím',img:'w20/h5.webp',price:0,ev:'w20',wH:['w20/h5',3.643,-1.543,-2.063,0],hc0:'rgb(206,160,251)'},
+  {id:'w2_h6',slot:'hair',name:'Hai búi tròn xanh',img:'w20/h6.webp',price:0,ev:'w20',wH:['w20/h6',3.445,-1.551,-1.878,0],hc0:'rgb(185,214,253)'},
+  {id:'w2_h7',slot:'hair',name:'Hai búi nơ đỏ',img:'w20/h7.webp',price:0,ev:'w20',wH:['w20/h7',3.632,-1.629,-1.686,0],hc0:'rgb(115,65,55)'},
+  {id:'w2_h8',slot:'hair',name:'Xoăn vàng tết viền hoa',img:'w20/h8.webp',price:0,ev:'w20',wH:['w20/h8',3.99,-1.75,-1.672,0],hc0:'rgb(252,216,172)'},
+  {id:'w2_h9',slot:'hair',name:'Hai bím hồng',img:'w20/h9.webp',price:0,ev:'w20',wH:['w20/h9',2.962,-1.36,-1.525,0],hc0:'rgb(253,179,192)'},
+  {id:'w2_h10',slot:'hair',name:'Đuôi ngựa nơ đỏ',img:'w20/h10.webp',price:0,ev:'w20',wH:['w20/h10',3.602,-1.393,-1.914,0],hc0:'rgb(61,48,52)'},
+  {id:'w2_h11',slot:'hair',name:'Xõa nâu cài hoa',img:'w20/h11.webp',price:0,ev:'w20',wH:['w20/h11',3.651,-1.675,-1.563,0],hc0:'rgb(187,124,96)'},
+  {id:'w2_h12',slot:'hair',name:'Bạch kim nơ xanh',img:'w20/h12.webp',price:0,ev:'w20',wH:['w20/h12',3.596,-1.606,-1.645,0],hc0:'rgb(231,216,232)'},
+  {id:'w2_h13',slot:'hair',name:'Đuôi ngựa lệch xanh',img:'w20/h13.webp',price:0,ev:'w20',wH:['w20/h13',3.969,-1.508,-2.003,0],hc0:'rgb(147,190,253)'},
+  {id:'w2_h14',slot:'hair',name:'Búi đỉnh tím',img:'w20/h14.webp',price:0,ev:'w20',wH:['w20/h14',3.154,-1.478,-1.969,0],hc0:'rgb(145,79,194)'},
+  {id:'w2_h15',slot:'hair',name:'Búi thấp cài hoa',img:'w20/h15.webp',price:0,ev:'w20',wH:['w20/h15',3.555,-1.51,-1.598,0],hc0:'rgb(76,62,61)'},
+  {id:'w2_h16',slot:'hair',name:'Đuôi ngựa lệch nơ trắng',img:'w20/h16.webp',price:0,ev:'w20',wH:['w20/h16',3.608,-2.302,-2.147,0],hc0:'rgb(252,179,192)'},
+  {id:'w2_h17',slot:'hair',name:'Hai bím vàng nơ cam',img:'w20/h17.webp',price:0,ev:'w20',wH:['w20/h17',4.063,-1.935,-1.549,0],hc0:'rgb(253,209,143)'},
+  {id:'w2_h18',slot:'hair',name:'Tết viền xanh lá',img:'w20/h18.webp',price:0,ev:'w20',wH:['w20/h18',3.398,-1.393,-1.659,0],hc0:'rgb(176,208,138)'},
+  {id:'w2_h19',slot:'hair',name:'Xoăn kem nơ đen',img:'w20/h19.webp',price:0,ev:'w20',wH:['w20/h19',3.777,-1.604,-1.627,0],hc0:'rgb(249,204,164)'},
+  {id:'w2_h20',slot:'hair',name:'Xõa dài đỏ rượu',img:'w20/h20.webp',price:0,ev:'w20',wH:['w20/h20',3.81,-1.653,-1.467,1],hc0:'rgb(178,30,36)'},
+  {id:'w2_h21',slot:'hair',name:'Bạch kim hoa lam',img:'w20/h21.webp',price:0,ev:'w20',wH:['w20/h21',3.6,-1.657,-1.8,0],hc0:'rgb(210,220,250)'},
+  {id:'w2_h22',slot:'hair',name:'Bob hồng kẹp chéo',img:'w20/h22.webp',price:0,ev:'w20',wH:['w20/h22',3.419,-1.548,-1.565,0],hc0:'rgb(253,184,194)'},
+  {id:'w2_h23',slot:'hair',name:'Hai đuôi thấp nơ đen',img:'w20/h23.webp',price:0,ev:'w20',wH:['w20/h23',3.761,-1.757,-1.494,0],hc0:'rgb(109,72,61)'},
+  {id:'w2_h24',slot:'hair',name:'Bob tím cài hoa',img:'w20/h24.webp',price:0,ev:'w20',wH:['w20/h24',3.39,-1.592,-1.645,0],hc0:'rgb(214,173,252)'},
+  {id:'w2_h25',slot:'hair',name:'Hai bím nơ tim đỏ',img:'w20/h25.webp',price:0,ev:'w20',wH:['w20/h25',3.741,-1.876,-2.002,0],hc0:'rgb(126,79,68)'},
+  {id:'w2_h26',slot:'hair',name:'Xoăn be cài hoa anh đào',img:'w20/h26.webp',price:0,ev:'w20',wH:['w20/h26',3.742,-1.79,-2.171,0],hc0:'rgb(224,162,141)'},
+  {id:'w2_h27',slot:'hair',name:'Xoăn nâu nơ đỏ lớn',img:'w20/h27.webp',price:0,ev:'w20',wH:['w20/h27',3.711,-1.771,-2.723,0],hc0:'rgb(112,67,60)'},
+  {id:'w2_h28',slot:'hair',name:'Búi rối cài hoa',img:'w20/h28.webp',price:0,ev:'w20',wH:['w20/h28',3.298,-1.533,-2.683,0],hc0:'rgb(175,114,92)'},
+  {id:'w2_h29',slot:'hair',name:'Hai búi hồng xoăn dài',img:'w20/h29.webp',price:0,ev:'w20',wH:['w20/h29',3.829,-1.944,-2.322,0],hc0:'rgb(251,166,177)'},
+  {id:'w2_h30',slot:'hair',name:'Xoăn đen nơ hồng ngọc trai',img:'w20/h30.webp',price:0,ev:'w20',wH:['w20/h30',4.151,-2.319,-2.528,0],hc0:'rgb(80,58,57)'},
+  {id:'w2_h31',slot:'hair',name:'Hai búi hồng ruy băng',img:'w20/h31.webp',price:0,ev:'w20',wH:['w20/h31',3.694,-1.829,-2.194,0],hc0:'rgb(252,171,181)'},
+  {id:'w2_h32',slot:'hair',name:'Tết nâu mũ nồi caro',img:'w20/h32.webp',price:0,ev:'w20',wH:['w20/h32',3.681,-1.834,-2.255,0],hc0:'rgb(134,77,65)'},
+  {id:'w2_h33',slot:'hair',name:'Tết be hoa ruy băng',img:'w20/h33.webp',price:0,ev:'w20',wH:['w20/h33',3.757,-1.82,-2.027,0],hc0:'rgb(211,141,117)'},
+  {id:'w2_h34',slot:'hair',name:'Xoăn đen nơ chuỗi tim',img:'w20/h34.webp',price:0,ev:'w20',wH:['w20/h34',3.73,-1.561,-2.262,0],hc0:'rgb(87,65,63)'},
   {id:'w2_t1',slot:'outfit',name:'Áo trễ vai nơ tim',img:'w20/t1.webp',price:0,ev:'w20',wB:'w20/t1'},
   {id:'w2_t2',slot:'outfit',name:'Thủy thủ nơ 20/10',img:'w20/t2.webp',price:0,ev:'w20',wB:'w20/t2'},
   {id:'w2_t3',slot:'outfit',name:'Croptop bèo nơ đỏ',img:'w20/t3.webp',price:0,ev:'w20',wB:'w20/t3'},
@@ -2751,6 +2771,36 @@ const WARDROBE=[
   {id:'w2_t18',slot:'outfit',name:'Sơ mi thêu nơ đỏ',img:'w20/t18.webp',price:0,ev:'w20',wB:'w20/t18'},
   {id:'w2_t19',slot:'outfit',name:'Croptop hai dây nơ',img:'w20/t19.webp',price:0,ev:'w20',wB:'w20/t19'},
   {id:'w2_t20',slot:'outfit',name:'Blouse thêu tim',img:'w20/t20.webp',price:0,ev:'w20',wB:'w20/t20'},
+  {id:'w2_t21',slot:'outfit',name:'Trễ vai nơ đỏ choker tim',img:'w20/t21.webp',price:0,ev:'w20',wB:['w20/t21',2.6,0.7]},
+  {id:'w2_t22',slot:'outfit',name:'Trễ vai bèo hồng nơ đỏ',img:'w20/t22.webp',price:0,ev:'w20',wB:['w20/t22',2.6,0.7]},
+  {id:'w2_t23',slot:'outfit',name:'Trễ vai nơ caro đỏ',img:'w20/t23.webp',price:0,ev:'w20',wB:['w20/t23',2.6,0.7]},
+  {id:'w2_t24',slot:'outfit',name:'Trễ vai bèo hoa anh đào',img:'w20/t24.webp',price:0,ev:'w20',wB:['w20/t24',2.6,0.7]},
+  {id:'w2_t25',slot:'outfit',name:'Thủy thủ đỏ cài hoa',img:'w20/t25.webp',price:0,ev:'w20',wB:['w20/t25',2.6,0.7]},
+  {id:'w2_t26',slot:'outfit',name:'Cardigan trễ vai hoa hồng',img:'w20/t26.webp',price:0,ev:'w20',wB:['w20/t26',2.6,0.7]},
+  {id:'w2_t27',slot:'outfit',name:'Len đỏ trễ vai chuỗi ngọc',img:'w20/t27.webp',price:0,ev:'w20',wB:['w20/t27',2.6,0.7]},
+  {id:'w2_t28',slot:'outfit',name:'Hai dây nơ đỏ cài hoa',img:'w20/t28.webp',price:0,ev:'w20',wB:['w20/t28',2.6,0.7]},
+  {id:'w2_t29',slot:'outfit',name:'Bèo hồng hoa hồng',img:'w20/t29.webp',price:0,ev:'w20',wB:['w20/t29',2.6,0.7]},
+  {id:'w2_t30',slot:'outfit',name:'Hai dây tết hoa hồng',img:'w20/t30.webp',price:0,ev:'w20',wB:['w20/t30',2.6,0.7]},
+  {id:'w2_t31',slot:'outfit',name:'Trễ vai cherry nơ đỏ',img:'w20/t31.webp',price:0,ev:'w20',wB:['w20/t31',2.55,0.88]},
+  {id:'w2_t32',slot:'outfit',name:'Thủy thủ hồng nơ tim',img:'w20/t32.webp',price:0,ev:'w20',wB:['w20/t32',2.55,0.88]},
+  {id:'w2_t33',slot:'outfit',name:'Croptop bèo tầng',img:'w20/t33.webp',price:0,ev:'w20',wB:['w20/t33',2.55,0.88]},
+  {id:'w2_t34',slot:'outfit',name:'Sơ mi nơ đỏ đô',img:'w20/t34.webp',price:0,ev:'w20',wB:['w20/t34',2.55,0.88]},
+  {id:'w2_t35',slot:'outfit',name:'Len trễ vai tulip',img:'w20/t35.webp',price:0,ev:'w20',wB:['w20/t35',2.55,0.88]},
+  {id:'w2_t36',slot:'outfit',name:'Blouse thêu nơ hồng',img:'w20/t36.webp',price:0,ev:'w20',wB:['w20/t36',2.55,0.88]},
+  {id:'w2_t37',slot:'outfit',name:'Trễ vai hồng phồng',img:'w20/t37.webp',price:0,ev:'w20',wB:['w20/t37',2.55,0.88]},
+  {id:'w2_t38',slot:'outfit',name:'Blouse nơ đô ngọc',img:'w20/t38.webp',price:0,ev:'w20',wB:['w20/t38',2.55,0.88]},
+  {id:'w2_t39',slot:'outfit',name:'Cardigan tulip ngọc trai',img:'w20/t39.webp',price:0,ev:'w20',wB:['w20/t39',2.55,0.88]},
+  {id:'w2_t40',slot:'outfit',name:'Trễ vai bèo trắng nơ hồng',img:'w20/t40.webp',price:0,ev:'w20',wB:['w20/t40',2.55,0.88]},
+  {id:'w2_t41',slot:'outfit',name:'Ren đen choker tim',img:'w20/t41.webp',price:0,ev:'w20',wB:['w20/t41',2.55,0.88]},
+  {id:'w2_t42',slot:'outfit',name:'Blouse nơ đen',img:'w20/t42.webp',price:0,ev:'w20',wB:['w20/t42',2.55,0.88]},
+  {id:'w2_t43',slot:'outfit',name:'Bèo hồng tulip',img:'w20/t43.webp',price:0,ev:'w20',wB:['w20/t43',2.55,0.88]},
+  {id:'w2_t44',slot:'outfit',name:'Thủy thủ cherry',img:'w20/t44.webp',price:0,ev:'w20',wB:['w20/t44',2.55,0.88]},
+  {id:'w2_t45',slot:'outfit',name:'Bèo tím nơ tím',img:'w20/t45.webp',price:0,ev:'w20',wB:['w20/t45',2.55,0.88]},
+  {id:'w2_t46',slot:'outfit',name:'Blouse xanh nơ hoa',img:'w20/t46.webp',price:0,ev:'w20',wB:['w20/t46',2.55,0.88]},
+  {id:'w2_t47',slot:'outfit',name:'Bèo hồng hoa hồng đỏ',img:'w20/t47.webp',price:0,ev:'w20',wB:['w20/t47',2.55,0.88]},
+  {id:'w2_t48',slot:'outfit',name:'Sơ mi nơ đỏ tim',img:'w20/t48.webp',price:0,ev:'w20',wB:['w20/t48',2.55,0.88]},
+  {id:'w2_t49',slot:'outfit',name:'Áo khoác đen choker',img:'w20/t49.webp',price:0,ev:'w20',wB:['w20/t49',2.55,0.88]},
+  {id:'w2_t50',slot:'outfit',name:'Trễ vai đào tulip',img:'w20/t50.webp',price:0,ev:'w20',wB:['w20/t50',2.55,0.88]},
   {id:'w2_e1',slot:'eyes',name:'Mắt tim hồng',img:'w20/e1.webp',price:0,ev:'w20',wE:['w20/e1',1.55,0.22,0]},
   {id:'w2_e2',slot:'eyes',name:'Mắt nâu lấp lánh',img:'w20/e2.webp',price:0,ev:'w20',wE:['w20/e2',1.55,0.22,0]},
   {id:'w2_e3',slot:'eyes',name:'Mắt tím ngân hà',img:'w20/e3.webp',price:0,ev:'w20',wE:['w20/e3',1.55,0.22,0]},
@@ -2767,7 +2817,7 @@ const WARDROBE=[
   {id:'w2_a3',slot:'pet',name:'Gấu Trúc Nơ Hồng',img:'w20/a3.webp',price:0,ev:'w20',hmP:'w20/a3'},
   {id:'w2_a4',slot:'pet',name:'Nai Hoa Hồng',img:'w20/a4.webp',price:0,ev:'w20',hmP:'w20/a4'},
   {id:'w2_a5',slot:'pet',name:'Cú Thiên Thần',img:'w20/a5.webp',price:0,ev:'w20',hmP:'w20/a5'},
-  {id:'w2_a6',slot:'hat',name:'Vòng hoa hồng chuỗi ngọc',img:'w20/a6.webp',price:0,ev:'w20',wHat:['w20/a6',2.5,0,-1.3]},
+  {id:'w2_a6',slot:'hat',name:'Vòng hoa hồng chuỗi ngọc',img:'w20/a6.webp',price:0,ev:'w20',wHat:['w20/a6',2.5,0,-1.55]},
   {id:'w2_a7',slot:'hat',name:'Mũ bèo hoa hồng',img:'w20/hat_bonnet.webp',price:0,ev:'w20',wHat:['w20/hat_bonnet',3.0,0,-1.75,0,[1.3,-0.55]]},
   {id:'w2_a8',slot:'hat',name:'Nơ cài hoa hồng',img:'w20/a8.webp',price:0,ev:'w20',wHat:['w20/a8',1.25,0.62,-1.25]},
   {id:'w2_a9',slot:'hat',name:'Cánh bướm nơ',img:'w20/a9.webp',price:0,ev:'w20',wHat:['w20/a9',1.2,-0.62,-1.25]},
@@ -2803,7 +2853,7 @@ const WARDROBE=[
   {id:'w2_somicaro',slot:'outfit',name:'Sơ mi caro hồng',img:'w20/s_somicaro.webp',price:0,ev:'w20',wB:['w20/p_somicaro',2.75,0.6]},
   {id:'w2_damyem',slot:'outfit',name:'Đầm yếm jean',img:'w20/s_damyem.webp',price:0,ev:'w20',wB:['w20/p_damyem',2.75,0.6]},
   {id:'w2_beret',slot:'hat',name:'Mũ nồi đỏ',img:'w20/s_beret.webp',price:0,ev:'w20',wHat:['w20/p_beret',2.5,0.04,-1.6,0]},
-  {id:'frame_rose',slot:'frame',name:'Khung "Vòng Hoa Hồng"',icon:'🌹',img:'w20/a6.webp',price:0,ev:'w20',frame:'rose'},
+  {id:'frame_rose',slot:'frame',name:'Khung "Vòng Hoa Hồng"',icon:'🌹',img:'w20/frame_rose.webp',price:0,ev:'w20',frame:'rose'},
 
 ];
 const WMAP=Object.fromEntries(WARDROBE.map(w=>[w.id,w]));
@@ -2812,6 +2862,8 @@ const DEFAULT_WEAR={hair:'hair_anh',haircolor:'hc_default',decor:'dec_plant',hat
 let wdSlot='hair', wdPreview=null;
 function wornItem(slot){ return WMAP[(S&&S.wear&&S.wear[slot])||DEFAULT_WEAR[slot]]||WMAP[DEFAULT_WEAR[slot]]; }
 const owns=id=>(WMAP[id].price===0&&!WMAP[id].ev)||!!(S.owned&&S.owned[id]);
+const OWNER_SKIN='#fff1ea'; // da trắng cho nhân vật chủ tiệm
+const ownerFr=()=>S&&(wornItem('frame')||{}).frame==='rose'?' fr-rose':'';
 function ownerView(over){
   const wear={...(S.wear||DEFAULT_WEAR),...(over||{})}, L={...S.owner,cap:null,cap2:null,hat:null,bow:null,glasses:false,shades:false,apron:null,outfit:null,gc:null,clip:null,mask:false,phones:false,heartglass:false,neckbow:false,stickers:false,lolli:false};
   for(const slot of ['hat','outfit','acc','hair','haircolor','eyes','mouth']){ const it=WMAP[wear[slot]]||WMAP[DEFAULT_WEAR[slot]];
@@ -2827,6 +2879,7 @@ function ownerView(over){
   if(hairItem.hcDef&&!hcItem.hc) L.hair=hairItem.hcDef;
   L.mood='happy';
   if(L.outfit==='maid') L.f=true;
+  L.skin=OWNER_SKIN;
   return L;
 }
 function uniLook(look,role,it){ if(!(role==='cashier'||role==='stocker')) return look; if(it.uniMaid) return {...look,outfit:'maid',gc:it.gc||null,apron:null,cap:null,f:true}; if(it.uniOutfit) return {...look,outfit:it.uniOutfit,apron:null,cap:null}; return it.uni?{...look,shirt:it.uni,cap:it.uni}:look; }
@@ -3656,7 +3709,7 @@ window.openLeaderboard=function(keep){ const tabs=[['week','📅 Tuần này'],[
     let h='';
     if(d.endsAt) h+=`<div class="lbinfo">⏳ Kết thúc sau <b>${lbLeft(d.endsAt)}</b> · Top 10 nhận thưởng</div>
       <div class="lbrw">${d.rewards.slice(0,4).map((g,i)=>`<span>${i<3?medal(i):'4–10'} <b>${g}💎</b></span>`).join('')}</div>`;
-    const rows=d.list.map((r,i)=>`<tr class="${r.me?'me':''}${r.frame==='hang'?' fr-hang':r.frame==='rose'?' fr-rose':''}"><td class="rk">${medal(i)}</td><td><b>${esc(r.shop)}</b>${r.me?' <span class="viptag">Bạn</span>':''}${r.frame==='hang'?'<div class="frt">🌙 CHỊ HẰNG · Mùa Trăng Rằm</div>':r.frame==='rose'?'<div class="frt">🌹 VÒNG HOA HỒNG · 20/10</div>':''}${r.title?' '+titleChip(r.title):''}<br><small class="muted">Ngày ${r.day} · ⭐${r.stars||'–'} · 💚${r.rep}</small></td><td style="text-align:right"><b>${fmtS(r.worth)}</b>${d.rewards&&i<10?`<br><small class="good">+${d.rewards[i]}💎</small>`:''}</td></tr>`).join('');
+    const rows=d.list.map((r,i)=>`<tr class="${r.me?'me':''}${r.frame==='hang'?' fr-hang':r.frame==='rose'?' fr-rose':''}"><td class="rk">${medal(i)}</td><td><b>${esc(r.shop)}</b>${r.me?' <span class="viptag">Bạn</span>':''}${r.frame==='hang'?'<div class="frt">🌙 CHỊ HẰNG · Mùa Trăng Rằm</div>':r.frame==='rose'?'<div class="frt"><img src="w20/frame_rose.webp" alt=""> VÒNG HOA HỒNG · 20/10</div>':''}${r.title?' '+titleChip(r.title):''}<br><small class="muted">Ngày ${r.day} · ⭐${r.stars||'–'} · 💚${r.rep}</small></td><td style="text-align:right"><b>${fmtS(r.worth)}</b>${d.rewards&&i<10?`<br><small class="good">+${d.rewards[i]}💎</small>`:''}</td></tr>`).join('');
     h+=rows?`<table class="lb">${rows}</table>`:`<p>Chưa có tiệm nào đủ ${LB_MIN_DAY} ngày kinh doanh. Hãy là người đầu tiên! 🎉</p>`;
     if(S&&S.day>=LB_MIN_DAY&&!d.myRank) h+=`<p class="muted" style="font-size:13px">Tiệm của bạn (${fmtS(netWorth())}) chưa vào top ${Math.max(d.total,1)}. Cố lên!</p>`;
     else if(d.myRank>50) h+=`<p class="muted" style="font-size:13px">Bạn đang hạng ${d.myRank}.</p>`;
@@ -3851,10 +3904,10 @@ function hmPopup(){ if(!S||!hmActive()) return false; const H=hmState(); if(H.se
 
 /* ====== 💐 HỘP MÙ 20/10 · VƯỜN HOA ======
    18/10 → 31/10 (giờ VN). Giống Bí Ngô: 20💎/hộp, 180💎/10 hộp, 1 hộp miễn phí mỗi ngày. Bảo hiểm 10 hộp có Hiếm, 150 hộp có Bí ẩn.
-   100 món; đủ 100/100: danh hiệu Bông Hồng Của Chợ + khung Vòng Hoa Hồng + 19 mỹ phẩm độc quyền. */
+   140 món; sưu tầm đủ W2_GOAL (100) món khác nhau: danh hiệu Bông Hồng Của Chợ + khung Vòng Hoa Hồng + 19 mỹ phẩm độc quyền. */
 const W2_START=Date.UTC(2026,9,18)-7*3600e3, W2_END=Date.UTC(2026,10,1)-7*3600e3;
 const W2_TEST=/w20test/.test(location.search+location.hash);
-const W2_RATE={c:0.65,r:0.28,e:0.06,s:0.01}, W2_SHARD={c:5,r:15,e:40,s:100}, W2_EX={c:20,r:60,e:700,s:1500}, W2_RN={c:'Thường',r:'Hiếm',e:'Cực hiếm',s:'✨ Bí ẩn'};
+const W2_GOAL=100, W2_RATE={c:0.65,r:0.28,e:0.06,s:0.01}, W2_SHARD={c:5,r:15,e:40,s:100}, W2_EX={c:20,r:60,e:700,s:1500}, W2_RN={c:'Thường',r:'Hiếm',e:'Cực hiếm',s:'✨ Bí ẩn'};
 const W2_POOL=[ // [mã ảnh trong w20/, độ hiếm, món tủ đồ (hoặc 'p:' sản phẩm)]
  ['a1','s','w2_a1'],
  ['a2','s','w2_a2'],
@@ -3879,6 +3932,46 @@ const W2_POOL=[ // [mã ảnh trong w20/, độ hiếm, món tủ đồ (hoặc 
  ['a9','e','w2_a9'],
  ['hat_bonnet','e','w2_a7'],
  ['hat_cap','e','w2_a10'],
+ ['h25','r','w2_h25'],
+ ['h26','r','w2_h26'],
+ ['h27','e','w2_h27'],
+ ['h28','r','w2_h28'],
+ ['h29','r','w2_h29'],
+ ['h30','e','w2_h30'],
+ ['h31','r','w2_h31'],
+ ['h32','e','w2_h32'],
+ ['h33','r','w2_h33'],
+ ['h34','e','w2_h34'],
+ ['t21','r','w2_t21'],
+ ['t22','c','w2_t22'],
+ ['t23','r','w2_t23'],
+ ['t24','c','w2_t24'],
+ ['t25','r','w2_t25'],
+ ['t26','c','w2_t26'],
+ ['t27','e','w2_t27'],
+ ['t28','c','w2_t28'],
+ ['t29','c','w2_t29'],
+ ['t30','r','w2_t30'],
+ ['t31','c','w2_t31'],
+ ['t32','c','w2_t32'],
+ ['t33','c','w2_t33'],
+ ['t34','c','w2_t34'],
+ ['t35','r','w2_t35'],
+ ['t36','c','w2_t36'],
+ ['t37','c','w2_t37'],
+ ['t38','r','w2_t38'],
+ ['t39','r','w2_t39'],
+ ['t40','c','w2_t40'],
+ ['t41','e','w2_t41'],
+ ['t42','r','w2_t42'],
+ ['t43','c','w2_t43'],
+ ['t44','c','w2_t44'],
+ ['t45','r','w2_t45'],
+ ['t46','r','w2_t46'],
+ ['t47','c','w2_t47'],
+ ['t48','c','w2_t48'],
+ ['t49','e','w2_t49'],
+ ['t50','c','w2_t50'],
  ['t1','r','w2_t1'],
  ['t5','r','w2_t5'],
  ['t9','r','w2_t9'],
@@ -3969,14 +4062,14 @@ function w2Roll(){ const H=w2State(); H.n++; H.sinceR++; H.sinceS++;
   const pool=W2_POOL.filter(e=>e[1]===r), e=pool[Math.floor(Math.random()*pool.length)], isNew=!H.own[e[0]]; let shard=0;
   if(isNew) w2Grant(e); else { H.own[e[0]]++; shard=W2_SHARD[r]; H.shard+=shard; }
   return {e,isNew,shard}; }
-function w2CheckDone(){ const H=w2State(); if(H.done||w2OwnCount()<W2_POOL.length) return false; H.done=true; S.owned.frame_rose=true; titleCheck(); return true; }
+function w2CheckDone(){ const H=w2State(); if(H.done||w2OwnCount()<W2_GOAL) return false; H.done=true; S.owned.frame_rose=true; titleCheck(); return true; }
 const w2Cell=(e,own)=>`<div class="hm-it hr-${e[1]} ${own?'':'lk'}" title="${esc(own||e[1]!=='s'?w2Name(e):'???')}"><img src="${w2Img(e[0])}" alt="">${own>1?`<i>x${own}</i>`:''}</div>`;
 window.openW2=function(){ if(!S) return; closeModal(); const H=w2State(); H.seen=vnDay();
   if(!w2Active()&&!H.n) return modal(`<div class="hm-ban w2"><h3>💐 Hộp mù 20/10</h3><p>Sự kiện 20/10 mở từ 18/10 đến 31/10. Hẹn bạn nhé!</p><img src="${w2Img('a1')}" alt=""></div><div class="row"><button class="primary" onclick="closeModal()">Đã hiểu</button></div>`);
   const own=w2OwnCount(), free=H.free!==vnDay()&&w2Active(), left=Math.max(0,Math.ceil((W2_END-Date.now())/864e5));
   const order=[...W2_POOL.filter(e=>e[1]==='c'),...W2_POOL.filter(e=>e[1]==='r'),...W2_POOL.filter(e=>e[1]==='e'),...W2_POOL.filter(e=>e[1]==='s')];
-  modal(`<div class="hm-ban w2"><h3>💐 Hộp mù 20/10</h3><p>Sưu tầm 100 món. Đủ bộ: danh hiệu, khung và 19 mỹ phẩm độc quyền!</p><span class="t">${w2Active()?(W2_TEST&&Date.now()<W2_START?'🧪 Bản chạy thử':`⏳ Còn ${left} ngày`):'Sự kiện đã kết thúc'} · 18/10 → 31/10</span><img src="${w2Img('a1')}" alt=""></div>
-    <div class="row" style="justify-content:space-between;margin:0 0 4px"><b>Bộ sưu tập</b><b style="color:#8a4fd8">${own}/${W2_POOL.length}${H.done?' ✓':''}</b></div>
+  modal(`<div class="hm-ban w2"><h3>💐 Hộp mù 20/10</h3><p>${W2_POOL.length} món để sưu tầm. Đủ ${W2_GOAL} món: danh hiệu, khung và 19 mỹ phẩm độc quyền!</p><span class="t">${w2Active()?(W2_TEST&&Date.now()<W2_START?'🧪 Bản chạy thử':`⏳ Còn ${left} ngày`):'Sự kiện đã kết thúc'} · 18/10 → 31/10</span><img src="${w2Img('a1')}" alt=""></div>
+    <div class="row" style="justify-content:space-between;margin:0 0 4px"><b>Bộ sưu tập</b><b style="color:#8a4fd8">${own}/${W2_POOL.length} · 🏆 ${H.done?'đã đạt mốc ✓':`mốc ${W2_GOAL}`}</b></div>
     <div class="hm-grid">${order.map(e=>w2Cell(e,H.own[e[0]])).join('')}</div>
     <div class="hm-leg"><span class="hr-c">Thường 65%</span><span class="hr-r">Hiếm 28%</span><span class="hr-e">Cực hiếm 6%</span><span class="hr-s">✨ Bí ẩn 1%</span></div>
     <div class="hm-pity"><div>🎯 Hiếm chắc chắn sau <b>${10-H.sinceR}</b> hộp<div class="hm-bar"><i style="width:${H.sinceR*10}%;background:#7cc0ef"></i></div></div><div>✨ Bí ẩn chắc chắn sau <b>${150-H.sinceS}</b> hộp<div class="hm-bar"><i style="width:${H.sinceS/1.5}%;background:#ffb703"></i></div></div></div>
@@ -4005,22 +4098,22 @@ window.w2Pull=function(n,cost){ const H=w2State(); if(cost){ if(S.gems<cost) ret
 window.w2Wear=function(id){ const w=WMAP[id]; S.wear[w.slot]=id; autosaveSoft(); refreshAll(); closeModal(); toast('👗 Đã dùng '+w.name); if(w.slot!=='decor'&&w.slot!=='cat'&&w.slot!=='pet'&&w.slot!=='theme') gotoTab('wardrobe'); };
 window.w2Exchange=function(){ const H=w2State(), miss=W2_POOL.filter(e=>!H.own[e[0]]);
   modal(`<h3>🧩 Đổi mảnh lấy món còn thiếu</h3><p class="muted" style="font-size:12.5px;margin:0">Bạn có <b>${H.shard}</b> mảnh. Món trùng tự đổi thành mảnh.</p>
-    ${miss.length?miss.map(e=>{ const c=W2_EX[e[1]], ok=H.shard>=c; return `<div class="hm-ex hr-${e[1]}"><img src="${w2Img(e[0])}" alt=""><div><b>${e[1]==='s'?'Món bí ẩn ✨':esc(w2Name(e))}</b><br><small>${W2_RN[e[1]]} · ${w2Kind(e)}</small><div class="hm-bar"><i style="width:${Math.min(100,H.shard/c*100)}%;background:#b77cff"></i></div></div><button class="sm ${ok?'primary':''}" ${ok?`onclick="w2Buy('${e[0]}')"`:'disabled'}>${c} 🧩</button></div>`; }).join(''):'<p>🎉 Bạn đã có đủ 100 món!</p>'}
+    ${miss.length?miss.map(e=>{ const c=W2_EX[e[1]], ok=H.shard>=c; return `<div class="hm-ex hr-${e[1]}"><img src="${w2Img(e[0])}" alt=""><div><b>${e[1]==='s'?'Món bí ẩn ✨':esc(w2Name(e))}</b><br><small>${W2_RN[e[1]]} · ${w2Kind(e)}</small><div class="hm-bar"><i style="width:${Math.min(100,H.shard/c*100)}%;background:#b77cff"></i></div></div><button class="sm ${ok?'primary':''}" ${ok?`onclick="w2Buy('${e[0]}')"`:'disabled'}>${c} 🧩</button></div>`; }).join(''):`<p>🎉 Bạn đã có đủ ${W2_POOL.length} món!</p>`}
     <div class="row" style="margin-top:8px"><button class="primary" onclick="openW2()">Quay lại</button></div>`); };
 window.w2Buy=function(k){ const H=w2State(), e=W2_POOL.find(x=>x[0]===k); if(!e||H.own[k]) return; const c=W2_EX[e[1]]; if(H.shard<c) return toast('Chưa đủ mảnh');
   H.shard-=c; w2Grant(e); sfx('reward'); const done=w2CheckDone(); autosaveSoft(); refreshAll(); toast('🧩 Đã đổi '+w2Name(e)); if(done) w2Done(); else w2Exchange(); };
 window.w2Rules=function(){ modal(`<h3>📋 Tỉ lệ & luật Hộp mù 20/10</h3>
   <table class="tbl" style="width:100%;font-size:13px"><tr><th>Độ hiếm</th><th>Tỉ lệ</th><th>Số món</th><th>Đổi mảnh</th></tr>${['c','r','e','s'].map(r=>`<tr><td>${W2_RN[r]}</td><td>${(W2_RATE[r]*100).toLocaleString('vi-VN')}%</td><td>${W2_POOL.filter(e=>e[1]===r).length}</td><td>${W2_EX[r]} 🧩</td></tr>`).join('')}</table>
-  <ul style="font-size:13px;padding-left:18px"><li>1 hộp 20💎 · 10 hộp 180💎 · mỗi ngày 1 hộp miễn phí.</li><li>Cứ 10 hộp chắc chắn có ít nhất 1 món Hiếm trở lên.</li><li>Mở đủ 150 hộp chắc chắn có món ✨ Bí ẩn.</li><li>Món trùng thành mảnh: Thường +5, Hiếm +15, Cực hiếm +40, Bí ẩn +100.</li><li>Đủ 100/100 món: danh hiệu 🌹 Bông Hồng Của Chợ, khung "Vòng Hoa Hồng" và mở khóa 19 mỹ phẩm độc quyền để bán.</li><li>Tất cả là đồ ngoại hình, không tăng sức mạnh.</li><li>Không bán lại, không chuyển cho người khác, không đổi ra tiền.</li></ul>
+  <ul style="font-size:13px;padding-left:18px"><li>1 hộp 20💎 · 10 hộp 180💎 · mỗi ngày 1 hộp miễn phí.</li><li>Cứ 10 hộp chắc chắn có ít nhất 1 món Hiếm trở lên.</li><li>Mở đủ 150 hộp chắc chắn có món ✨ Bí ẩn.</li><li>Món trùng thành mảnh: Thường +5, Hiếm +15, Cực hiếm +40, Bí ẩn +100.</li><li>Sưu tầm đủ ${W2_GOAL} món khác nhau (trên tổng ${W2_POOL.length} món): danh hiệu 🌹 Bông Hồng Của Chợ, khung "Vòng Hoa Hồng" và mở khóa 19 mỹ phẩm độc quyền để bán.</li><li>Tất cả là đồ ngoại hình, không tăng sức mạnh.</li><li>Không bán lại, không chuyển cho người khác, không đổi ra tiền.</li></ul>
   <div class="row"><button class="primary" onclick="openW2()">Quay lại</button></div>`); };
 window.w2Done=function(){ const V=PRODUCTS.filter(p=>p.need==='done20');
-  modal(`<div style="text-align:center"><div style="font-size:30px">🏆</div><h3 style="margin:2px 0;color:#c2185b">Hoàn thành bộ 100/100!</h3><p style="margin:0;font-size:13px">Danh hiệu <b style="color:#c2185b">🌹 Bông Hồng Của Chợ</b> và khung <b>"Vòng Hoa Hồng"</b> đã mở.</p>
+  modal(`<div style="text-align:center"><div style="font-size:30px">🏆</div><h3 style="margin:2px 0;color:#c2185b">Sưu tầm đủ ${W2_GOAL} món!</h3><p style="margin:0;font-size:13px">Danh hiệu <b style="color:#c2185b">🌹 Bông Hồng Của Chợ</b> và khung <b>"Vòng Hoa Hồng"</b> đã mở.</p>
     <p style="margin:8px 0 0;font-weight:800">💄 Mở khóa ${V.length} mỹ phẩm độc quyền</p><p class="muted" style="margin:0;font-size:12px">Nhập ở tab 📦 Kho, bán ở quầy 💄 Mỹ phẩm 20/10 · tuần 18–24/10 bán chạy gấp đôi</p>
     <div class="hm-veg">${V.map(p=>`<img src="${p.img}" alt="" title="${esc(p.name)}">`).join('')}</div>
     <div class="row"><button onclick="openW2()">Quay lại</button><button class="primary" onclick="closeModal();gotoTab('kho');catFilter='mp20';renderKho()">📦 Nhập hàng</button></div></div>`); };
 // bảng giới thiệu khi sự kiện mở (mỗi ngày 1 lần nếu chưa mở hộp miễn phí)
 function w2Popup(){ if(!S||!w2Active()) return false; const H=w2State(); if(H.seen===vnDay()) return false; H.seen=vnDay();
-  modal(`<div class="hm-ban w2"><h3>💐 Hộp mù 20/10</h3><p>Mừng 20/10! Sưu tầm 100 món: áo, tóc, linh vật, nền tiệm Phố Hoa…</p><span class="t">18/10 → 31/10</span><img src="${w2Img('a1')}" alt=""></div>
+  modal(`<div class="hm-ban w2"><h3>💐 Hộp mù 20/10</h3><p>Mừng 20/10! ${W2_POOL.length} món: áo, tóc, linh vật, nền tiệm Phố Hoa…</p><span class="t">18/10 → 31/10</span><img src="${w2Img('a1')}" alt=""></div>
     <div style="display:flex;justify-content:center;gap:8px">${['t2','h3','a3'].map(k=>`<img src="${w2Img(k)}" style="width:70px;height:70px;object-fit:contain;background:#f6efff;border-radius:12px;border:2px solid #e3d6f0">`).join('')}</div>
     ${H.free!==vnDay()?'<p style="text-align:center;color:#2f9e5b;font-size:13px;margin:8px 0">🎟️ Hôm nay bạn có 1 hộp miễn phí</p>':''}
     <div class="row"><button onclick="closeModal()">Để sau</button><button class="primary" onclick="openW2()">💐 Mở hộp ngay</button></div>`); return true; }
@@ -4918,7 +5011,7 @@ const TITLES=[
   {id:'gift',icon:'🎁',name:'Người hào phóng',desc:'Tặng quà bạn bè 30 lần',ok:()=>(S.cnt?.gift||0)>=30,p:()=>[(S.cnt?.gift||0),30]},
   {id:'thief',icon:'🕵️',name:'Thám tử',desc:'Tự tay bắt 10 kẻ trộm',ok:()=>(S.cnt?.thief||0)>=10,p:()=>[Math.min(S.cnt?.thief||0,10),10]},
   {id:'tycoon',icon:'🏢',name:'Ông trùm',desc:'Sở hữu 10 cửa hàng tập đoàn',ok:()=>cpOwned()>=10,p:()=>[cpOwned(),10]},
-  {id:'hongcho',icon:'🌹',name:'Bông Hồng Của Chợ',desc:'Hoàn thành bộ Hộp mù 20/10 (100/100)',ok:()=>!!(S.w20&&S.w20.done),p:()=>[S.w20?W2_POOL.filter(e=>S.w20.own[e[0]]).length:0,100]},
+  {id:'hongcho',icon:'🌹',name:'Bông Hồng Của Chợ',desc:'Sưu tầm đủ 100 món Hộp mù 20/10',ok:()=>!!(S.w20&&S.w20.done),p:()=>[Math.min(W2_GOAL,S.w20?W2_POOL.filter(e=>S.w20.own[e[0]]).length:0),W2_GOAL]},
   {id:'hmking',icon:'🎃',name:'Vua Bí Ngô',desc:'Hoàn thành bộ Hộp mù Bí Ngô',ok:()=>!!(S.hm&&S.hm.done),p:()=>[S.hm?HM_POOL.filter(e=>S.hm.own[e[0]]).length:0,24]},
   {id:'mil',icon:'💰',name:'Triệu phú chợ',desc:'Trả lời đúng cả 15 câu Ai là triệu phú',ok:()=>(S.cnt?.milWin||0)>=1,p:()=>[(S.cnt?.milWin||0),1]},
 ];
@@ -5602,11 +5695,11 @@ window.doRename=function(){ const n=($('#rnName').value||'').replace(/[<>\u0000-
 // Thêm bản mới lên ĐẦU danh sách. v phải khác nhau; người chơi thấy bảng tự bật 1 lần cho mỗi v mới.
 const CHANGELOG=[
   {v:'2026-10-18-w20',date:'18/10/2026',title:'💐 Hộp mù 20/10 · Vườn Hoa',items:[
-    ['💐','Sự kiện Hộp mù 20/10 (18/10 → 31/10): sưu tầm 100 món áo, tóc, mắt, môi, mũ, linh vật. Mở ở ☰ Menu → 💐 Hộp mù 20/10','new'],
+    ['💐','Sự kiện Hộp mù 20/10 (18/10 → 31/10): 140 món áo, tóc, mắt, môi, mũ, linh vật. Mở ở ☰ Menu → 💐 Hộp mù 20/10','new'],
     ['✨','Hàng Bí ẩn: 7 linh vật và Nền tiệm Phố Hoa 20/10 (cả tiệm đổi sang tông hồng)','new'],
     ['🎟️','Mỗi ngày 1 hộp miễn phí. Mỗi 10 hộp chắc chắn có món Hiếm, 150 hộp chắc chắn có món Bí ẩn','new'],
-    ['🏆','Đủ 100/100 món: danh hiệu 🌹 Bông Hồng Của Chợ, khung "Vòng Hoa Hồng" và 19 mỹ phẩm độc quyền để bán','new'],
-    ['💇','Tủ đồ có thêm 24 kiểu tóc và 20 áo vẽ tay mới','new']]},
+    ['🏆','Sưu tầm đủ 100 món: danh hiệu 🌹 Bông Hồng Của Chợ, khung "Vòng Hoa Hồng" và 19 mỹ phẩm độc quyền để bán','new'],
+    ['💇','Tủ đồ có thêm 34 kiểu tóc và 50 áo vẽ tay mới','new']]},
   {v:'2026-10-04-staff',date:'04/10/2026',title:'🛒 38 món hàng mới & 👥 Chăm sóc nhân viên',items:[
     ['🆕','6 ngành hàng mới: Đồ ăn sẵn, Văn phòng phẩm, Đồ cúng lễ, Gia dụng, Thú cưng, Mỹ phẩm + 8 món thêm cho ngành cũ. Mở ở Kho → 🆕 Ngành hàng mới','new'],
     ['🌕','Ngày Rằm, mùng 1: đồ cúng bán chạy gấp 2–3 lần','new'],
