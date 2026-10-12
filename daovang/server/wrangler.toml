@@ -13,7 +13,7 @@ database_id = "DIEN_ID_D1_VAO_DAY"
 # Địa chỉ trang game (Mini App), phải là https
 GAME_URL = "https://minhvy107.github.io/cholaxanh/daovang/"
 # Tên bot không có @, dùng để tạo link mời bạn
-BOT_USERNAME = ""
+BOT_USERNAME = "daovang2026_bot"
 # Liên hệ hỗ trợ thanh toán, ví dụ "@ten_cua_ban"
 SUPPORT = ""
 ALLOWED_ORIGIN = "*"

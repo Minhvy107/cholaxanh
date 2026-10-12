@@ -21,7 +21,7 @@ Mọi số liệu (vàng, cấp, năng lượng) nằm trên máy chủ. Trình 
 
 ### 1. Tạo bot
 1. Mở **@BotFather** trên Telegram và gõ `/newbot`. Đặt tên, ví dụ "Đào Vàng", và username, ví dụ `daovang_vn_bot`. Nhận **token**.
-2. Gõ `/newapp`, chọn bot vừa tạo, rồi điền URL `https://minhvy107.github.io/cholaxanh/daovang/` và short name, ví dụ `play`. Link chơi sẽ là `t.me/<username>/play`.
+2. Gõ `/newapp`, chọn bot vừa tạo, rồi điền URL `https://minhvy107.github.io/cholaxanh/daovang/` và short name, ví dụ `play`. Link chơi sẽ là `t.me/daovang2026_bot/play`.
 3. Trong `server/wrangler.toml`, điền `BOT_USERNAME` (không có @) và `SUPPORT` (ví dụ `@ten_cua_ban`).
 
 ### 2. Thêm secret cho GitHub Actions
