@@ -27,10 +27,10 @@ const CFG = {
   refBonus: 2500,
 };
 const SHOP = {
-  energy: { stars: 15, vnd: 10000, title: '⚡ Nạp đầy năng lượng', desc: 'Năng lượng đầy lại ngay để bấm tiếp' },
-  boost: { stars: 30, vnd: 20000, title: '🔥 Nhân đôi vàng 2 giờ', desc: 'x2 vàng khi bấm và thợ mỏ trong 2 giờ (cộng dồn)' },
-  chest: { stars: 49, vnd: 39000, title: '💰 Rương vàng', desc: 'Nhận ngay số vàng bằng 2 giờ thợ mỏ (ít nhất 20.000)' },
-  goldminer: { stars: 99, vnd: 69000, title: '👷 Thợ mỏ vàng', desc: '+50 vàng/giây vĩnh viễn, mua nhiều lần được' },
+  energy: { stars: 15, vnd: 9000, title: '⚡ Nạp đầy năng lượng', desc: 'Năng lượng đầy lại ngay để bấm tiếp' },
+  boost: { stars: 30, vnd: 17000, title: '🔥 Nhân đôi vàng 2 giờ', desc: 'x2 vàng khi bấm và thợ mỏ trong 2 giờ (cộng dồn)' },
+  chest: { stars: 49, vnd: 27000, title: '💰 Rương vàng', desc: 'Nhận ngay số vàng bằng 2 giờ thợ mỏ (ít nhất 20.000)' },
+  goldminer: { stars: 99, vnd: 55000, title: '👷 Thợ mỏ vàng', desc: '+50 vàng/giây vĩnh viễn, mua nhiều lần được' },
 };
 
 // 💳 Chuyển khoản VietQR: SePay báo tiền về /sepay → máy chủ tự cộng vật phẩm
