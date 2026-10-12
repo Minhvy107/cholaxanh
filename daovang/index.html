@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>Đào Vàng</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+:root{--bg:#17110d;--bg2:#241a14;--card:#2e221a;--line:#4a3628;--ink:#fbefdc;--mute:#bba58c;--gold:#ffc83d;--gold2:#ff9f1c;--ok:#5fd38d;--bad:#ff6b6b;--star:#ffd84d}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font:600 15px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overscroll-behavior:none;user-select:none;-webkit-user-select:none}
+body{display:flex;flex-direction:column;padding-bottom:env(safe-area-inset-bottom)}
+button{font:inherit;color:inherit;border:0;cursor:pointer}
+.top{padding:12px 16px 6px;display:flex;align-items:center;gap:10px}
+.av{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold2));display:grid;place-items:center;color:#3a2410;font-weight:800;flex:none}
+.who{flex:1;min-width:0}.who b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.who small{color:var(--mute)}
+.pill{background:var(--card);border:1px solid var(--line);border-radius:999px;padding:5px 10px;font-size:13px;white-space:nowrap}
+.demo{margin:0 16px 4px;background:#5a3a12;border:1px solid #8a5a1a;border-radius:10px;padding:6px 10px;font-size:12.5px;color:#ffe2a8;text-align:center}
+main{flex:1;overflow-y:auto;padding:4px 16px 16px}
+.page{display:none}.page.on{display:block}
+.bal{text-align:center;margin-top:6px}.bal .n{font-size:40px;font-weight:900;letter-spacing:-.5px;color:var(--gold);text-shadow:0 2px 0 #7a4a10}
+.bal .s{color:var(--mute);font-size:13px}
+.boost{display:inline-block;margin-top:6px;background:#5a1f12;border:1px solid #a33c1c;color:#ffb38a;border-radius:999px;padding:3px 10px;font-size:12.5px}
+.rockwrap{position:relative;height:min(62vw,300px);display:grid;place-items:center;margin:12px 0 6px;touch-action:manipulation}
+.rock{width:min(58vw,270px);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 35% 30%,#8a6a50,#4d3626 55%,#2c1d14);box-shadow:0 10px 0 #120c08,0 0 60px #ffb02033 inset,0 0 40px #ff9f1c22;display:grid;place-items:center;transition:transform .06s;position:relative}
+.rock:active,.rock.hit{transform:scale(.95)}
+.rock .ore{font-size:min(26vw,120px);filter:drop-shadow(0 4px 0 #0006)}
+.rock i{position:absolute;width:14px;height:14px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#fff3b0,var(--gold) 50%,#b8790a)}
+.fl{position:absolute;pointer-events:none;font-weight:900;font-size:22px;color:var(--gold);text-shadow:0 2px 0 #6a3e08;animation:fl .8s ease-out forwards;z-index:5}
+@keyframes fl{to{transform:translateY(-90px);opacity:0}}
+.en{display:flex;align-items:center;gap:8px;margin-top:4px}.en .bar{flex:1;height:12px;background:var(--bg2);border:1px solid var(--line);border-radius:999px;overflow:hidden}
+.en .bar i{display:block;height:100%;background:linear-gradient(90deg,#36c6ff,#7cf0ff);transition:width .2s}
+.en span{font-size:13px;color:var(--mute);min-width:92px;text-align:right}
+.row{display:flex;gap:8px;margin-top:12px}
+.btn{flex:1;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:11px 10px;font-weight:800}
+.btn.gold{background:linear-gradient(180deg,var(--gold),var(--gold2));color:#3a2410;border:0;box-shadow:0 3px 0 #9a5a08}
+.btn:disabled{opacity:.45}
+h2{font-size:18px;margin:10px 0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px;display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.card .ic{font-size:30px;width:44px;text-align:center;flex:none}
+.card .bd{flex:1;min-width:0}.card .bd b{display:block}.card .bd small{color:var(--mute);display:block;font-size:12.5px}
+.card .btn{flex:none;min-width:96px}
+.muted{color:var(--mute);font-size:13px}
+.lb{list-style:none;margin:0;padding:0}.lb li{display:flex;gap:10px;align-items:center;padding:9px 10px;border-bottom:1px solid var(--line)}
+.lb li.me{background:#3b2a12;border-radius:10px}.lb .r{width:28px;text-align:center;font-weight:900;color:var(--mute)}.lb .nm{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.lb .v{color:var(--gold)}
+nav{display:flex;background:var(--bg2);border-top:1px solid var(--line)}
+nav button{flex:1;background:none;padding:8px 0 10px;font-size:11.5px;color:var(--mute);display:flex;flex-direction:column;align-items:center;gap:2px}
+nav button b{font-size:21px;line-height:1}nav button.on{color:var(--gold)}
+.ov{position:fixed;inset:0;background:#000a;display:none;align-items:center;justify-content:center;padding:16px;z-index:20}.ov.on{display:flex}
+.dlg{background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:20px;max-width:360px;width:100%;text-align:center}
+.dlg .big{font-size:48px}.dlg h3{margin:6px 0}.dlg p{color:var(--mute);margin:6px 0 14px}
+.toast{position:fixed;left:50%;top:14px;transform:translateX(-50%);background:#000d;padding:8px 14px;border-radius:12px;font-size:14px;z-index:30;opacity:0;transition:opacity .2s;pointer-events:none;max-width:90vw;text-align:center}.toast.on{opacity:1}
+.err{text-align:center;padding:40px 16px;color:var(--mute)}
+</style>
+</head>
+<body>
+<div class="top"><div class="av" id="av">⛏</div><div class="who"><b id="nm">Thợ mỏ</b><small id="rk">Đang tải…</small></div><span class="pill" id="rate">⛏ 0/giây</span></div>
+<div class="demo" id="demo" hidden>🧪 Bản xem thử trên trình duyệt: lưu trên máy này. Mở trong Telegram để chơi thật.</div>
+<main>
+  <section class="page on" id="p-mine">
+    <div class="bal"><div class="n" id="gold">0</div><div class="s">vàng · <span id="tp">+1</span> mỗi lần bấm</div><div id="boost"></div></div>
+    <div class="rockwrap" id="rockwrap"><div class="rock" id="rock"><span class="ore">🪨</span><i style="left:24%;top:30%"></i><i style="left:66%;top:24%"></i><i style="left:58%;top:68%"></i><i style="left:30%;top:64%;width:10px;height:10px"></i></div></div>
+    <div class="en"><span style="text-align:left;min-width:0">⚡</span><div class="bar"><i id="enbar"></i></div><span id="entx">0/0</span></div>
+    <div class="row"><button class="btn gold" id="daily">🎁 Quà hôm nay</button><button class="btn" data-go="shop">⭐ Cửa hàng</button></div>
+  </section>
+  <section class="page" id="p-up"><h2>⬆️ Nâng cấp</h2><div id="ups"></div><p class="muted">Thợ mỏ vẫn đào khi bạn tắt game (tối đa 3 giờ). Quay lại thường xuyên để nhận vàng!</p></section>
+  <section class="page" id="p-shop"><h2>⭐ Cửa hàng Stars</h2><div id="shop"></div><p class="muted">Thanh toán bằng Telegram Stars ngay trong Telegram. Gặp lỗi? Nhắn /paysupport cho bot.</p></section>
+  <section class="page" id="p-top"><h2>🏆 Bảng xếp hạng</h2><p class="muted" id="myrank"></p><ul class="lb" id="lb"></ul></section>
+  <section class="page" id="p-fr"><h2>👥 Mời bạn bè</h2>
+    <div class="card"><div class="ic">🎁</div><div class="bd"><b>Mỗi bạn mới: cả hai nhận <span id="rb">2.500</span> vàng</b><small>Bạn bè vào game qua link của bạn lần đầu tiên.</small></div></div>
+    <div class="row" style="margin-top:0"><button class="btn gold" id="share">📨 Mời bạn</button><button class="btn" id="copy">📋 Chép link</button></div>
+    <h2 id="frc">Bạn đã mời</h2><ul class="lb" id="frl"></ul></section>
+</main>
+<nav>
+  <button class="on" data-go="mine"><b>⛏️</b>Đào</button><button data-go="up"><b>⬆️</b>Nâng cấp</button><button data-go="shop"><b>⭐</b>Cửa hàng</button><button data-go="top"><b>🏆</b>Top</button><button data-go="fr"><b>👥</b>Bạn bè</button>
+</nav>
+<div class="ov" id="ov"><div class="dlg" id="dlg"></div></div>
+<div class="toast" id="toast"></div>
+<script>
+// Địa chỉ máy chủ (thư mục server/). Có thể thử máy chủ khác bằng ?api=https://…
+const API=(new URLSearchParams(location.search).get('api')||'https://daovang-bot.tnhn1311.workers.dev').replace(/\/$/,'');
+const tg=window.Telegram&&Telegram.WebApp, INIT=tg&&tg.initData||'', DEMO=!INIT;
+const $=s=>document.querySelector(s);
+if(tg){ tg.ready(); tg.expand(); try{ tg.disableVerticalSwipes&&tg.disableVerticalSwipes(); tg.setHeaderColor('#17110d'); tg.setBackgroundColor('#17110d'); }catch(e){} }
+const haptic=t=>{ try{ tg&&tg.HapticFeedback&&(t==='ok'?tg.HapticFeedback.notificationOccurred('success'):tg.HapticFeedback.impactOccurred(t||'light')); }catch(e){} };
+const fmt=n=>{ n=Math.floor(n); if(n<1e5) return n.toLocaleString('vi-VN'); const u=[[1e12,'T'],[1e9,'B'],[1e6,'M'],[1e3,'K']].find(x=>n>=x[0]); return (n/u[0]).toFixed(n/u[0]<100?1:0).replace('.',',')+u[1]; };
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let toastT; function toast(m){ const t=$('#toast'); t.textContent=m; t.classList.add('on'); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove('on'),2200); }
+function dialog(html){ $('#dlg').innerHTML=html+'<div class="row"><button class="btn gold" onclick="closeDlg()">OK</button></div>'; $('#ov').classList.add('on'); }
+window.closeDlg=()=>$('#ov').classList.remove('on');
+
+/* ===== Bản xem thử: chạy cùng công thức với máy chủ, lưu localStorage ===== */
+const Demo=(()=>{
+  const CFG={regen:1,baseEnergy:500,tankStep:250,maxTps:20,offlineCap:10800,tap:{base:50,mul:1.6},miner:{base:100,mul:1.55,rate:2},tank:{base:200,mul:1.7},goldMinerRate:50,refBonus:2500};
+  const SHOP={energy:{stars:15,title:'⚡ Nạp đầy năng lượng',desc:'Năng lượng đầy lại ngay để bấm tiếp'},boost:{stars:30,title:'🔥 Nhân đôi vàng 2 giờ',desc:'x2 vàng khi bấm và thợ mỏ trong 2 giờ (cộng dồn)'},chest:{stars:49,title:'💰 Rương vàng',desc:'Nhận ngay số vàng bằng 2 giờ thợ mỏ (ít nhất 20.000)'},goldminer:{stars:99,title:'👷 Thợ mỏ vàng',desc:'+50 vàng/giây vĩnh viễn, mua nhiều lần được'}};
+  const vnDay=ms=>new Date(ms+7*3600e3).toISOString().slice(0,10);
+  const rate=u=>u.miner_lvl*CFG.miner.rate+u.gold_miners*CFG.goldMinerRate, maxE=u=>CFG.baseEnergy+u.tank_lvl*CFG.tankStep;
+  let u; try{ u=JSON.parse(localStorage.getItem('dv-demo')); }catch(e){}
+  const isNew=!u, now0=Date.now();
+  if(!u) u={id:1,name:'Bạn (xem thử)',gold:0,total:0,tap_lvl:0,miner_lvl:0,tank_lvl:0,gold_miners:0,energy:500,last:now0,tap_at:now0,boost_until:0,daily_day:'',streak:0};
+  const save=()=>{ try{ localStorage.setItem('dv-demo',JSON.stringify(u)); }catch(e){} };
+  const adv=now=>{ const dt=Math.max(0,now-u.last)/1000, c=Math.min(dt,CFG.offlineCap), b=Math.min(c,Math.max(0,(u.boost_until-u.last)/1000)), e=rate(u)*(c+b); u.gold+=e; u.total+=e; u.energy=Math.min(maxE(u),u.energy+dt*CFG.regen); u.last=now; return {dt,earn:e}; };
+  const view=now=>({...u,gold:Math.floor(u.gold),total:Math.floor(u.total),daily_ready:u.daily_day!==vnDay(now),now});
+  const cost=(k,l)=>Math.floor(CFG[k].base*CFG[k].mul**l);
+  return async(path,b={})=>{ const now=Date.now(), o=adv(now); let r;
+    if(path==='/state') r={cfg:CFG,shop:SHOP,bot:'',me:view(now),offline:!isNew&&o.dt>60&&o.earn>=1?{earn:Math.floor(o.earn),sec:Math.round(Math.min(o.dt,CFG.offlineCap))}:null,welcome:isNew?{refBonus:0}:null};
+    else if(path==='/sync'){ const ok=Math.min(b.taps|0,Math.floor(u.energy),Math.floor((now-u.tap_at)/1000*CFG.maxTps)+CFG.maxTps), g=ok*(1+u.tap_lvl)*(u.boost_until>now?2:1); u.gold+=g; u.total+=g; u.energy-=ok; u.tap_at=now; r={me:view(now),accepted:ok}; }
+    else if(path==='/buy'){ const col=b.item+'_lvl', p=cost(b.item,u[col]); if(u.gold<p) throw new Error('not_enough'); u.gold-=p; u[col]++; if(b.item==='tank') u.energy+=CFG.tankStep; r={me:view(now)}; }
+    else if(path==='/daily'){ if(u.daily_day===vnDay(now)) throw new Error('claimed'); u.streak=u.daily_day===vnDay(now-864e5)?u.streak+1:1; u.daily_day=vnDay(now); const g=200*Math.min(u.streak,7)+rate(u)*600; u.gold+=g; u.total+=g; r={me:view(now),reward:Math.floor(g)}; }
+    else if(path==='/demo-pay'){ const it=b.item; if(it==='energy') u.energy=maxE(u); else if(it==='boost') u.boost_until=Math.max(u.boost_until,now)+7200e3; else if(it==='chest'){ const g=Math.max(20000,rate(u)*7200); u.gold+=g; u.total+=g; } else if(it==='goldminer') u.gold_miners++; r={me:view(now)}; }
+    else if(path==='/top') r={list:[{name:u.name,total:Math.floor(u.total),me:true}],rank:1,total:Math.floor(u.total)};
+    else if(path==='/friends') r={count:0,bonus:CFG.refBonus,list:[]};
+    save(); return r; };
+})();
+
+async function api(path,body){
+  if(DEMO) return Demo(path,body);
+  const r=await fetch(API+path,{method:body?'POST':'GET',headers:{'content-type':'application/json','x-init-data':INIT},body:body?JSON.stringify(body):undefined,keepalive:path==='/sync'});
+  const d=await r.json().catch(()=>({}));
+  if(!r.ok){ const e=new Error(d.error||('HTTP '+r.status)); e.data=d; throw e; }
+  return d; }
+
+/* ===== Trạng thái: số của máy chủ + phần dự đoán tại máy cho mượt ===== */
+let CFG, SHOP, BOT='', me, anchor=0, pending=0, inflight=0;
+const tapPow=()=>1+me.tap_lvl, rateOf=()=>me.miner_lvl*CFG.miner.rate+me.gold_miners*CFG.goldMinerRate, maxE=()=>CFG.baseEnergy+me.tank_lvl*CFG.tankStep;
+const sNow=()=>me.now+(Date.now()-anchor);
+const multAt=t=>me.boost_until>t?2:1;
+function setMe(m){ me=m; anchor=Date.now(); }
+function live(){ const dt=(Date.now()-anchor)/1000, t=sNow(), loc=pending+inflight;
+  const boosted=Math.min(dt,Math.max(0,(me.boost_until-me.now)/1000));
+  return { gold:me.gold+rateOf()*(dt+boosted)+loc*tapPow()*multAt(t), energy:Math.max(0,Math.min(maxE(),me.energy+dt*CFG.regen)-loc) }; }
+const cost=(k,l)=>Math.floor(CFG[k].base*CFG[k].mul**l);
+
+async function sync(){ if(!pending||inflight) return; inflight=pending; pending=0;
+  try{ const r=await api('/sync',{taps:inflight}); inflight=0; setMe(r.me); }
+  catch(e){ pending+=inflight; inflight=0; } }
+setInterval(sync,4000);
+document.addEventListener('visibilitychange',()=>{ if(document.hidden) sync(); });
+
+/* ===== Bấm đào ===== */
+const rock=$('#rock'), wrap=$('#rockwrap');
+rock.addEventListener('pointerdown',e=>{ e.preventDefault(); if(!me) return;
+  if(live().energy<1){ haptic('heavy'); return toast('⚡ Hết năng lượng! Đợi hồi hoặc nạp ở Cửa hàng'); }
+  pending++; haptic('light');
+  const t=sNow(), g=tapPow()*multAt(t), b=wrap.getBoundingClientRect(), f=document.createElement('div');
+  f.className='fl'; f.textContent='+'+fmt(g); f.style.left=(e.clientX-b.left-14)+'px'; f.style.top=(e.clientY-b.top-20)+'px';
+  wrap.appendChild(f); setTimeout(()=>f.remove(),800);
+  rock.classList.add('hit'); setTimeout(()=>rock.classList.remove('hit'),60);
+  if(pending>=60) sync(); draw(); });
+
+/* ===== Vẽ ===== */
+function draw(){ if(!me) return; const L=live(), t=sNow(), m=maxE();
+  $('#gold').textContent=fmt(L.gold); $('#tp').textContent='+'+fmt(tapPow()*multAt(t));
+  $('#rate').textContent='⛏ '+fmt(rateOf()*multAt(t))+'/giây';
+  $('#enbar').style.width=(L.energy/m*100)+'%'; $('#entx').textContent=Math.floor(L.energy)+'/'+m;
+  const left=me.boost_until-t; $('#boost').innerHTML=left>0?`<span class="boost">🔥 x2 vàng · còn ${Math.floor(left/3600e3)}:${String(Math.floor(left/60e3)%60).padStart(2,'0')}:${String(Math.floor(left/1e3)%60).padStart(2,'0')}</span>`:'';
+  const d=$('#daily'); d.disabled=!me.daily_ready; d.textContent=me.daily_ready?'🎁 Quà hôm nay':`✅ Đã nhận (chuỗi ${me.streak} ngày)`;
+  document.querySelectorAll('[data-up]').forEach(b=>{ const k=b.dataset.up; b.disabled=L.gold<cost(k,me[k+'_lvl']); }); }
+setInterval(draw,250);
+
+const UPS=[
+  {k:'tap',ic:'⛏️',n:'Cuốc chim',d:l=>`+1 vàng mỗi lần bấm (đang ${1+l})`},
+  {k:'miner',ic:'👷',n:'Thợ mỏ',d:l=>`+${CFG.miner.rate} vàng/giây kể cả khi offline (đang ${l*CFG.miner.rate}/giây)`},
+  {k:'tank',ic:'🔋',n:'Bình năng lượng',d:l=>`+${CFG.tankStep} năng lượng tối đa (đang ${CFG.baseEnergy+l*CFG.tankStep})`}];
+function renderUps(){ $('#ups').innerHTML=UPS.map(u=>{ const l=me[u.k+'_lvl'];
+  return `<div class="card"><div class="ic">${u.ic}</div><div class="bd"><b>${u.n} · cấp ${l}</b><small>${u.d(l)}</small></div><button class="btn gold" data-up="${u.k}">💰 ${fmt(cost(u.k,l))}</button></div>`; }).join(''); draw(); }
+$('#ups').addEventListener('click',async e=>{ const b=e.target.closest('[data-up]'); if(!b||b.disabled) return;
+  b.disabled=true; await sync();
+  try{ const r=await api('/buy',{item:b.dataset.up}); setMe(r.me); haptic('ok'); toast('⬆️ Đã nâng cấp!'); }
+  catch(err){ if(err.data&&err.data.me) setMe(err.data.me); toast(err.message==='not_enough'?'Chưa đủ vàng':'Lỗi: '+err.message); }
+  renderUps(); });
+
+function renderShop(){ $('#shop').innerHTML=Object.entries(SHOP).map(([k,s])=>`<div class="card"><div class="ic">${s.title.split(' ')[0]}</div><div class="bd"><b>${s.title.replace(/^\S+\s/,'')}</b><small>${s.desc}</small>${k==='goldminer'&&me.gold_miners?`<small>Đang có ${me.gold_miners} thợ mỏ vàng</small>`:''}</div><button class="btn gold" data-buy="${k}">⭐ ${s.stars}</button></div>`).join(''); }
+$('#shop').addEventListener('click',async e=>{ const b=e.target.closest('[data-buy]'); if(!b) return; const k=b.dataset.buy, it=SHOP[k];
+  await sync();
+  if(DEMO){ if(!confirm(`Bản xem thử: giả lập mua "${it.title}" (${it.stars}⭐, không trừ tiền thật)?`)) return; setMe((await api('/demo-pay',{item:k})).me); haptic('ok'); toast('✅ '+it.title); return renderShop(); }
+  b.disabled=true;
+  try{ const r=await api('/invoice',{item:k});
+    tg.openInvoice(r.link,async st=>{ b.disabled=false;
+      if(st==='paid'){ haptic('ok'); toast('✅ Đã thanh toán, đang cộng vật phẩm…');
+        // Telegram báo máy chủ qua webhook, có thể trễ vài giây: hỏi lại tới khi số liệu đổi
+        const before=JSON.stringify([me.energy|0,me.boost_until,me.gold_miners]);
+        for(let i=0;i<8;i++){ await new Promise(ok=>setTimeout(ok,1200)); const s=await api('/state').catch(()=>null); if(s){ setMe(s.me); if(JSON.stringify([me.energy|0,me.boost_until,me.gold_miners])!==before||k==='chest'&&i>=1) break; } }
+        toast('🎉 '+it.title+' đã có hiệu lực!'); renderShop(); }
+      else if(st==='failed') toast('Thanh toán không thành công'); }); }
+  catch(err){ b.disabled=false; toast('Lỗi tạo hóa đơn: '+err.message); } });
+
+$('#daily').addEventListener('click',async()=>{ await sync();
+  try{ const r=await api('/daily',{}); setMe(r.me); haptic('ok'); dialog(`<div class="big">🎁</div><h3>+${fmt(r.reward)} vàng</h3><p>Chuỗi ${me.streak} ngày liên tiếp. Mai quay lại để nhận nhiều hơn!</p>`); }
+  catch(err){ if(err.data&&err.data.me) setMe(err.data.me); toast('Hôm nay đã nhận rồi'); } draw(); });
+
+async function renderTop(){ $('#lb').innerHTML='<li class="muted">Đang tải…</li>'; await sync();
+  try{ const r=await api('/top'); $('#myrank').textContent=`Bạn hạng #${r.rank} · tổng đã đào ${fmt(r.total)} vàng`; $('#rk').textContent=`🏆 Hạng #${r.rank}`;
+    $('#lb').innerHTML=r.list.map((x,i)=>`<li class="${x.me?'me':''}"><span class="r">${['🥇','🥈','🥉'][i]||i+1}</span><span class="nm">${esc(x.name)}</span><span class="v">${fmt(x.total)}</span></li>`).join(''); }
+  catch(e){ $('#lb').innerHTML='<li class="muted">Không tải được bảng xếp hạng</li>'; } }
+const refLink=()=>BOT?`https://t.me/${BOT}?start=r${me.id}`:'';
+async function renderFr(){ $('#frl').innerHTML='<li class="muted">Đang tải…</li>';
+  try{ const r=await api('/friends'); $('#rb').textContent=fmt(r.bonus); $('#frc').textContent=`Bạn đã mời (${r.count})`;
+    $('#frl').innerHTML=r.list.map(x=>`<li><span class="r">👤</span><span class="nm">${esc(x.name)}</span><span class="v">${fmt(x.total)}</span></li>`).join('')||'<li class="muted">Chưa mời ai. Gửi link cho bạn bè nhé!</li>'; }
+  catch(e){ $('#frl').innerHTML='<li class="muted">Không tải được</li>'; } }
+$('#share').addEventListener('click',()=>{ const l=refLink(); if(!l) return toast(DEMO?'Mở trong Telegram để có link mời':'Chủ game chưa điền BOT_USERNAME');
+  const txt=`⛏️ Vào Đào Vàng cùng mình! Nhận ngay ${fmt(CFG.refBonus)} vàng khi vào qua link này.`;
+  tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(l)}&text=${encodeURIComponent(txt)}`); });
+$('#copy').addEventListener('click',()=>{ const l=refLink(); if(!l) return toast(DEMO?'Mở trong Telegram để có link mời':'Chủ game chưa điền BOT_USERNAME');
+  navigator.clipboard.writeText(l).then(()=>toast('📋 Đã chép link mời'),()=>toast(l)); });
+
+/* ===== Chuyển tab ===== */
+document.addEventListener('click',e=>{ const b=e.target.closest('[data-go]'); if(!b||!me) return; const p=b.dataset.go;
+  document.querySelectorAll('.page').forEach(x=>x.classList.toggle('on',x.id==='p-'+p));
+  document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('on',x.dataset.go===p));
+  haptic('light'); if(p==='up') renderUps(); if(p==='shop') renderShop(); if(p==='top') renderTop(); if(p==='fr') renderFr(); });
+
+/* ===== Khởi động ===== */
+(async()=>{ $('#demo').hidden=!DEMO;
+  try{ const s=await api('/state'); CFG=s.cfg; SHOP=s.shop; BOT=s.bot; setMe(s.me);
+    $('#nm').textContent=me.name; $('#av').textContent=(me.name.trim()[0]||'⛏').toUpperCase(); $('#rk').textContent='Thợ mỏ';
+    renderUps(); renderShop(); draw();
+    if(s.welcome) dialog(`<div class="big">⛏️</div><h3>Chào mừng tới Đào Vàng!</h3><p>Bấm vào tảng đá để đào vàng. Dùng vàng nâng cấp cuốc và thuê thợ mỏ đào giúp cả khi bạn offline.${s.welcome.refBonus?`<br><br>🎁 Quà người được mời: <b>+${fmt(s.welcome.refBonus)} vàng</b>`:''}</p>`);
+    else if(s.offline) dialog(`<div class="big">👷</div><h3>+${fmt(s.offline.earn)} vàng</h3><p>Thợ mỏ đã đào giúp bạn trong ${Math.floor(s.offline.sec/3600)} giờ ${Math.floor(s.offline.sec/60)%60} phút vắng mặt.</p>`);
+    api('/top').then(r=>$('#rk').textContent=`🏆 Hạng #${r.rank}`).catch(()=>{}); }
+  catch(e){ $('main').innerHTML=`<div class="err"><div style="font-size:44px">😵</div><p>Không kết nối được máy chủ.</p><p class="muted">${esc(e.message)}</p><button class="btn gold" onclick="location.reload()">Thử lại</button></div>`; } })();
+</script>
+</body>
+</html>

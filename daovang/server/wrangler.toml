@@ -1,0 +1,23 @@
+name = "daovang-bot"
+main = "worker.js"
+compatibility_date = "2026-09-01"
+
+# Tạo: npx wrangler d1 create daovang  → dán database_id vào đây
+# (GitHub Actions .github/workflows/deploy-daovang.yml tự tìm/tạo và điền)
+[[d1_databases]]
+binding = "DB"
+database_name = "daovang"
+database_id = "DIEN_ID_D1_VAO_DAY"
+
+[vars]
+# Địa chỉ trang game (Mini App), phải là https
+GAME_URL = "https://minhvy107.github.io/cholaxanh/daovang/"
+# Tên bot không có @, dùng để tạo link mời bạn
+BOT_USERNAME = ""
+# Liên hệ hỗ trợ thanh toán, ví dụ "@ten_cua_ban"
+SUPPORT = ""
+ALLOWED_ORIGIN = "*"
+
+# Khóa bí mật KHÔNG ghi ở đây:
+#   npx wrangler secret put TG_BOT_TOKEN   (token từ @BotFather)
+#   npx wrangler secret put ADMIN_KEY      (mật khẩu tự đặt, ≥ 8 ký tự, dùng cho /setup và /refund)
