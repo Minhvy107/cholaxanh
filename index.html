@@ -1034,7 +1034,7 @@ const HO=['Nguyễn','Trần','Lê','Phạm','Hoàng','Huỳnh','Võ','Đặng',
 const DOW=['Thứ 2','Thứ 3','Thứ 4','Thứ 5','Thứ 6','Thứ 7','Chủ nhật'];
 const OPEN=390, CLOSE=1290, GOAL=500e6, START_MONEY=40e6, BASE_CUST=150;
 // 🧪 Chế độ chơi thử (?choithu): bản lưu riêng, không kết nối máy chủ (không lên bảng xếp hạng, không nạp tiền)
-const TESTMODE=/choithu/.test(location.search+location.hash);
+const TESTMODE=/choithu/.test(location.search+location.hash), TEST_GEMS=20000; // ?choithu: bản lưu riêng, không lên BXH, không nạp tiền thật
 const SAVE_AUTO=TESTMODE?'clx2-test-auto':'clx2-auto', SAVE_SLOT=i=>(TESTMODE?'clx2-test-slot-':'clx2-slot-')+i;
 
 function prof(t){ const h=t/60; return 0.45+1.5*Math.exp(-((h-7)**2)/1.2)+0.9*Math.exp(-((h-11.8)**2)/1.5)+1.7*Math.exp(-((h-18)**2)/2); }
@@ -1087,7 +1087,7 @@ function newGame(name){
   const c=makeStaff('cashier'); c.skill=3; c.speed=1.15; c.wage=280e3; S.staff.push(c);
   rollMorning(true);
   PRODUCTS.forEach(p=>S.price[p.id]=S.market[p.id].ref);
-  if(TESTMODE){ S.tier=3; S.money=50e9; S.rep=90; S.gems=2000; S.day=30; S.test=true; S.testTop=1; }
+  if(TESTMODE){ S.tier=3; S.money=50e9; S.rep=90; S.gems=TEST_GEMS; S.day=30; S.test=true; S.testTop=1; S.testGem=1; }
 }
 function rollMorning(first){
   settleQuests(); rollQuests(); festMorning(); storyMorning(); wxMorning(); catMorning(); rivalMorning(); chCheck();
@@ -3103,7 +3103,10 @@ function renderWardrobe(){
    - api: địa chỉ máy chủ nạp (thư mục server/, Cloudflare Worker). Để trống = chế độ thử nghiệm.
    - memo: chữ đặt trước mã đơn trong nội dung chuyển khoản (VietinBank + SePay bắt buộc có "SEVQR"). */
 const PAY_CFG={bin:'970415',acct:'107873840539',holder:'TRAN NGOC HOAI NHU',api:'https://cholaxanh-nap.tnhn1311.workers.dev',site:'https://minhvy107.github.io/cholaxanh/',memo:'SEVQR'};
-if(TESTMODE){ PAY_CFG.api=''; document.addEventListener('DOMContentLoaded',()=>{ const b=document.createElement('div'); b.textContent='🧪 CHƠI THỬ · bản lưu riêng · không lên bảng xếp hạng'; b.style.cssText='position:fixed;left:50%;top:calc(2px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:70;background:#ff7a2f;color:#fff;font:800 11px system-ui;padding:2px 10px;border-radius:10px;pointer-events:none;white-space:nowrap'; document.body.appendChild(b); }); }
+if(TESTMODE){ PAY_CFG.api=''; document.addEventListener('DOMContentLoaded',()=>{ const b=document.createElement('div'); b.innerHTML='🧪 CHƠI THỬ · không lên BXH · <button type="button" style="all:unset;cursor:pointer;background:#fff;color:#d9561a;border-radius:8px;padding:0 6px;pointer-events:auto">💎 +10.000</button>'; b.style.cssText='position:fixed;left:50%;top:calc(2px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:70;background:#ff7a2f;color:#fff;font:800 11px system-ui;padding:2px 10px;border-radius:10px;pointer-events:none;white-space:nowrap';
+  // nạp thử kim cương: chỉ có ở bản chơi thử (bản lưu riêng, không lên BXH, nạp tiền thật đã tắt)
+  b.querySelector('button').onclick=()=>{ if(!S) return toast('Vào game trước đã nhé'); S.gems=(S.gems||0)+10000; autosaveSoft(); refreshAll(); if(activeTab==='wardrobe') renderWardrobe(); toast('🧪 +10.000💎 (chơi thử)'); };
+  document.body.appendChild(b); }); }
 // 🐞 Hỗ trợ: link Zalo (https://zalo.me/...) hoặc số điện thoại Zalo của chủ game. Để trống = ẩn nút báo lỗi.
 const SUPPORT={zalo:'https://zalo.me/0917392049',qr:'https://zaloapp.com/qr/p/1b3g1giwfxayr'};
 const zaloURL=()=>{ const z=String(SUPPORT.zalo||'').trim(); if(!z) return ''; if(/^https?:\/\//.test(z)) return z; const d=z.replace(/\D/g,''); return d?'https://zalo.me/'+d.replace(/^84/,'0'):''; };
@@ -5820,6 +5823,7 @@ function newsOnStart(){
 }
 function startPlaying(){
   if(TESTMODE&&S&&!S.testTop){ S.testTop=1; S.money=Math.max(S.money,50e9); S.tier=Math.max(S.tier||0,3); }   // bản thử cũ: nâng lên 50 tỷ
+  if(TESTMODE&&S&&!S.testGem){ S.testGem=1; S.gems=Math.max(S.gems||0,TEST_GEMS); }
   closeModal(); R=null; userPaused=false;
   $('#start').hidden=true;
   selCat=CAT_KEYS[0];
