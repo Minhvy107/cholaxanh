@@ -43,35 +43,54 @@ jobs:
           sed -i "s/DIEN_ID_D1_VAO_DAY/$ID/" daovang/server/wrangler.toml
           echo "Dùng D1: $ID"
 
-      - name: Đưa máy chủ lên Cloudflare (kèm khóa bot)
-        id: dep_bot
-        if: steps.chk.outputs.ok == 'true' && steps.chk.outputs.bot == 'true'
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ env.CF_TOKEN }}
-          accountId: ${{ env.CF_ACCOUNT }}
-          workingDirectory: daovang/server
-          command: deploy
-          secrets: |
-            TG_BOT_TOKEN
-            ADMIN_KEY
+      # Gọi wrangler trực tiếp (bản 4.x) và tự thử lại: API Cloudflare đôi khi trả 504 Gateway Timeout
+      - name: Cài wrangler
+        if: steps.chk.outputs.ok == 'true'
+        run: npm install -g wrangler@4.149.0
 
-      - name: Đưa máy chủ lên Cloudflare (chỉ code)
-        if: steps.chk.outputs.ok == 'true' && steps.chk.outputs.bot != 'true'
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ env.CF_TOKEN }}
-          accountId: ${{ env.CF_ACCOUNT }}
-          workingDirectory: daovang/server
-          command: deploy
+      - name: Đưa máy chủ lên Cloudflare
+        id: dep
+        if: steps.chk.outputs.ok == 'true'
+        shell: bash
+        working-directory: daovang/server
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ env.CF_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ env.CF_ACCOUNT }}
+        run: |
+          for i in 1 2 3 4; do
+            wrangler deploy 2>&1 | tee /tmp/deploy.log && break
+            [ "$i" = 4 ] && { echo "::error::Cloudflare lỗi 4 lần liền, thử lại sau ít phút (Actions → Run workflow)"; exit 1; }
+            echo "Lỗi, thử lại sau $((i * 20)) giây…"; sleep $((i * 20))
+          done
+          echo "url=$(grep -oE 'https://[a-z0-9.-]+\.workers\.dev' /tmp/deploy.log | head -n1)" >> "$GITHUB_OUTPUT"
+
+      - name: Nạp khóa bot vào máy chủ
+        if: steps.chk.outputs.ok == 'true' && steps.chk.outputs.bot == 'true'
+        shell: bash
+        working-directory: daovang/server
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ env.CF_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ env.CF_ACCOUNT }}
+        run: |
+          for name in TG_BOT_TOKEN ADMIN_KEY; do
+            for i in 1 2 3 4; do
+              printf '%s' "${!name}" | wrangler secret put "$name" && break
+              [ "$i" = 4 ] && { echo "::error::Không nạp được $name"; exit 1; }
+              echo "Lỗi, thử lại sau $((i * 20)) giây…"; sleep $((i * 20))
+            done
+          done
 
       - name: Gắn bot (tạo bảng, webhook, lệnh, nút Chơi)
         if: steps.chk.outputs.ok == 'true' && steps.chk.outputs.bot == 'true'
+        shell: bash
         env:
-          URL: ${{ steps.dep_bot.outputs.deployment-url }}
+          URL: ${{ steps.dep.outputs.url }}
         run: |
           U="${URL:-https://daovang-bot.tnhn1311.workers.dev}"
-          sleep 5
           echo "Máy chủ: $U"
-          curl -sS -H "x-admin-key: $ADMIN_KEY" "$U/setup" | tee /tmp/setup.json; echo
-          jq -e '.ok == true' /tmp/setup.json > /dev/null || { echo "::error::Gắn bot thất bại (xem dòng trên)"; exit 1; }
+          for i in 1 2 3 4 5; do
+            sleep $((i * 5))
+            curl -sS -H "x-admin-key: $ADMIN_KEY" "$U/setup" | tee /tmp/setup.json; echo
+            jq -e '.ok == true' /tmp/setup.json > /dev/null 2>&1 && exit 0
+          done
+          echo "::error::Gắn bot thất bại (xem các dòng trên)"; exit 1
