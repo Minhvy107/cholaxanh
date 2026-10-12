@@ -1,0 +1,77 @@
+# ⛏️ Đào Vàng: đưa máy chủ bot (daovang/server) lên Cloudflare mỗi khi code thay đổi trên main, hoặc bấm chạy tay.
+# Dùng chung secret CLOUDFLARE_API_TOKEN với Chợ Lá Xanh (token cần thêm quyền "D1: Edit").
+# Thêm secret trong GitHub: Settings → Secrets and variables → Actions:
+#   DAOVANG_BOT_TOKEN  token bot lấy từ @BotFather
+#   DAOVANG_ADMIN_KEY  mật khẩu tự đặt (≥ 8 ký tự), dùng cho /setup và /refund
+# Có đủ 2 secret này thì workflow tự nạp vào máy chủ và tự gắn bot (webhook, lệnh, nút Chơi).
+name: Cập nhật máy chủ Đào Vàng
+
+on:
+  push:
+    branches: [main]
+    paths: ['daovang/server/**', '.github/workflows/deploy-daovang.yml']
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      CF_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CF_ACCOUNT: ${{ secrets.CLOUDFLARE_ACCOUNT_ID || '2aafd661337f1c25f504edf3203914b3' }}
+      TG_BOT_TOKEN: ${{ secrets.DAOVANG_BOT_TOKEN }}
+      ADMIN_KEY: ${{ secrets.DAOVANG_ADMIN_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Kiểm tra khóa
+        id: chk
+        run: |
+          if [ -z "$CF_TOKEN" ]; then echo "::warning::Chưa có CLOUDFLARE_API_TOKEN, bỏ qua."; echo "ok=false" >> "$GITHUB_OUTPUT"; exit 0; fi
+          echo "ok=true" >> "$GITHUB_OUTPUT"
+          if [ -n "$TG_BOT_TOKEN" ] && [ -n "$ADMIN_KEY" ]; then echo "bot=true" >> "$GITHUB_OUTPUT"; else echo "::warning::Chưa có DAOVANG_BOT_TOKEN / DAOVANG_ADMIN_KEY: chỉ cập nhật code, chưa gắn bot."; echo "bot=false" >> "$GITHUB_OUTPUT"; fi
+
+      - name: Tìm hoặc tạo cơ sở dữ liệu D1 "daovang"
+        if: steps.chk.outputs.ok == 'true'
+        run: |
+          API="https://api.cloudflare.com/client/v4/accounts/$CF_ACCOUNT/d1/database"
+          ID=$(curl -fsS -H "Authorization: Bearer $CF_TOKEN" "$API?name=daovang" | jq -r '.result[] | select(.name=="daovang") | .uuid' | head -n1)
+          if [ -z "$ID" ]; then
+            ID=$(curl -fsS -X POST -H "Authorization: Bearer $CF_TOKEN" -H 'content-type: application/json' -d '{"name":"daovang"}' "$API" | jq -r '.result.uuid')
+            echo "Đã tạo D1 mới"
+          fi
+          if [ -z "$ID" ] || [ "$ID" = "null" ]; then echo "::error::Không tạo được D1. Token Cloudflare cần quyền D1: Edit."; exit 1; fi
+          sed -i "s/DIEN_ID_D1_VAO_DAY/$ID/" daovang/server/wrangler.toml
+          echo "Dùng D1: $ID"
+
+      - name: Đưa máy chủ lên Cloudflare (kèm khóa bot)
+        id: dep_bot
+        if: steps.chk.outputs.ok == 'true' && steps.chk.outputs.bot == 'true'
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ env.CF_TOKEN }}
+          accountId: ${{ env.CF_ACCOUNT }}
+          workingDirectory: daovang/server
+          command: deploy
+          secrets: |
+            TG_BOT_TOKEN
+            ADMIN_KEY
+
+      - name: Đưa máy chủ lên Cloudflare (chỉ code)
+        if: steps.chk.outputs.ok == 'true' && steps.chk.outputs.bot != 'true'
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ env.CF_TOKEN }}
+          accountId: ${{ env.CF_ACCOUNT }}
+          workingDirectory: daovang/server
+          command: deploy
+
+      - name: Gắn bot (tạo bảng, webhook, lệnh, nút Chơi)
+        if: steps.chk.outputs.ok == 'true' && steps.chk.outputs.bot == 'true'
+        env:
+          URL: ${{ steps.dep_bot.outputs.deployment-url }}
+        run: |
+          U="${URL:-https://daovang-bot.tnhn1311.workers.dev}"
+          sleep 5
+          echo "Máy chủ: $U"
+          curl -sS -H "x-admin-key: $ADMIN_KEY" "$U/setup" | tee /tmp/setup.json; echo
+          jq -e '.ok == true' /tmp/setup.json > /dev/null || { echo "::error::Gắn bot thất bại (xem dòng trên)"; exit 1; }
