@@ -46,6 +46,23 @@ npx wrangler deploy
 # mở trên trình duyệt: https://daovang-bot.<tên>.workers.dev/setup?key=<ADMIN_KEY>
 ```
 
+## 💳 Chuyển khoản VietQR (tùy chọn)
+Mỗi món trong cửa hàng có thêm nút 💳 bên cạnh nút ⭐. Người chơi quét VietQR, SePay báo tiền về, máy chủ tự cộng vật phẩm. Mỗi đơn chỉ cộng một lần, chuyển thiếu tiền thì không duyệt.
+
+Giá: Năng lượng 9.000đ · x2 vàng 17.000đ · Rương 27.000đ · Thợ mỏ vàng 55.000đ (cao hơn giá Stars một chút) (sửa `vnd` trong `SHOP` ở `server/worker.js`).
+
+Bật lên:
+1. Tài khoản nhận tiền nằm trong `server/wrangler.toml` (`PAY_BIN`, `PAY_ACCT`, `PAY_HOLDER`, `PAY_MEMO`). Đang điền sẵn tài khoản của Chợ Lá Xanh, đổi nếu cần.
+2. Trong **SePay → Webhooks**, thêm một webhook mới (giữ nguyên webhook của Chợ Lá Xanh):
+   - URL: `https://daovang-bot.tnhn1311.workers.dev/sepay`
+   - Kiểu chứng thực: **API Key**, khóa tự đặt (ví dụ một chuỗi dài ngẫu nhiên)
+   - Chỉ nhận tiền vào
+3. Thêm secret GitHub `DAOVANG_SEPAY_KEY` = đúng khóa đó, rồi chạy lại workflow **"Cập nhật máy chủ Đào Vàng"**.
+
+Chưa có `DAOVANG_SEPAY_KEY` thì nút 💳 tự ẩn, game chỉ bán bằng Stars.
+
+⚠️ Telegram quy định hàng ảo trong bot phải bán bằng Stars. Đặt chuyển khoản ngay trong game có thể khiến bot bị khóa nếu bị báo cáo.
+
 ## Tiền Stars
 - Stars người chơi trả vào số dư của bot. Xem trong @BotFather → bot → **Balance**, hoặc trong app Telegram ở phần quản lý bot.
 - Rút ra TON qua **Fragment** sau khoảng 21 ngày. Mỗi lần rút tối thiểu 1.000⭐, mỗi Star được khoảng $0,013.

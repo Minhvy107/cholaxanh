@@ -51,6 +51,14 @@ nav button b{font-size:21px;line-height:1}nav button.on{color:var(--gold)}
 .dlg .big{font-size:48px}.dlg h3{margin:6px 0}.dlg p{color:var(--mute);margin:6px 0 14px}
 .toast{position:fixed;left:50%;top:14px;transform:translateX(-50%);background:#000d;padding:8px 14px;border-radius:12px;font-size:14px;z-index:30;opacity:0;transition:opacity .2s;pointer-events:none;max-width:90vw;text-align:center}.toast.on{opacity:1}
 .err{text-align:center;padding:40px 16px;color:var(--mute)}
+.buys{display:flex;flex-direction:column;gap:6px;flex:none}.buys .btn{min-width:104px;padding:9px 8px}
+.btn.bank{background:#1f4f86;border-color:#3d7cc4;color:#fff}
+.qr{background:#fff;border-radius:14px;padding:10px;width:230px;max-width:100%;margin:6px auto 10px;min-height:120px;display:grid;place-items:center;color:#555}.qr img{width:100%;height:auto;display:block}
+.ptbl{width:100%;border-collapse:collapse;font-size:14px;text-align:left}.ptbl td{padding:6px 4px;border-bottom:1px solid var(--line);vertical-align:middle}.ptbl td:first-child{color:var(--mute);white-space:nowrap}
+.ptbl b{word-break:break-all}.cp{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:3px 8px;font-size:12px;margin-left:6px}
+.pst{margin:10px 0 4px;padding:8px;border-radius:10px;background:var(--card);font-size:14px}.pst.ok{background:#1d4a2e;color:#9ff0bd}
+.pend{background:#1f3550;border:1px solid #3d7cc4;border-radius:12px;padding:9px 12px;margin-bottom:10px;font-size:13.5px}
+.dlg{max-height:92vh;overflow-y:auto}
 </style>
 </head>
 <body>
@@ -64,7 +72,7 @@ nav button b{font-size:21px;line-height:1}nav button.on{color:var(--gold)}
     <div class="row"><button class="btn gold" id="daily">🎁 Quà hôm nay</button><button class="btn" data-go="shop">⭐ Cửa hàng</button></div>
   </section>
   <section class="page" id="p-up"><h2>⬆️ Nâng cấp</h2><div id="ups"></div><p class="muted">Thợ mỏ vẫn đào khi bạn tắt game (tối đa 3 giờ). Quay lại thường xuyên để nhận vàng!</p></section>
-  <section class="page" id="p-shop"><h2>⭐ Cửa hàng Stars</h2><div id="shop"></div><p class="muted">Thanh toán bằng Telegram Stars ngay trong Telegram. Gặp lỗi? Nhắn /paysupport cho bot.</p></section>
+  <section class="page" id="p-shop"><h2>🛒 Cửa hàng</h2><div id="shop"></div><p class="muted">Trả bằng ⭐ Telegram Stars, hoặc 💳 chuyển khoản ngân hàng (nếu có). Gặp lỗi? Nhắn /paysupport cho bot.</p></section>
   <section class="page" id="p-top"><h2>🏆 Bảng xếp hạng</h2><p class="muted" id="myrank"></p><ul class="lb" id="lb"></ul></section>
   <section class="page" id="p-fr"><h2>👥 Mời bạn bè</h2>
     <div class="card"><div class="ic">🎁</div><div class="bd"><b>Mỗi bạn mới: cả hai nhận <span id="rb">2.500</span> vàng</b><small>Bạn bè vào game qua link của bạn lần đầu tiên.</small></div></div>
@@ -92,7 +100,7 @@ window.closeDlg=()=>$('#ov').classList.remove('on');
 /* ===== Bản xem thử: chạy cùng công thức với máy chủ, lưu localStorage ===== */
 const Demo=(()=>{
   const CFG={regen:1,baseEnergy:500,tankStep:250,maxTps:20,offlineCap:10800,tap:{base:50,mul:1.6},miner:{base:100,mul:1.55,rate:2},tank:{base:200,mul:1.7},goldMinerRate:50,refBonus:2500};
-  const SHOP={energy:{stars:15,title:'⚡ Nạp đầy năng lượng',desc:'Năng lượng đầy lại ngay để bấm tiếp'},boost:{stars:30,title:'🔥 Nhân đôi vàng 2 giờ',desc:'x2 vàng khi bấm và thợ mỏ trong 2 giờ (cộng dồn)'},chest:{stars:49,title:'💰 Rương vàng',desc:'Nhận ngay số vàng bằng 2 giờ thợ mỏ (ít nhất 20.000)'},goldminer:{stars:99,title:'👷 Thợ mỏ vàng',desc:'+50 vàng/giây vĩnh viễn, mua nhiều lần được'}};
+  const SHOP={energy:{stars:15,vnd:9000,title:'⚡ Nạp đầy năng lượng',desc:'Năng lượng đầy lại ngay để bấm tiếp'},boost:{stars:30,vnd:17000,title:'🔥 Nhân đôi vàng 2 giờ',desc:'x2 vàng khi bấm và thợ mỏ trong 2 giờ (cộng dồn)'},chest:{stars:49,vnd:27000,title:'💰 Rương vàng',desc:'Nhận ngay số vàng bằng 2 giờ thợ mỏ (ít nhất 20.000)'},goldminer:{stars:99,vnd:55000,title:'👷 Thợ mỏ vàng',desc:'+50 vàng/giây vĩnh viễn, mua nhiều lần được'}};
   const vnDay=ms=>new Date(ms+7*3600e3).toISOString().slice(0,10);
   const rate=u=>u.miner_lvl*CFG.miner.rate+u.gold_miners*CFG.goldMinerRate, maxE=u=>CFG.baseEnergy+u.tank_lvl*CFG.tankStep;
   let u; try{ u=JSON.parse(localStorage.getItem('dv-demo')); }catch(e){}
@@ -110,6 +118,8 @@ const Demo=(()=>{
     else if(path==='/demo-pay'){ const it=b.item; if(it==='energy') u.energy=maxE(u); else if(it==='boost') u.boost_until=Math.max(u.boost_until,now)+7200e3; else if(it==='chest'){ const g=Math.max(20000,rate(u)*7200); u.gold+=g; u.total+=g; } else if(it==='goldminer') u.gold_miners++; r={me:view(now)}; }
     else if(path==='/top') r={list:[{name:u.name,total:Math.floor(u.total),me:true}],rank:1,total:Math.floor(u.total)};
     else if(path==='/friends') r={count:0,bonus:CFG.refBonus,list:[]};
+    else if(path==='/order') r={code:'DVXEMTHU01',item:b.item,vnd:SHOP[b.item].vnd,pay:{bin:'970436',acct:'0000000000',holder:'TAI KHOAN THU NGHIEM',memo:'',demo:true}};
+    else if(path.startsWith('/order/')) r={status:'pending'};
     save(); return r; };
 })();
 
@@ -121,7 +131,7 @@ async function api(path,body){
   return d; }
 
 /* ===== Trạng thái: số của máy chủ + phần dự đoán tại máy cho mượt ===== */
-let CFG, SHOP, BOT='', me, anchor=0, pending=0, inflight=0;
+let CFG, SHOP, BOT='', PAY=null, ORDER=null, me, anchor=0, pending=0, inflight=0;
 const tapPow=()=>1+me.tap_lvl, rateOf=()=>me.miner_lvl*CFG.miner.rate+me.gold_miners*CFG.goldMinerRate, maxE=()=>CFG.baseEnergy+me.tank_lvl*CFG.tankStep;
 const sNow=()=>me.now+(Date.now()-anchor);
 const multAt=t=>me.boost_until>t?2:1;
@@ -170,8 +180,12 @@ $('#ups').addEventListener('click',async e=>{ const b=e.target.closest('[data-up
   catch(err){ if(err.data&&err.data.me) setMe(err.data.me); toast(err.message==='not_enough'?'Chưa đủ vàng':'Lỗi: '+err.message); }
   renderUps(); });
 
-function renderShop(){ $('#shop').innerHTML=Object.entries(SHOP).map(([k,s])=>`<div class="card"><div class="ic">${s.title.split(' ')[0]}</div><div class="bd"><b>${s.title.replace(/^\S+\s/,'')}</b><small>${s.desc}</small>${k==='goldminer'&&me.gold_miners?`<small>Đang có ${me.gold_miners} thợ mỏ vàng</small>`:''}</div><button class="btn gold" data-buy="${k}">⭐ ${s.stars}</button></div>`).join(''); }
-$('#shop').addEventListener('click',async e=>{ const b=e.target.closest('[data-buy]'); if(!b) return; const k=b.dataset.buy, it=SHOP[k];
+function renderShop(){ $('#shop').innerHTML=Object.entries(SHOP).map(([k,s])=>`<div class="card"><div class="ic">${s.title.split(' ')[0]}</div><div class="bd"><b>${s.title.replace(/^\S+\s/,'')}</b><small>${s.desc}</small>${k==='goldminer'&&me.gold_miners?`<small>Đang có ${me.gold_miners} thợ mỏ vàng</small>`:''}</div><div class="buys"><button class="btn gold" data-buy="${k}">⭐ ${s.stars}</button>${PAY&&s.vnd?`<button class="btn bank" data-qr="${k}">💳 ${vnd(s.vnd)}</button>`:''}</div></div>`).join('');
+  $('#shop').insertAdjacentHTML('afterbegin',ORDER?`<div class="pend" data-show="1">⏳ Đơn ${ORDER.code} (${vnd(ORDER.vnd)}) đang chờ tiền về · bấm để xem</div>`:''); }
+$('#shop').addEventListener('click',async e=>{
+  if(e.target.closest('[data-show]')) return showPay();
+  const q=e.target.closest('[data-qr]'); if(q){ await newOrder(q.dataset.qr); return; }
+  const b=e.target.closest('[data-buy]'); if(!b) return; const k=b.dataset.buy, it=SHOP[k];
   await sync();
   if(DEMO){ if(!confirm(`Bản xem thử: giả lập mua "${it.title}" (${it.stars}⭐, không trừ tiền thật)?`)) return; setMe((await api('/demo-pay',{item:k})).me); haptic('ok'); toast('✅ '+it.title); return renderShop(); }
   b.disabled=true;
@@ -204,6 +218,51 @@ $('#share').addEventListener('click',()=>{ const l=refLink(); if(!l) return toas
 $('#copy').addEventListener('click',()=>{ const l=refLink(); if(!l) return toast(DEMO?'Mở trong Telegram để có link mời':'Chủ game chưa điền BOT_USERNAME');
   navigator.clipboard.writeText(l).then(()=>toast('📋 Đã chép link mời'),()=>toast(l)); });
 
+/* ===== 💳 Chuyển khoản VietQR ===== */
+const vnd=v=>v.toLocaleString('vi-VN')+'đ';
+const BANKS={'970436':'Vietcombank','970415':'VietinBank','970418':'BIDV','970405':'Agribank','970422':'MB Bank','970407':'Techcombank','970416':'ACB','970423':'TPBank','970432':'VPBank','970403':'Sacombank','970441':'VIB','970443':'SHB'};
+const tlv=(id,v)=>id+String(v.length).padStart(2,'0')+v;
+function crc16(t){ let c=0xFFFF; for(let i=0;i<t.length;i++){ c^=t.charCodeAt(i)<<8; for(let k=0;k<8;k++) c=c&0x8000?((c<<1)^0x1021)&0xFFFF:(c<<1)&0xFFFF; } return c.toString(16).toUpperCase().padStart(4,'0'); }
+function vietQR(bin,acct,amount,memo){ // chuẩn EMVCo / NAPAS VietQR
+  const mai=tlv('00','A000000727')+tlv('01',tlv('00',bin)+tlv('01',acct))+tlv('02','QRIBFTTA');
+  const body=tlv('00','01')+tlv('01','12')+tlv('38',mai)+tlv('53','704')+tlv('54',String(amount))+tlv('58','VN')+tlv('62',tlv('08',memo))+'6304';
+  return body+crc16(body); }
+let qrLib=null;
+const loadQR=()=>qrLib||(qrLib=new Promise((ok,no)=>{ if(window.qrcode) return ok(window.qrcode); const sc=document.createElement('script'); sc.src='https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js'; sc.onload=()=>ok(window.qrcode); sc.onerror=()=>{ qrLib=null; no(); }; document.head.appendChild(sc); }));
+async function newOrder(k){ const it=SHOP[k];
+  if(ORDER&&ORDER.item!==k&&!confirm(`Bạn còn đơn ${ORDER.code} chưa thanh toán. Hủy đơn đó và tạo đơn mới?`)) return showPay();
+  if(ORDER&&ORDER.item===k) return showPay();
+  try{ const r=await api('/order',{item:k}); if(r.pay) PAY=r.pay; ORDER={code:r.code,item:r.item,vnd:r.vnd}; renderShop(); showPay(); }
+  catch(e){ toast(e.message==='pay_off'?'Chuyển khoản đang tạm tắt, hãy dùng ⭐ Stars':'Không tạo được đơn: '+e.message); } }
+let payOpen=false;
+function showPay(){ const o=ORDER; if(!o||!PAY) return; const it=SHOP[o.item], memo=(PAY.memo?PAY.memo+' ':'')+o.code;
+  const cp=v=>`<button class="cp" onclick="copyTxt('${v}')">Chép</button>`;
+  $('#dlg').innerHTML=`<h3>${esc(it.title)} · ${vnd(o.vnd)}</h3>
+    ${PAY.demo?'<div class="demo" style="margin:6px 0">🧪 Bản xem thử: tài khoản mẫu, đừng chuyển tiền.</div>':''}
+    <div class="qr" id="qr">Đang tạo mã QR…</div>
+    <table class="ptbl"><tr><td>Ngân hàng</td><td><b>${BANKS[PAY.bin]||PAY.bin}</b></td></tr>
+      <tr><td>Số TK</td><td><b>${esc(PAY.acct)}</b>${cp(PAY.acct)}</td></tr><tr><td>Chủ TK</td><td><b>${esc(PAY.holder)}</b></td></tr>
+      <tr><td>Số tiền</td><td><b>${vnd(o.vnd)}</b>${cp(o.vnd)}</td></tr><tr><td>Nội dung</td><td><b style="color:var(--gold)">${memo}</b>${cp(memo)}</td></tr></table>
+    <p style="font-size:12.5px;margin:10px 0 0">Chụp màn hình mã QR rồi mở app ngân hàng → <b>Quét QR → chọn ảnh</b>, hoặc chép số tài khoản. Giữ đúng <b>số tiền</b> và <b>nội dung</b>. Vật phẩm tự cộng trong khoảng 1 phút sau khi tiền về.</p>
+    <div class="pst" id="pst">⏳ Đang chờ tiền về…</div>
+    <div class="row"><button class="btn" onclick="cancelOrder()">Hủy đơn</button>${PAY.demo?'<button class="btn" onclick="demoPaid()">🧪 Giả lập đã trả</button>':''}<button class="btn gold" onclick="closePay()">Đóng</button></div>`;
+  $('#ov').classList.add('on'); payOpen=true;
+  loadQR().then(qr=>{ const q=qr(0,'M'); q.addData(vietQR(PAY.bin,PAY.acct,o.vnd,memo)); q.make(); const el=$('#qr'); if(el) el.innerHTML=q.createImgTag(5,6); })
+    .catch(()=>{ const el=$('#qr'); if(el) el.textContent='Không tải được mã QR, hãy chuyển khoản theo thông tin bên dưới.'; }); }
+window.closePay=()=>{ payOpen=false; closeDlg(); };
+window.copyTxt=v=>{ (navigator.clipboard?navigator.clipboard.writeText(String(v)):Promise.reject()).then(()=>toast('📋 Đã chép'),()=>toast(String(v))); };
+window.cancelOrder=async()=>{ if(!ORDER||!confirm('Hủy đơn này? Nếu bạn ĐÃ chuyển khoản thì đừng hủy, hãy đợi vật phẩm được cộng.')) return;
+  const c=ORDER.code; ORDER=null; closePay(); renderShop(); if(!DEMO) api('/order/'+c+'?cancel=1',{}).catch(()=>{}); };
+function orderDone(m){ const it=SHOP[ORDER.item]; ORDER=null; if(m) setMe(m); haptic('ok'); renderShop(); renderUps();
+  dialog(`<div class="big">🎉</div><h3>Đã nhận tiền!</h3><p>${esc(it.title)} đã có hiệu lực. Cảm ơn bạn đã ủng hộ!</p>`); payOpen=false; }
+window.demoPaid=async()=>{ if(!DEMO||!ORDER) return; const r=await api('/demo-pay',{item:ORDER.item}); orderDone(r.me); };
+let polling=false;
+setInterval(async()=>{ if(!ORDER||DEMO||polling) return; if(document.hidden&&!payOpen&&Math.random()<.8) return; polling=true;
+  try{ const r=await api('/order/'+ORDER.code);
+    if(r.status==='paid') orderDone(r.me);
+    else if(r.status!=='pending'){ ORDER=null; renderShop(); const st=$('#pst'); if(st&&payOpen) st.textContent='Đơn đã hết hạn hoặc đã hủy, hãy tạo đơn mới.'; } }
+  catch(e){} finally{ polling=false; } },4000);
+
 /* ===== Chuyển tab ===== */
 document.addEventListener('click',e=>{ const b=e.target.closest('[data-go]'); if(!b||!me) return; const p=b.dataset.go;
   document.querySelectorAll('.page').forEach(x=>x.classList.toggle('on',x.id==='p-'+p));
@@ -212,7 +271,7 @@ document.addEventListener('click',e=>{ const b=e.target.closest('[data-go]'); if
 
 /* ===== Khởi động ===== */
 (async()=>{ $('#demo').hidden=!DEMO;
-  try{ const s=await api('/state'); CFG=s.cfg; SHOP=s.shop; BOT=s.bot; setMe(s.me);
+  try{ const s=await api('/state'); CFG=s.cfg; SHOP=s.shop; BOT=s.bot; PAY=s.pay||(DEMO?{demo:true}:null); ORDER=s.order||null; setMe(s.me);
     $('#nm').textContent=me.name; $('#av').textContent=(me.name.trim()[0]||'⛏').toUpperCase(); $('#rk').textContent='Thợ mỏ';
     renderUps(); renderShop(); draw();
     if(s.welcome) dialog(`<div class="big">⛏️</div><h3>Chào mừng tới Đào Vàng!</h3><p>Bấm vào tảng đá để đào vàng. Dùng vàng nâng cấp cuốc và thuê thợ mỏ đào giúp cả khi bạn offline.${s.welcome.refBonus?`<br><br>🎁 Quà người được mời: <b>+${fmt(s.welcome.refBonus)} vàng</b>`:''}</p>`);
