@@ -399,8 +399,11 @@ label.toggle{display:flex;gap:6px;align-items:center;font-size:13px;cursor:point
 .gems{font:800 15px var(--display);background:#eaf4ff;border:2px solid #a9cdf0;color:#2f6aa3;border-radius:999px;padding:2px 12px;display:inline-flex;gap:4px;align-items:center}
 .wd-top{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;margin-bottom:10px}
 #wdCv{width:100%;height:170px;display:block;border-radius:16px;border:2px solid var(--line);background:#fff}
-.wd-items{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;max-height:calc(100dvh - var(--hdrH,90px) - 330px);min-height:180px;overflow-y:auto;overscroll-behavior:contain;padding:8px 2px 4px;-webkit-overflow-scrolling:touch}
-.wd-dock{position:sticky;top:var(--hdrH,0px);z-index:5;background:var(--page);padding-bottom:6px;border-bottom:2px dashed var(--line);margin-bottom:12px}
+.wd-items{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;max-height:calc(100dvh - var(--hdrH,90px) - 380px);min-height:180px;overflow-y:auto;padding:8px 2px 4px;-webkit-overflow-scrolling:touch}
+.wd-dock{background:var(--page);padding-bottom:6px;border-bottom:2px dashed var(--line);margin-bottom:12px}
+.gems.nap{cursor:pointer;gap:6px}.gems.nap b{background:#2f6aa3;color:#fff;border-radius:999px;padding:0 8px;font-size:13px}
+.wd-nap{display:flex;gap:8px;margin:0 0 8px}.wd-nap button{flex:1;font:800 14px var(--display);border-radius:12px;padding:7px 8px}
+#sGemsBtn{all:unset;cursor:pointer;color:inherit;white-space:nowrap}#sGemsBtn:active{opacity:.6}
 .chips.wd-slots{flex-wrap:nowrap;overflow-x:auto;padding:2px 2px 6px;margin:0;scrollbar-width:none}.wd-slots::-webkit-scrollbar{display:none}.wd-slots button{flex:none;font-size:13px;padding:5px 11px}
 .wd-items .wd-item{padding:6px 2px 4px;border-radius:12px}.wd-items .wd-item .thumb{width:46px;height:46px}.wd-items .wd-item .ic{font-size:24px}.wd-items .wd-item .nm{font-size:10.5px;min-height:25px;line-height:1.15}.wd-items .wd-item button{font-size:11px;padding:1px 4px}
 .wd-item{background:var(--panel);border:2px solid var(--line);border-radius:14px;padding:8px 4px 6px;display:flex;flex-direction:column;align-items:center;gap:2px;text-align:center;cursor:pointer;position:relative}
@@ -641,7 +644,7 @@ span.pill.bad{background:#fde6e3;color:var(--bad)} span.pill.good{background:#e1
   <header id="hdr">
     <button class="pausebtn" id="btnPause" aria-label="Tạm dừng và menu">⏸</button>
     <div class="hday"><b id="sDay">Ngày 1</b><span>🕕 <b id="sClock">06:30</b></span></div>
-    <div class="hmid"><button class="nm hname" onclick="openRename()" title="Đổi tên tiệm"><span id="hName"></span> <i>✏️</i></button><b id="sMoney">0</b><small>💚 <span id="sRep">50</span> · 💎 <span id="sGems">0</span></small></div>
+    <div class="hmid"><button class="nm hname" onclick="openRename()" title="Đổi tên tiệm"><span id="hName"></span> <i>✏️</i></button><b id="sMoney">0</b><small>💚 <span id="sRep">50</span> · <button type="button" id="sGemsBtn" onclick="hmGoTopup()" title="Nạp kim cương">💎 <span id="sGems">0</span></button></small></div>
     <div class="hstars"><span class="stars" id="sStarsIcons">☆☆☆☆☆</span><span><span id="sStars">–</span> · <span id="sRevCount">0</span> đánh giá</span></div>
   </header>
   <div class="awning"></div>
@@ -673,7 +676,8 @@ span.pill.bad{background:#fde6e3;color:var(--bad)} span.pill.good{background:#e1
   </section>
 
   <section class="tab panel" id="tab-wardrobe">
-    <div class="sec-title"><h3 class="sec">👗 Tủ đồ</h3><span class="gems" id="wdGems">💎 0</span></div>
+    <div class="sec-title"><h3 class="sec">👗 Tủ đồ</h3><button type="button" class="gems nap" onclick="hmGoTopup()"><span id="wdGems">💎 0</span><b>+ Nạp</b></button></div>
+    <div class="wd-nap"><button type="button" onclick="wdGoto('wdQuests')">📋 Nhiệm vụ</button><button type="button" class="primary" onclick="hmGoTopup()">💳 Nạp kim cương</button></div>
     <div class="wd-dock">
       <div class="wd-top"><canvas id="wdCv"></canvas></div>
       <div class="chips wd-slots" id="wdSlots"></div>
@@ -683,7 +687,7 @@ span.pill.bad{background:#fde6e3;color:var(--bad)} span.pill.good{background:#e1
     <p class="muted" style="margin:0 0 8px;font-size:13px">Làm xong nhận kim cương. Nhiệm vụ đổi mỗi ngày (theo ngày thật), nhiệm vụ đã xong mà quên nhận sẽ được cộng tự động khi sang ngày mới.</p>
     <div id="wdQuests"></div>
     <p class="muted" style="font-size:13px">Cách kiếm thêm 💎: nhiệm vụ mỗi ngày (~30), quà 7 ngày, vòng quay, thử thách bất ngờ (tối đa 15/ngày), mốc thành tích (+20), mốc thưởng lễ hội. Cần tiền gấp? <a href="#" onclick="openFinance();return false">💱 Đổi 💎 lấy tiền</a>.</p>
-    <h3 class="sec" style="margin-top:14px">💳 Nạp kim cương</h3>
+    <h3 class="sec" style="margin-top:14px" id="wdNapSec">💳 Nạp kim cương</h3>
     <div id="wdOffers"></div>
     <div class="packs" id="wdPacks"></div>
     <p class="muted" style="font-size:12.5px">Quét mã VietQR bằng app ngân hàng bất kỳ. Kim cương được cộng tự động khi tiền về. Bạn vẫn có thể kiếm kim cương miễn phí bằng cách chơi.</p>
@@ -3940,7 +3944,8 @@ window.hmOpen=function(n,free){ const H=hmState(); if(!hmActive()) return toast(
   if(n===10) return modal(`<h3>🎃 Mở 10 hộp?</h3><p>Dùng <b>180💎</b> để mở 10 hộp mù. Chắc chắn có ít nhất 1 món Hiếm.</p><p class="muted" style="font-size:12.5px">Hôm nay bạn đã dùng ${H.spent}💎 cho hộp mù.</p><div class="row"><button onclick="openHM()">Thôi</button><button class="primary" onclick="hmPull(10,180)">Mở 10 hộp</button></div>`);
   hmPull(1,cost); };
 // mở tab Tủ đồ và cuộn tới khu nạp kim cương
-window.hmGoTopup=function(){ closeModal(); gotoTab('wardrobe'); setTimeout(()=>{ const el=$('#wdPacks'); if(el){ el.scrollIntoView({block:'center',behavior:'smooth'}); el.classList.add('hl'); setTimeout(()=>el.classList.remove('hl'),2500); } },150); };
+window.wdGoto=function(id){ const el=$('#'+id), h=$('#hdr'); if(!el) return; window.scrollTo({top:Math.max(0,el.getBoundingClientRect().top+scrollY-(h?h.getBoundingClientRect().bottom:0)-48),behavior:'smooth'}); };
+window.hmGoTopup=function(){ closeModal(); if(activeTab!=='wardrobe') gotoTab('wardrobe'); setTimeout(()=>{ wdGoto('wdNapSec'); const el=$('#wdPacks'); if(el){ el.classList.add('hl'); setTimeout(()=>el.classList.remove('hl'),2500); } },150); };
 window.hmPull=function(n,cost){ const H=hmState(); if(cost){ if(S.gems<cost) return toast('Không đủ 💎'); S.gems-=cost; H.spent+=cost; }
   const res=[]; for(let i=0;i<n;i++) res.push(hmRoll()); cnt('hmBox',n); const done=hmCheckDone(); autosaveSoft(); refreshAll();
   const best=res.reduce((a,b)=>'cres'.indexOf(b.e[1])>'cres'.indexOf(a.e[1])?b:a); sfx(best.e[1]==='c'?'coin':'reward');
