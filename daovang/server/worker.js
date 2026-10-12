@@ -8,6 +8,8 @@
 //   POST /buy {item}       nâng cấp bằng vàng: tap | miner | tank
 //   POST /daily            quà mỗi ngày
 //   POST /invoice {item}   tạo link hóa đơn Telegram Stars
+//   POST /order {item}     tạo đơn chuyển khoản VietQR · GET /order/:code trạng thái · POST /order/:code?cancel=1 hủy
+//   POST /sepay            SePay báo tiền vào tài khoản (header Authorization: Apikey <SEPAY_API_KEY>)
 //   GET  /top  /friends    bảng xếp hạng, bạn bè đã mời
 //   POST /webhook          Telegram gửi cập nhật (tin nhắn, thanh toán)
 //   GET  /setup?key=…      (chủ game) tạo bảng D1, gắn webhook, lệnh, nút menu
@@ -25,11 +27,17 @@ const CFG = {
   refBonus: 2500,
 };
 const SHOP = {
-  energy: { stars: 15, title: '⚡ Nạp đầy năng lượng', desc: 'Năng lượng đầy lại ngay để bấm tiếp' },
-  boost: { stars: 30, title: '🔥 Nhân đôi vàng 2 giờ', desc: 'x2 vàng khi bấm và thợ mỏ trong 2 giờ (cộng dồn)' },
-  chest: { stars: 49, title: '💰 Rương vàng', desc: 'Nhận ngay số vàng bằng 2 giờ thợ mỏ (ít nhất 20.000)' },
-  goldminer: { stars: 99, title: '👷 Thợ mỏ vàng', desc: '+50 vàng/giây vĩnh viễn, mua nhiều lần được' },
+  energy: { stars: 15, vnd: 5000, title: '⚡ Nạp đầy năng lượng', desc: 'Năng lượng đầy lại ngay để bấm tiếp' },
+  boost: { stars: 30, vnd: 10000, title: '🔥 Nhân đôi vàng 2 giờ', desc: 'x2 vàng khi bấm và thợ mỏ trong 2 giờ (cộng dồn)' },
+  chest: { stars: 49, vnd: 15000, title: '💰 Rương vàng', desc: 'Nhận ngay số vàng bằng 2 giờ thợ mỏ (ít nhất 20.000)' },
+  goldminer: { stars: 99, vnd: 29000, title: '👷 Thợ mỏ vàng', desc: '+50 vàng/giây vĩnh viễn, mua nhiều lần được' },
 };
+
+// 💳 Chuyển khoản VietQR: SePay báo tiền về /sepay → máy chủ tự cộng vật phẩm
+const ORDER_RE = /DV[A-Z0-9]{8}/;
+const ORDER_TTL = 24 * 3600e3;
+const payOn = env => !!(env.SEPAY_API_KEY && env.PAY_BIN && env.PAY_ACCT);
+const payInfo = env => payOn(env) ? { bin: env.PAY_BIN, acct: env.PAY_ACCT, holder: env.PAY_HOLDER || '', memo: env.PAY_MEMO || '' } : null;
 
 const cost = (k, lvl) => Math.floor(CFG[k].base * CFG[k].mul ** lvl);
 const tapPower = u => 1 + u.tap_lvl;
@@ -102,6 +110,8 @@ const SCHEMA = [
   `CREATE INDEX IF NOT EXISTS users_total ON users(total DESC)`,
   `CREATE INDEX IF NOT EXISTS users_ref ON users(ref)`,
   `CREATE TABLE IF NOT EXISTS pending_refs (user_id INTEGER PRIMARY KEY, ref INTEGER)`,
+  `CREATE TABLE IF NOT EXISTS orders (code TEXT PRIMARY KEY, user_id INTEGER, item TEXT, vnd INTEGER, status TEXT, at INTEGER, paid_at INTEGER, tx TEXT)`,
+  `CREATE INDEX IF NOT EXISTS orders_user ON orders(user_id, at DESC)`,
   `CREATE TABLE IF NOT EXISTS payments (charge_id TEXT PRIMARY KEY, user_id INTEGER, item TEXT, stars INTEGER, at INTEGER, refunded INTEGER DEFAULT 0)`,
 ];
 const COLS = ['name', 'gold', 'total', 'tap_lvl', 'miner_lvl', 'tank_lvl', 'gold_miners', 'energy', 'last', 'tap_at', 'boost_until', 'daily_day', 'streak'];
@@ -195,6 +205,24 @@ async function handle(req, env) {
   if (path === '/health') return json(env, { ok: true, t: now });
   if (!env.TG_BOT_TOKEN) return json(env, { error: 'no_token' }, 503);
 
+  // Webhook SePay: có tiền vào tài khoản
+  if (req.method === 'POST' && path === '/sepay') {
+    if (!env.SEPAY_API_KEY || !safeEq(req.headers.get('authorization') || '', 'Apikey ' + env.SEPAY_API_KEY)) return json(env, { success: false }, 401);
+    const tx = await req.json().catch(() => null);
+    if (!tx || tx.transferType !== 'in') return json(env, { success: true });
+    const m = String(tx.content || tx.description || '').toUpperCase().replace(/[^A-Z0-9]/g, '').match(ORDER_RE);
+    if (!m) return json(env, { success: true });
+    const o = await env.DB.prepare('SELECT * FROM orders WHERE code = ?').bind(m[0]).first();
+    if (!o || o.status !== 'pending' || now - o.at > ORDER_TTL || Number(tx.transferAmount) < o.vnd) return json(env, { success: true });
+    // Chỉ đơn còn "pending" mới đổi sang "paid" → SePay gửi lại cũng chỉ cộng 1 lần
+    const r = await env.DB.prepare("UPDATE orders SET status = 'paid', paid_at = ?, tx = ? WHERE code = ? AND status = 'pending'").bind(now, String(tx.id || ''), o.code).run();
+    if (r.meta.changes) {
+      await applyItem(env, o.user_id, o.item, now);
+      await tg(env, 'sendMessage', { chat_id: o.user_id, text: `✅ Đã nhận ${o.vnd.toLocaleString('vi-VN')}đ cho đơn ${o.code} – ${SHOP[o.item].title}. Chúc bạn đào nhiều vàng!` }).catch(() => {});
+    }
+    return json(env, { success: true });
+  }
+
   if (req.method === 'POST' && path === '/webhook') {
     if (!safeEq(req.headers.get('x-telegram-bot-api-secret-token') || '', await hookSecret(env))) return json(env, { error: 'auth' }, 401);
     const up = await req.json().catch(() => null);
@@ -240,7 +268,8 @@ async function handle(req, env) {
     u.name = cleanName(a.user);
     await save(env, u);
     return json(env, {
-      cfg: CFG, shop: SHOP, bot: env.BOT_USERNAME || '', me: view(u, now),
+      cfg: CFG, shop: SHOP, bot: env.BOT_USERNAME || '', me: view(u, now), pay: payInfo(env),
+      order: await env.DB.prepare("SELECT code, item, vnd FROM orders WHERE user_id = ? AND status = 'pending' AND at > ? ORDER BY at DESC LIMIT 1").bind(u.id, now - ORDER_TTL).first(),
       offline: !r.isNew && off.dt > 60 && off.earn >= 1 ? { earn: Math.floor(off.earn), sec: Math.round(Math.min(off.dt, CFG.offlineCap)) } : null,
       welcome: r.isNew ? { refBonus: r.refBonus || 0 } : null,
     });
@@ -290,6 +319,31 @@ async function handle(req, env) {
       payload: `${body.item}:${u.id}:${now}`, currency: 'XTR', prices: [{ label: it.title, amount: it.stars }],
     });
     return json(env, { link });
+  }
+
+  // 💳 Tạo đơn chuyển khoản (mỗi người chỉ giữ 1 đơn chờ, tạo đơn mới thì hủy đơn cũ)
+  if (req.method === 'POST' && path === '/order') {
+    const it = SHOP[body.item];
+    if (!it) return json(env, { error: 'bad_request' }, 400);
+    if (!payOn(env)) return json(env, { error: 'pay_off' }, 503);
+    const A = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    const code = 'DV' + Array.from(crypto.getRandomValues(new Uint8Array(8)), b => A[b % 32]).join('');
+    await env.DB.batch([
+      env.DB.prepare("UPDATE orders SET status = 'cancelled' WHERE user_id = ? AND status = 'pending'").bind(u.id),
+      env.DB.prepare("INSERT INTO orders (code, user_id, item, vnd, status, at) VALUES (?, ?, ?, ?, 'pending', ?)").bind(code, u.id, body.item, it.vnd, now),
+    ]);
+    return json(env, { code, item: body.item, vnd: it.vnd, pay: payInfo(env) });
+  }
+  let om = path.match(/^\/order\/(DV[A-Z0-9]{8})$/);
+  if (om && req.method === 'GET') {
+    const o = await env.DB.prepare('SELECT status, at FROM orders WHERE code = ? AND user_id = ?').bind(om[1], u.id).first();
+    if (!o) return json(env, { status: 'missing' });
+    const status = o.status === 'pending' && now - o.at > ORDER_TTL ? 'expired' : o.status;
+    return json(env, { status, me: status === 'paid' ? view(u, now) : undefined });
+  }
+  if (om && req.method === 'POST' && url.searchParams.get('cancel') === '1') {
+    await env.DB.prepare("UPDATE orders SET status = 'cancelled' WHERE code = ? AND user_id = ? AND status = 'pending'").bind(om[1], u.id).run();
+    return json(env, { ok: true });
   }
 
   if (req.method === 'GET' && path === '/top') {

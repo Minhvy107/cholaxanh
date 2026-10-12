@@ -18,6 +18,15 @@ BOT_USERNAME = "daovang2026_bot"
 SUPPORT = ""
 ALLOWED_ORIGIN = "*"
 
+# 💳 Tài khoản nhận chuyển khoản (không phải bí mật: người chơi chuyển khoản cũng thấy)
+# PAY_BIN = mã ngân hàng: Vietcombank 970436, VietinBank 970415, BIDV 970418, MB 970422, Techcombank 970407, ACB 970416…
+# PAY_MEMO = chữ đặt trước mã đơn trong nội dung (VietinBank + SePay cần "SEVQR"; ngân hàng khác để "")
+PAY_BIN = "970415"
+PAY_ACCT = "107873840539"
+PAY_HOLDER = "TRAN NGOC HOAI NHU"
+PAY_MEMO = "SEVQR"
+
 # Khóa bí mật KHÔNG ghi ở đây:
 #   npx wrangler secret put TG_BOT_TOKEN   (token từ @BotFather)
 #   npx wrangler secret put ADMIN_KEY      (mật khẩu tự đặt, ≥ 8 ký tự, dùng cho /setup và /refund)
+#   npx wrangler secret put SEPAY_API_KEY  (khóa API trong webhook SePay; chưa có thì nút chuyển khoản tự ẩn)
