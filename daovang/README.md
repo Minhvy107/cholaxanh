@@ -49,7 +49,7 @@ npx wrangler deploy
 ## 💳 Chuyển khoản VietQR (tùy chọn)
 Mỗi món trong cửa hàng có thêm nút 💳 bên cạnh nút ⭐. Người chơi quét VietQR, SePay báo tiền về, máy chủ tự cộng vật phẩm. Mỗi đơn chỉ cộng một lần, chuyển thiếu tiền thì không duyệt.
 
-Giá: Năng lượng 5.000đ · x2 vàng 10.000đ · Rương 15.000đ · Thợ mỏ vàng 29.000đ (sửa `vnd` trong `SHOP` ở `server/worker.js`).
+Giá: Năng lượng 10.000đ · x2 vàng 20.000đ · Rương 39.000đ · Thợ mỏ vàng 69.000đ (sửa `vnd` trong `SHOP` ở `server/worker.js`).
 
 Bật lên:
 1. Tài khoản nhận tiền nằm trong `server/wrangler.toml` (`PAY_BIN`, `PAY_ACCT`, `PAY_HOLDER`, `PAY_MEMO`). Đang điền sẵn tài khoản của Chợ Lá Xanh, đổi nếu cần.

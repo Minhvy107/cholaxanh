@@ -100,7 +100,7 @@ window.closeDlg=()=>$('#ov').classList.remove('on');
 /* ===== Bản xem thử: chạy cùng công thức với máy chủ, lưu localStorage ===== */
 const Demo=(()=>{
   const CFG={regen:1,baseEnergy:500,tankStep:250,maxTps:20,offlineCap:10800,tap:{base:50,mul:1.6},miner:{base:100,mul:1.55,rate:2},tank:{base:200,mul:1.7},goldMinerRate:50,refBonus:2500};
-  const SHOP={energy:{stars:15,vnd:5000,title:'⚡ Nạp đầy năng lượng',desc:'Năng lượng đầy lại ngay để bấm tiếp'},boost:{stars:30,vnd:10000,title:'🔥 Nhân đôi vàng 2 giờ',desc:'x2 vàng khi bấm và thợ mỏ trong 2 giờ (cộng dồn)'},chest:{stars:49,vnd:15000,title:'💰 Rương vàng',desc:'Nhận ngay số vàng bằng 2 giờ thợ mỏ (ít nhất 20.000)'},goldminer:{stars:99,vnd:29000,title:'👷 Thợ mỏ vàng',desc:'+50 vàng/giây vĩnh viễn, mua nhiều lần được'}};
+  const SHOP={energy:{stars:15,vnd:10000,title:'⚡ Nạp đầy năng lượng',desc:'Năng lượng đầy lại ngay để bấm tiếp'},boost:{stars:30,vnd:20000,title:'🔥 Nhân đôi vàng 2 giờ',desc:'x2 vàng khi bấm và thợ mỏ trong 2 giờ (cộng dồn)'},chest:{stars:49,vnd:39000,title:'💰 Rương vàng',desc:'Nhận ngay số vàng bằng 2 giờ thợ mỏ (ít nhất 20.000)'},goldminer:{stars:99,vnd:69000,title:'👷 Thợ mỏ vàng',desc:'+50 vàng/giây vĩnh viễn, mua nhiều lần được'}};
   const vnDay=ms=>new Date(ms+7*3600e3).toISOString().slice(0,10);
   const rate=u=>u.miner_lvl*CFG.miner.rate+u.gold_miners*CFG.goldMinerRate, maxE=u=>CFG.baseEnergy+u.tank_lvl*CFG.tankStep;
   let u; try{ u=JSON.parse(localStorage.getItem('dv-demo')); }catch(e){}
