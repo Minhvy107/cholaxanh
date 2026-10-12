@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>Mơ AI</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+:root{--bg:#141019;--bg2:#1d1726;--card:#251d31;--line:#3a2e4b;--ink:#f6f0ff;--mute:#a99bbd;--pink:#ff3d8b;--pink2:#c2185b;--vio:#8e5bd8;--gold:#ffc83d}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font:500 15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overscroll-behavior:none}
+body{display:flex;flex-direction:column}
+button{font:inherit;color:inherit;border:0;cursor:pointer;background:none}
+.scr{display:none;flex:1;min-height:0;flex-direction:column}.scr.on{display:flex}
+.bar{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--bg2);border-bottom:1px solid var(--line);flex:none}
+.bar h1{font-size:20px;margin:0;flex:1;font-weight:800;letter-spacing:-.3px}.bar h1 span{color:var(--pink)}
+.pill{background:var(--card);border:1px solid var(--line);border-radius:999px;padding:6px 11px;font-size:13.5px;font-weight:700;white-space:nowrap}
+.back{width:36px;height:36px;border-radius:50%;background:var(--card);border:1px solid var(--line);font-size:18px;flex:none}
+.body{flex:1;overflow-y:auto;padding:14px 14px 24px}
+.demo{background:#4a2b5e;border:1px solid #7a4a99;border-radius:10px;padding:6px 10px;font-size:12.5px;text-align:center;margin-bottom:10px;color:#f0d6ff}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.cc{position:relative;border-radius:18px;overflow:hidden;aspect-ratio:3/4;background:var(--card);text-align:left}
+.cc img,.ph img,.gi img{width:100%;height:100%;object-fit:cover;display:block}
+.cc .ov{position:absolute;inset:auto 0 0 0;padding:28px 10px 10px;background:linear-gradient(transparent,#000c)}
+.cc b{font-size:16px}.cc small{display:block;color:#ddd;font-size:12px;line-height:1.3;margin-top:2px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.ph{width:min(78vw,340px);aspect-ratio:3/4;margin:4px auto 14px;border-radius:22px;overflow:hidden;box-shadow:0 10px 40px #0008}
+.nm{display:flex;align-items:center;gap:10px}.nm h2{margin:0;font-size:26px;flex:1}.nm h2 span{color:var(--mute);font-weight:500}
+.chip{background:var(--pink);border-radius:999px;padding:3px 12px;font-size:13px;font-weight:700}
+.bio{color:#ddd;margin:8px 0 14px}
+.row{display:flex;gap:10px}
+.btn{flex:1;border-radius:999px;padding:13px 10px;font-weight:800;background:var(--card);border:1px solid var(--line)}
+.btn.pk{background:linear-gradient(90deg,var(--pink2),var(--pink));border:0}
+.btn.wh{background:#fff;color:#222;border:0}
+.btn:disabled{opacity:.45}
+.tabs{display:flex;gap:8px;margin:18px 0 12px}.tabs button{border-radius:999px;padding:7px 14px;background:var(--card);border:1px solid var(--line);font-weight:700;font-size:14px}.tabs button.on{background:#eee;color:#222}
+.gal{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.gi{position:relative;aspect-ratio:3/4;border-radius:14px;overflow:hidden;background:var(--card)}
+.gi.lk img{filter:blur(14px) brightness(.7);transform:scale(1.1)}
+.gi .lock{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;font-weight:800;text-shadow:0 1px 4px #000}
+.gi .lock span{background:#000a;border-radius:999px;padding:5px 12px;font-size:13px}
+.gi .cap{position:absolute;left:0;right:0;bottom:0;padding:16px 8px 6px;font-size:12px;background:linear-gradient(transparent,#000b)}
+.sc{display:block;width:100%;text-align:left;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:8px}
+.sc b{display:block}.sc small{color:var(--mute)}
+/* Chat */
+.chead{display:flex;align-items:center;gap:10px;flex:1;min-width:0}.chead img{width:38px;height:38px;border-radius:50%;object-fit:cover;flex:none}.chead div{min-width:0}.chead b{display:block}.chead small{display:block;color:var(--mute);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.msgs{flex:1;overflow-y:auto;padding:14px 12px;display:flex;flex-direction:column;gap:8px}
+.m{max-width:82%;padding:9px 13px;border-radius:18px;white-space:pre-wrap;word-wrap:break-word}
+.m.a{background:var(--card);border-bottom-left-radius:6px;align-self:flex-start}
+.m.u{background:linear-gradient(135deg,var(--pink2),var(--pink));border-bottom-right-radius:6px;align-self:flex-end}
+.m i{color:#d9c8ef}.m.u i{color:#ffe0ee}
+.typing{align-self:flex-start;background:var(--card);border-radius:18px;padding:12px 14px;display:flex;gap:4px}.typing i{width:7px;height:7px;border-radius:50%;background:var(--mute);animation:bl 1s infinite}.typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
+@keyframes bl{0%,60%,100%{opacity:.3}30%{opacity:1}}
+.quota{text-align:center;font-size:12px;color:var(--mute);padding:4px 0}
+.inp{display:flex;gap:8px;padding:8px 10px calc(8px + env(safe-area-inset-bottom));background:var(--bg2);border-top:1px solid var(--line);flex:none}
+.inp textarea{flex:1;resize:none;background:var(--card);border:1px solid var(--line);border-radius:20px;color:var(--ink);font:inherit;padding:9px 14px;max-height:110px;outline:none}
+.inp button{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--pink2),var(--pink));font-size:18px;flex:none}
+/* Hộp thoại */
+.ov{position:fixed;inset:0;background:#000b;display:none;align-items:center;justify-content:center;padding:16px;z-index:20}.ov.on{display:flex}
+.dlg{background:var(--bg2);border:1px solid var(--line);border-radius:22px;padding:18px;max-width:380px;width:100%;max-height:92vh;overflow-y:auto;text-align:center}
+.dlg h3{margin:4px 0 8px}.dlg p{color:var(--mute);margin:6px 0 14px}.dlg .big{font-size:46px}
+.pack{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:10px;margin-bottom:8px;text-align:left}
+.pack .bd{flex:1;min-width:0}.pack small{display:block;color:var(--mute);font-size:12px}
+.pack .bb{display:flex;flex-direction:column;gap:5px}.pack .bb .btn{flex:none;padding:7px 10px;font-size:13px;min-width:96px;border-radius:12px}
+.btn.st{background:linear-gradient(180deg,#ffd84d,#ff9f1c);color:#3a2410;border:0}.btn.bank{background:#1f4f86;border-color:#3d7cc4}
+.qr{background:#fff;border-radius:14px;padding:10px;width:220px;max-width:100%;margin:6px auto 10px;min-height:120px;display:grid;place-items:center;color:#555}.qr img{width:100%;height:auto;display:block}
+.ptbl{width:100%;border-collapse:collapse;font-size:14px;text-align:left}.ptbl td{padding:6px 4px;border-bottom:1px solid var(--line)}.ptbl td:first-child{color:var(--mute);white-space:nowrap}.ptbl b{word-break:break-all}
+.cp{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:3px 8px;font-size:12px;margin-left:6px}
+.pst{margin:10px 0 4px;padding:8px;border-radius:10px;background:var(--card);font-size:14px}
+.full img{width:100%;border-radius:14px}
+.toast{position:fixed;left:50%;top:12px;transform:translateX(-50%);background:#000d;padding:8px 14px;border-radius:12px;font-size:14px;z-index:30;opacity:0;transition:opacity .2s;pointer-events:none;max-width:90vw;text-align:center}.toast.on{opacity:1}
+.err{text-align:center;padding:40px 16px;color:var(--mute)}
+</style>
+</head>
+<body>
+<!-- Trang chủ -->
+<section class="scr on" id="s-home">
+  <div class="bar"><h1>Mơ <span>AI</span> 💞</h1><button class="pill" id="wallet" onclick="openShop()">💗 0</button></div>
+  <div class="body"><div class="demo" id="demo" hidden>🧪 Bản xem thử trên trình duyệt: AI trả lời mẫu, lưu trên máy này. Mở trong Telegram để trò chuyện thật.</div><div class="grid" id="chars"></div>
+    <p style="color:var(--mute);font-size:12px;text-align:center;margin-top:16px">Nhân vật là AI, không phải người thật. Dành cho người từ 18 tuổi.</p></div>
+</section>
+<!-- Hồ sơ nhân vật -->
+<section class="scr" id="s-prof">
+  <div class="bar"><button class="back" onclick="go('home')">‹</button><h1 style="font-size:17px" id="p-title"></h1><button class="pill" onclick="openShop()" data-wallet>💗 0</button></div>
+  <div class="body" id="prof"></div>
+</section>
+<!-- Trò chuyện -->
+<section class="scr" id="s-chat">
+  <div class="bar"><button class="back" onclick="go('prof')">‹</button><div class="chead" id="c-head"></div><button class="pill" onclick="newChat()">↺ Mới</button></div>
+  <div class="msgs" id="msgs"></div>
+  <div class="quota" id="quota"></div>
+  <div class="inp"><textarea id="txt" rows="1" placeholder="Nhắn tin…" maxlength="800"></textarea><button id="send">➤</button></div>
+</section>
+<div class="ov" id="ov"><div class="dlg" id="dlg"></div></div>
+<div class="toast" id="toast"></div>
+<script>
+// Địa chỉ máy chủ (thư mục server/). Có thể thử máy chủ khác bằng ?api=https://…
+const API=(new URLSearchParams(location.search).get('api')||'https://mo-ai-bot.tnhn1311.workers.dev').replace(/\/$/,'');
+const tg=window.Telegram&&Telegram.WebApp, INIT=tg&&tg.initData||'', DEMO=!INIT;
+const $=s=>document.querySelector(s);
+if(tg){ tg.ready(); tg.expand(); try{ tg.setHeaderColor('#1d1726'); tg.setBackgroundColor('#141019'); }catch(e){} }
+const haptic=t=>{ try{ tg&&tg.HapticFeedback&&(t==='ok'?tg.HapticFeedback.notificationOccurred('success'):tg.HapticFeedback.impactOccurred(t||'light')); }catch(e){} };
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const vnd=v=>v.toLocaleString('vi-VN')+'đ';
+let toastT; function toast(m){ const t=$('#toast'); t.textContent=m; t.classList.add('on'); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove('on'),2400); }
+function dialog(html,ok='OK'){ $('#dlg').innerHTML=html+(ok?`<div class="row"><button class="btn pk" onclick="closeDlg()">${ok}</button></div>`:''); $('#ov').classList.add('on'); }
+window.closeDlg=()=>{ $('#ov').classList.remove('on'); payOpen=false; };
+
+/* Ảnh minh họa tạm (SVG) khi nhân vật chưa có ảnh thật */
+function art(c,label,seed=0){ const [a,b]=c.colors, r=(n)=>((c.id.charCodeAt(n%c.id.length)*37+seed*53+n*91)%100);
+  const dots=[0,1,2,3,4].map(i=>`<circle cx="${r(i)*3}" cy="${r(i+5)*4}" r="${20+r(i+9)/2}" fill="#fff" opacity=".08"/>`).join('');
+  const svg=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 400"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient></defs><rect width="300" height="400" fill="url(#g)"/>${dots}<text x="150" y="${label?190:215}" font-size="${label?96:130}" text-anchor="middle">${c.emoji}</text>${label?`<text x="150" y="280" font-size="22" font-family="system-ui,sans-serif" font-weight="700" fill="#fff" text-anchor="middle">${esc(label)}</text>`:''}</svg>`;
+  return 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg); }
+const avatar=c=>c.avatar||art(c);
+const photo=(c,g,i)=>g.img||art(c,g.caption,i+1);
+
+/* ===== Bản xem thử (ngoài Telegram) ===== */
+const Demo=(()=>{ let st; try{ st=JSON.parse(localStorage.getItem('mo-demo')); }catch(e){}
+  st=st||{hearts:20,adult:false,unlocks:[],conv:{},free:10};
+  const save=()=>{ try{ localStorage.setItem('mo-demo',JSON.stringify(st)); }catch(e){} };
+  const me=()=>({id:1,name:'Bạn',hearts:st.hearts,vip:false,vip_until:0,free_left:st.free,free_per_day:10,adult:st.adult});
+  const LINES=['Thật hả? Kể thêm cho mình nghe đi 🥰','Haha, dễ thương ghê 😆','Hôm nay của bạn thế nào rồi?','Mình đang nghĩ về câu bạn nói lúc nãy đó…','(Bản xem thử: mở trong Telegram để trò chuyện với AI thật nha 💞)'];
+  return async(path,b)=>{ let r; const C=CHARS.find(x=>x.id===(b&&b.char||path.split('/')[2]));
+    if(path==='/state') r={me:me(),isNew:!st.seen,welcome:20,chars:window.DEMO_CHARS,packs:window.DEMO_PACKS,pay:{demo:true},ai:true,unlocks:st.unlocks,order:null}, st.seen=1;
+    else if(path==='/adult'){ st.adult=true; r={ok:true}; }
+    else if(path.startsWith('/chat/')) r={scene:(st.conv[C.id]||{}).scene||'',messages:(st.conv[C.id]||{}).m||[]};
+    else if(path==='/scene'){ const sc=C.scenes.find(s=>s.id===b.scene); const m=[{role:'assistant',content:sc?sc.opening:C.greeting}]; st.conv[C.id]={scene:b.scene,m}; r={ok:true,scene:b.scene,messages:m}; }
+    else if(path==='/chat'){ if(st.free>0) st.free--; else if(st.hearts>0) st.hearts--; else { const e=new Error('no_hearts'); throw e; }
+      const cv=st.conv[C.id]=st.conv[C.id]||{scene:'',m:[]}; const reply=LINES[Math.floor(Math.random()*LINES.length)];
+      cv.m.push({role:'user',content:b.text},{role:'assistant',content:reply}); await new Promise(o=>setTimeout(o,700)); r={reply,me:me()}; }
+    else if(path==='/unlock'){ const g=C?null:CHARS.flatMap(c=>c.gallery).find(x=>x.id===b.photo); if(st.hearts<g.price) throw new Error('no_hearts'); st.hearts-=g.price; st.unlocks.push(g.id); r={ok:true,me:me()}; }
+    else if(path==='/order') r={code:'MOXEMTHU01',pack:b.pack,vnd:PACKS[b.pack].vnd,pay:{bin:'970436',acct:'0000000000',holder:'TAI KHOAN THU NGHIEM',memo:'',demo:true}};
+    else if(path==='/demo-pay'){ const p=PACKS[b.pack]; st.hearts+=p.hearts; r={me:me()}; }
+    else if(path.startsWith('/order/')) r={status:'pending'};
+    save(); return r; }; })();
+
+async function api(path,body){
+  if(DEMO) return Demo(path,body);
+  const r=await fetch(API+path,{method:body?'POST':'GET',headers:{'content-type':'application/json','x-init-data':INIT},body:body?JSON.stringify(body):undefined});
+  const d=await r.json().catch(()=>({}));
+  if(!r.ok){ const e=new Error(d.error||('HTTP '+r.status)); e.data=d; throw e; }
+  return d; }
+
+/* ===== Trạng thái ===== */
+let ME, CHARS=[], PACKS={}, PAY=null, ORDER=null, UNLOCKS=new Set(), CUR=null, TAB='gal', busy=false;
+function setMe(m){ if(!m) return; ME=m; const t=ME.vip?'👑 VIP · 💗 '+ME.hearts:'💗 '+ME.hearts; $('#wallet').textContent=t; document.querySelectorAll('[data-wallet]').forEach(b=>b.textContent=t); quota(); }
+function go(s){ document.querySelectorAll('.scr').forEach(x=>x.classList.toggle('on',x.id==='s-'+s)); if(tg&&tg.BackButton){ s==='home'?tg.BackButton.hide():tg.BackButton.show(); } }
+if(tg&&tg.BackButton) tg.BackButton.onClick(()=>{ if($('#s-chat').classList.contains('on')) go('prof'); else go('home'); });
+
+function renderHome(){ $('#chars').innerHTML=CHARS.map(c=>`<button class="cc" data-c="${c.id}"><img alt="" src="${avatar(c)}"><div class="ov"><b>${esc(c.name)}, ${c.age}</b><small>${esc(c.tagline)}</small></div></button>`).join(''); }
+$('#chars').addEventListener('click',e=>{ const b=e.target.closest('[data-c]'); if(b){ haptic(); openProf(b.dataset.c); } });
+
+function openProf(id){ CUR=CHARS.find(c=>c.id===id); $('#p-title').textContent=CUR.name; renderProf(); go('prof'); $('#prof').scrollTop=0; }
+function renderProf(){ const c=CUR;
+  $('#prof').innerHTML=`<div class="ph"><img alt="" src="${avatar(c)}"></div>
+    <div class="nm"><h2>${esc(c.name)}, <span>${c.age}</span></h2><span class="chip">${esc(c.gender)}</span></div>
+    <p class="bio">${esc(c.bio)}</p>
+    <div class="row"><button class="btn pk" onclick="openChat()">💬 Trò chuyện</button><button class="btn wh" onclick="toast('📞 Gọi thoại sắp có!')">🔒 Gọi</button></div>
+    <div class="tabs"><button class="${TAB==='gal'?'on':''}" onclick="TAB='gal';renderProf()">Ảnh · ${c.gallery.length}</button><button class="${TAB==='sc'?'on':''}" onclick="TAB='sc';renderProf()">Kịch bản</button></div>
+    ${TAB==='gal'?`<div class="gal">${c.gallery.map((g,i)=>{ const lk=g.price>0&&!UNLOCKS.has(g.id);
+      return `<button class="gi${lk?' lk':''}" data-g="${g.id}"><img alt="" src="${photo(c,g,i)}">${lk?`<div class="lock">🔒<span>💗 ${g.price}</span></div>`:`<div class="cap">${esc(g.caption)}</div>`}</button>`; }).join('')}</div>`
+    :c.scenes.map(s=>`<button class="sc" data-s="${s.id}"><b>${esc(s.title)}</b><small>${esc(s.desc)}</small></button>`).join('')+`<button class="sc" data-s=""><b>💬 Trò chuyện bình thường</b><small>Không theo kịch bản nào</small></button>`}`; }
+$('#prof').addEventListener('click',async e=>{
+  const g=e.target.closest('[data-g]'); if(g){ const i=CUR.gallery.findIndex(x=>x.id===g.dataset.g), ph=CUR.gallery[i];
+    if(ph.price>0&&!UNLOCKS.has(ph.id)){ if(!confirm(`Mở khóa "${ph.caption}" với 💗 ${ph.price}?`)) return;
+      try{ const r=await api('/unlock',{photo:ph.id}); UNLOCKS.add(ph.id); setMe(r.me); haptic('ok'); renderProf(); }
+      catch(err){ if(err.data&&err.data.me) setMe(err.data.me); if(err.message==='no_hearts'){ toast('Không đủ 💗'); openShop(); } else toast('Lỗi: '+err.message); } return; }
+    dialog(`<div class="full"><img alt="" src="${photo(CUR,ph,i)}"></div><p>${esc(ph.caption)}</p>`,'Đóng'); return; }
+  const s=e.target.closest('[data-s]'); if(s){ if(!await ensureAdult()) return; const sc=CUR.scenes.find(x=>x.id===s.dataset.s);
+    if(!confirm(sc?`Bắt đầu kịch bản "${sc.title}"? Cuộc trò chuyện hiện tại với ${CUR.name} sẽ được làm mới.`:`Làm mới cuộc trò chuyện với ${CUR.name}?`)) return;
+    try{ const r=await api('/scene',{char:CUR.id,scene:s.dataset.s}); go('chat'); renderChatHead(); renderMsgs(r.messages); }catch(err){ toast('Lỗi: '+err.message); } } });
+
+/* ===== Xác nhận 18+ ===== */
+function ensureAdult(){ if(ME.adult) return Promise.resolve(true);
+  return new Promise(ok=>{ window._adult=async v=>{ closeDlg(); if(v){ await api('/adult',{}).catch(()=>{}); ME.adult=true; } ok(v); };
+    dialog(`<div class="big">🔞</div><h3>Bạn đã đủ 18 tuổi?</h3><p>Mơ AI dành cho người trưởng thành. Các nhân vật là AI, không phải người thật, và câu trả lời do AI tạo ra.</p>
+      <div class="row"><button class="btn" onclick="_adult(false)">Chưa</button><button class="btn pk" onclick="_adult(true)">Tôi đã đủ 18</button></div>`,''); }); }
+
+/* ===== Trò chuyện ===== */
+function renderChatHead(){ $('#c-head').innerHTML=`<img alt="" src="${avatar(CUR)}"><div><b>${esc(CUR.name)}</b><small>${esc(CUR.tagline)}</small></div>`; }
+const fmtMsg=t=>esc(t).replace(/\*([^*\n]{1,200})\*/g,'<i>$1</i>');
+function renderMsgs(list){ $('#msgs').innerHTML=list.map(m=>`<div class="m ${m.role==='user'?'u':'a'}">${fmtMsg(m.content)}</div>`).join(''); scrollEnd(); }
+function addMsg(role,text){ const d=document.createElement('div'); d.className='m '+(role==='user'?'u':'a'); d.innerHTML=fmtMsg(text); $('#msgs').appendChild(d); scrollEnd(); }
+const scrollEnd=()=>{ const m=$('#msgs'); m.scrollTop=m.scrollHeight; };
+function quota(){ if(!ME) return; $('#quota').textContent=ME.vip?'👑 VIP: nhắn tin không giới hạn':ME.free_left>0?`Còn ${ME.free_left}/${ME.free_per_day} tin miễn phí hôm nay`:`Hết lượt miễn phí · mỗi tin 💗 1 (còn 💗 ${ME.hearts})`; }
+window.openChat=async()=>{ if(!await ensureAdult()) return; go('chat'); renderChatHead(); $('#msgs').innerHTML='<div class="quota">Đang tải…</div>';
+  try{ const r=await api('/chat/'+CUR.id); if(r.messages.length) renderMsgs(r.messages); else { const s=await api('/scene',{char:CUR.id,scene:''}); renderMsgs(s.messages); } }
+  catch(e){ $('#msgs').innerHTML=`<div class="quota">Không tải được: ${esc(e.message)}</div>`; } quota(); };
+window.newChat=()=>{ go('prof'); TAB='sc'; renderProf(); toast('Chọn kịch bản hoặc trò chuyện bình thường'); };
+async function send(){ const ta=$('#txt'), text=ta.value.trim(); if(!text||busy) return;
+  if(!ME.vip&&ME.free_left<=0&&ME.hearts<1){ toast('Hết lượt miễn phí và 💗'); return openShop(); }
+  busy=true; ta.value=''; autoH(); addMsg('user',text); haptic();
+  const t=document.createElement('div'); t.className='typing'; t.innerHTML='<i></i><i></i><i></i>'; $('#msgs').appendChild(t); scrollEnd();
+  try{ const r=await api('/chat',{char:CUR.id,text}); t.remove(); addMsg('assistant',r.reply); setMe(r.me); }
+  catch(e){ t.remove(); if(e.data&&e.data.me) setMe(e.data.me);
+    const M={no_hearts:'Hết lượt miễn phí và 💗, nạp thêm để trò chuyện tiếp nhé',ai_busy:'Nhân vật đang bận, thử lại sau vài giây',ai_off:'AI chưa được bật, chủ app cần thêm khóa Claude API',busy:'Đợi tin trước được trả lời đã nhé',adult:'Cần xác nhận đủ 18 tuổi'};
+    toast(M[e.message]||'Lỗi: '+e.message); ta.value=text; $('#msgs').lastElementChild&&$('#msgs').lastElementChild.remove(); if(e.message==='no_hearts') openShop(); }
+  busy=false; }
+const autoH=()=>{ const ta=$('#txt'); ta.style.height='auto'; ta.style.height=Math.min(110,ta.scrollHeight)+'px'; };
+$('#txt').addEventListener('input',autoH);
+$('#txt').addEventListener('keydown',e=>{ if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); send(); } });
+$('#send').addEventListener('click',send);
+
+/* ===== Cửa hàng ===== */
+window.openShop=()=>{ payOpen=false; dialog(`<h3>💗 Cửa hàng</h3><p>Mỗi ngày miễn phí ${ME.free_per_day} tin. Hết lượt thì mỗi tin tốn 💗 1. Ảnh độc quyền mở bằng 💗.</p>
+  ${ORDER?`<div class="pst" onclick="showPay()" style="cursor:pointer">⏳ Đơn ${ORDER.code} (${vnd(ORDER.vnd)}) đang chờ tiền về · bấm để xem</div>`:''}
+  ${Object.entries(PACKS).map(([k,p])=>`<div class="pack"><div class="bd"><b>${esc(p.title)}</b><small>${esc(p.desc)}</small></div><div class="bb"><button class="btn st" onclick="buyStars('${k}')">⭐ ${p.stars}</button>${PAY?`<button class="btn bank" onclick="newOrder('${k}')">💳 ${vnd(p.vnd)}</button>`:''}</div></div>`).join('')}
+  <p style="font-size:12px">Tim và VIP là hàng ảo, không quy đổi thành tiền. Lỗi thanh toán: nhắn /paysupport cho bot.</p>`,'Đóng'); };
+window.buyStars=async k=>{ const p=PACKS[k];
+  if(DEMO){ if(!confirm(`Bản xem thử: giả lập mua "${p.title}"?`)) return; setMe((await api('/demo-pay',{pack:k})).me); haptic('ok'); return toast('✅ '+p.title); }
+  try{ const r=await api('/invoice',{pack:k}); closeDlg();
+    tg.openInvoice(r.link,async s=>{ if(s!=='paid') return s==='failed'&&toast('Thanh toán không thành công');
+      haptic('ok'); toast('✅ Đã thanh toán, đang cộng…'); const h=ME.hearts;
+      for(let i=0;i<8;i++){ await new Promise(o=>setTimeout(o,1200)); const st=await api('/state').catch(()=>null); if(st){ setMe(st.me); if(ME.hearts!==h) break; } }
+      toast('🎉 '+p.title+' đã vào tài khoản!'); }); }
+  catch(e){ toast('Lỗi tạo hóa đơn: '+e.message); } };
+
+/* ===== 💳 Chuyển khoản VietQR ===== */
+const BANKS={'970436':'Vietcombank','970415':'VietinBank','970418':'BIDV','970405':'Agribank','970422':'MB Bank','970407':'Techcombank','970416':'ACB','970423':'TPBank','970432':'VPBank','970403':'Sacombank','970441':'VIB','970443':'SHB'};
+const tlv=(id,v)=>id+String(v.length).padStart(2,'0')+v;
+function crc16(t){ let c=0xFFFF; for(let i=0;i<t.length;i++){ c^=t.charCodeAt(i)<<8; for(let k=0;k<8;k++) c=c&0x8000?((c<<1)^0x1021)&0xFFFF:(c<<1)&0xFFFF; } return c.toString(16).toUpperCase().padStart(4,'0'); }
+function vietQR(bin,acct,amount,memo){ const mai=tlv('00','A000000727')+tlv('01',tlv('00',bin)+tlv('01',acct))+tlv('02','QRIBFTTA');
+  const body=tlv('00','01')+tlv('01','12')+tlv('38',mai)+tlv('53','704')+tlv('54',String(amount))+tlv('58','VN')+tlv('62',tlv('08',memo))+'6304'; return body+crc16(body); }
+let qrLib=null;
+const loadQR=()=>qrLib||(qrLib=new Promise((ok,no)=>{ if(window.qrcode) return ok(window.qrcode); const sc=document.createElement('script'); sc.src='https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js'; sc.onload=()=>ok(window.qrcode); sc.onerror=()=>{ qrLib=null; no(); }; document.head.appendChild(sc); }));
+window.newOrder=async k=>{ if(ORDER&&ORDER.pack!==k&&!confirm(`Bạn còn đơn ${ORDER.code} chưa thanh toán. Hủy đơn đó và tạo đơn mới?`)) return showPay();
+  if(ORDER&&ORDER.pack===k) return showPay();
+  try{ const r=await api('/order',{pack:k}); if(r.pay) PAY=r.pay; ORDER={code:r.code,pack:r.pack,vnd:r.vnd}; showPay(); }
+  catch(e){ toast(e.message==='pay_off'?'Chuyển khoản đang tạm tắt, hãy dùng ⭐ Stars':'Không tạo được đơn: '+e.message); } };
+let payOpen=false;
+window.showPay=()=>{ const o=ORDER; if(!o||!PAY) return; const p=PACKS[o.pack], memo=(PAY.memo?PAY.memo+' ':'')+o.code;
+  const cp=v=>`<button class="cp" onclick="copyTxt('${v}')">Chép</button>`;
+  dialog(`<h3>${esc(p.title)} · ${vnd(o.vnd)}</h3>${PAY.demo?'<div class="demo">🧪 Bản xem thử: tài khoản mẫu, đừng chuyển tiền.</div>':''}
+    <div class="qr" id="qr">Đang tạo mã QR…</div>
+    <table class="ptbl"><tr><td>Ngân hàng</td><td><b>${BANKS[PAY.bin]||PAY.bin}</b></td></tr><tr><td>Số TK</td><td><b>${esc(PAY.acct)}</b>${cp(PAY.acct)}</td></tr>
+      <tr><td>Chủ TK</td><td><b>${esc(PAY.holder)}</b></td></tr><tr><td>Số tiền</td><td><b>${vnd(o.vnd)}</b>${cp(o.vnd)}</td></tr>
+      <tr><td>Nội dung</td><td><b style="color:var(--gold)">${memo}</b>${cp(memo)}</td></tr></table>
+    <p style="font-size:12.5px;margin:10px 0 0">Chụp màn hình mã QR rồi mở app ngân hàng → <b>Quét QR → chọn ảnh</b>, hoặc chép số tài khoản. Giữ đúng <b>số tiền</b> và <b>nội dung</b>. Tự cộng trong khoảng 1 phút sau khi tiền về.</p>
+    <div class="pst">⏳ Đang chờ tiền về…</div>
+    <div class="row"><button class="btn" onclick="cancelOrder()">Hủy đơn</button>${PAY.demo?'<button class="btn" onclick="demoPaid()">🧪 Đã trả</button>':''}<button class="btn pk" onclick="closeDlg()">Đóng</button></div>`,'');
+  payOpen=true;
+  loadQR().then(qr=>{ const q=qr(0,'M'); q.addData(vietQR(PAY.bin,PAY.acct,o.vnd,memo)); q.make(); const el=$('#qr'); if(el) el.innerHTML=q.createImgTag(5,6); })
+    .catch(()=>{ const el=$('#qr'); if(el) el.textContent='Không tải được mã QR, hãy chuyển khoản theo thông tin bên dưới.'; }); };
+window.copyTxt=v=>{ (navigator.clipboard?navigator.clipboard.writeText(String(v)):Promise.reject()).then(()=>toast('📋 Đã chép'),()=>toast(String(v))); };
+window.cancelOrder=async()=>{ if(!ORDER||!confirm('Hủy đơn này? Nếu bạn ĐÃ chuyển khoản thì đừng hủy.')) return; const c=ORDER.code; ORDER=null; closeDlg(); if(!DEMO) api('/order/'+c+'?cancel=1',{}).catch(()=>{}); };
+function orderDone(m){ const p=PACKS[ORDER.pack]; ORDER=null; setMe(m); haptic('ok'); dialog(`<div class="big">🎉</div><h3>Đã nhận tiền!</h3><p>${esc(p.title)} đã vào tài khoản. Cảm ơn bạn 💞</p>`); }
+window.demoPaid=async()=>{ if(!DEMO||!ORDER) return; orderDone((await api('/demo-pay',{pack:ORDER.pack})).me); };
+let polling=false;
+setInterval(async()=>{ if(!ORDER||DEMO||polling||(document.hidden&&!payOpen)) return; polling=true;
+  try{ const r=await api('/order/'+ORDER.code); if(r.status==='paid') orderDone(r.me); else if(r.status!=='pending') ORDER=null; }catch(e){} finally{ polling=false; } },4000);
+
+/* ===== Khởi động ===== */
+(async()=>{ $('#demo').hidden=!DEMO;
+  if(DEMO){ // dữ liệu mẫu cho bản xem thử: tải danh sách nhân vật từ máy chủ nếu được, không thì dùng 1 nhân vật mẫu
+    window.DEMO_PACKS={h100:{stars:50,vnd:27000,hearts:100,title:'💗 100 tim',desc:'Dùng để nhắn tin khi hết lượt miễn phí và mở khóa ảnh'},h550:{stars:200,vnd:109000,hearts:550,title:'💗 550 tim',desc:'500 tim + tặng 50 tim'},vip30:{stars:250,vnd:135000,hearts:300,title:'👑 VIP 30 ngày',desc:'Nhắn tin không giới hạn 30 ngày + tặng 300 tim'}};
+    window.DEMO_CHARS=await fetch(API+'/chars').then(r=>r.json()).catch(()=>[{id:'linh',name:'Linh',age:24,gender:'Nữ',emoji:'☕',colors:['#f7b2c4','#8e5bd8'],tagline:'Cô barista dịu dàng',bio:'Bản xem thử.',greeting:'Chào anh 🥰',avatar:'',gallery:[{id:'linh1',caption:'Ảnh mẫu',price:0},{id:'linh3',caption:'Ảnh khóa',price:30}],scenes:[]}]); }
+  try{ const s=await api('/state'); CHARS=s.chars; PACKS=s.packs; PAY=s.pay; ORDER=s.order||null; UNLOCKS=new Set(s.unlocks); setMe(s.me); renderHome();
+    if(s.isNew) dialog(`<div class="big">💞</div><h3>Chào mừng tới Mơ AI!</h3><p>Chọn một người bạn để bắt đầu trò chuyện. Mỗi ngày miễn phí ${s.me.free_per_day} tin nhắn, và đây là quà chào mừng: <b>💗 ${s.welcome}</b>.</p>`); }
+  catch(e){ $('#chars').outerHTML=`<div class="err"><div style="font-size:44px">😵</div><p>Không kết nối được máy chủ.</p><p>${esc(e.message)}</p><button class="btn pk" onclick="location.reload()">Thử lại</button></div>`; } })();
+</script>
+</body>
+</html>
