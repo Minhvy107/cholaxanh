@@ -1978,7 +1978,10 @@ function renderOrder(){
   const r=clamp(1-c.waited/c.patience,0,1), bar=$('#patBar'); bar.style.width=Math.round(r*100)+'%'; bar.style.background=patColor(r);
 }
 function renderTray(){
-  const c=R&&R.cur; let h=`<span class="sign">GIỎ HÀNG</span><button class="owner${ownerFr()}" data-owner="1" title="Chủ tiệm – mở Tủ đồ"><img src="${avatar(ownerView())}" alt="Chủ tiệm"></button>`;
+  const tray=$('#tray');
+  if(!tray._body){ tray.innerHTML='<span class="sign">GIỎ HÀNG</span><button class="owner" data-owner="1" title="Chủ tiệm – mở Tủ đồ"><img alt="Chủ tiệm"></button><div class="tbody" style="display:contents"></div>'; tray._body=tray.querySelector('.tbody'); }
+  { const ob=tray.querySelector('.owner'), im=ob.firstChild, src=avatar(ownerView()), cl='owner'+ownerFr(); if(ob.className!==cl) ob.className=cl; if(im.getAttribute('src')!==src) im.src=src; }
+  const c=R&&R.cur; let h='';
   if(!R) h+='<div class="tempty">Tiệm đang đóng cửa</div>';
   else if(!c) h+=`<div class="tempty">${R.queue.length?'Mời khách tiếp theo…':'Chưa có khách 😴'}</div>`;
   else {
@@ -1989,7 +1992,7 @@ function renderTray(){
        <div class="ttotal"><span>Tổng</span><span>${fmtS(total)}</span></div>
        <button class="pill" id="btnPay" ${c.stage==='pay'&&!autoOn()?'':'disabled'}>${c.stage==='pay'?'💵 Nhận tiền':'Lấy đủ hàng…'}</button>`;
   }
-  setHTML($('#tray'),h);
+  setHTML(tray._body,h);
 }
 function renderCats(){
   const need={}; const c=R&&R.cur;
@@ -2005,12 +2008,24 @@ function pxEmo(e){ const m=pxEmo.m||(pxEmo.m={}); if(m[e]) return m[e]; const N=
   for(let i=0;i<N*N;i++){ if(on[i]) continue; const X=i%N, Y=(i/N)|0; if((X>0&&on[i-1])||(X<N-1&&on[i+1])||(Y>0&&on[i-N])||(Y<N-1&&on[i+N])){ A[i*4]=74; A[i*4+1]=38; A[i*4+2]=46; A[i*4+3]=255; } }
   x.putImageData(D,0,0); return m[e]=c.toDataURL(); }
 function renderBins(){
-  const locked=catLocked(selCat);
-  setHTML($('#bins'),PRODUCTS.filter(p=>p.cat===selCat&&(locked||hmHasP(p))&&(!p.nw||p.nw===p.cat||lineOn(p.nw))).map(p=>{
+  const locked=catLocked(selCat), box=$('#bins');
+  const list=PRODUCTS.filter(p=>p.cat===selCat&&(locked||hmHasP(p))&&(!p.nw||p.nw===p.cat||lineOn(p.nw)));
+  const rows=list.map(p=>{
     const st=stockOf(p.id), n=locked?2:st>=20?5:st>=10?4:st>=4?3:st>0?2:2;
     const pile=p.img?`<img class="bimg" src="${p.img}" alt="">`:curTheme()==='flower'?`<img class="pxi" src="${pxEmo(p.icon)}" alt="">`:PILE_POS.slice(0,n).map(([x,y])=>`<span style="left:calc(${x}% - 13px);top:${y}px">${p.icon}</span>`).join('');
-    return `<button class="bin${!locked&&!st?' out':''}${locked?' lock':''}${p.img?' hmb':''}" data-p="${p.id}">${p.img?'<span class="hmtag">✦ ĐQ</span>':''}<span class="pile">${pile}</span><span class="nm">${p.name}</span><span class="pr">${fmtS(S.price[p.id])}</span>${locked?'':`<span class="cnt">${st>99?'99+':st}</span>`}</button>`;
-  }).join(''));
+    return {id:p.id,cls:`bin${!locked&&!st?' out':''}${locked?' lock':''}${p.img?' hmb':''}`,tag:p.img?'<span class="hmtag">✦ ĐQ</span>':'',pile,nm:p.name,pr:fmtS(S.price[p.id]),cnt:locked?null:(st>99?'99+':String(st))}; });
+  // cùng danh sách món như lần trước → sửa tại chỗ (giữ nguyên thẻ <img>, không giải mã ảnh lại)
+  const key=selCat+'|'+locked+'|'+rows.map(r=>r.id).join(',');
+  if(box._k===key&&box.children.length===rows.length){
+    rows.forEach((r,i)=>{ const b=box.children[i], c=b._c||(b._c={});
+      if(b.className!==r.cls) b.className=r.cls;
+      if(c.pile!==r.pile){ b.querySelector('.pile').innerHTML=r.pile; c.pile=r.pile; }
+      if(c.pr!==r.pr){ b.querySelector('.pr').textContent=r.pr; c.pr=r.pr; }
+      if(c.cnt!==r.cnt){ b.querySelector('.cnt').textContent=r.cnt; c.cnt=r.cnt; } });
+    return; }
+  box._k=key; box._h=null;
+  box.innerHTML=rows.map(r=>`<button class="${r.cls}" data-p="${r.id}">${r.tag}<span class="pile">${r.pile}</span><span class="nm">${r.nm}</span><span class="pr">${r.pr}</span>${r.cnt==null?'':`<span class="cnt">${r.cnt}</span>`}</button>`).join('');
+  rows.forEach((r,i)=>{ box.children[i]._c={pile:r.pile,pr:r.pr,cnt:r.cnt}; });
 }
 function staffStatus(s){
   if(!R) return '💤 chưa vào ca';
