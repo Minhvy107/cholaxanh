@@ -3937,9 +3937,9 @@ function hmPopup(){ if(!S||!hmActive()) return false; const H=hmState(); if(H.se
     <div class="row"><button onclick="closeModal()">Để sau</button><button class="primary" onclick="openHM()">🎃 Mở hộp ngay</button></div>`); return true; }
 
 /* ====== 💐 HỘP MÙ 20/10 · VƯỜN HOA ======
-   18/10 → 31/10 (giờ VN). Giống Bí Ngô: 20💎/hộp, 180💎/10 hộp, 1 hộp miễn phí mỗi ngày. Bảo hiểm 10 hộp có Hiếm, 150 hộp có Bí ẩn.
+   12/10 → 31/10 (giờ VN, mở bán sớm từ 12/10). Giống Bí Ngô: 20💎/hộp, 180💎/10 hộp, 1 hộp miễn phí mỗi ngày. Bảo hiểm 10 hộp có Hiếm, 150 hộp có Bí ẩn.
    100 món (toàn bộ ảnh vẽ tay của chủ game); sưu tầm đủ W2_GOAL món: danh hiệu Bông Hồng Của Chợ + khung Vòng Hoa Hồng + 19 mỹ phẩm độc quyền. */
-const W2_START=Date.UTC(2026,9,18)-7*3600e3, W2_END=Date.UTC(2026,10,1)-7*3600e3;
+const W2_START=Date.UTC(2026,9,12)-7*3600e3, W2_END=Date.UTC(2026,10,1)-7*3600e3;
 const W2_TEST=/w20test/.test(location.search+location.hash);
 const W2_GOAL=100, W2_RATE={c:0.65,r:0.28,e:0.06,s:0.01}, W2_SHARD={c:5,r:15,e:40,s:100}, W2_EX={c:20,r:60,e:700,s:1500}, W2_RN={c:'Thường',r:'Hiếm',e:'Cực hiếm',s:'✨ Bí ẩn'};
 const W2_POOL=[ // [mã ảnh trong w20/, độ hiếm, món tủ đồ (hoặc 'p:' sản phẩm)]
@@ -4059,10 +4059,10 @@ function w2Roll(){ const H=w2State(); H.n++; H.sinceR++; H.sinceS++;
 function w2CheckDone(){ const H=w2State(); if(H.done||w2OwnCount()<W2_GOAL) return false; H.done=true; S.owned.frame_rose=true; titleCheck(); return true; }
 const w2Cell=(e,own)=>`<div class="hm-it hr-${e[1]} ${own?'':'lk'}" title="${esc(own||e[1]!=='s'?w2Name(e):'???')}"><img src="${w2Img(e[0])}" alt="">${own>1?`<i>x${own}</i>`:''}</div>`;
 window.openW2=function(){ if(!S) return; closeModal(); const H=w2State(); H.seen=vnDay();
-  if(!w2Active()&&!H.n) return modal(`<div class="hm-ban w2"><h3>💐 Hộp mù 20/10</h3><p>Sự kiện 20/10 mở từ 18/10 đến 31/10. Hẹn bạn nhé!</p><img src="${w2Img('a1')}" alt=""></div><div class="row"><button class="primary" onclick="closeModal()">Đã hiểu</button></div>`);
+  if(!w2Active()&&!H.n) return modal(`<div class="hm-ban w2"><h3>💐 Hộp mù 20/10</h3><p>Sự kiện 20/10 mở từ 12/10 đến 31/10. Hẹn bạn nhé!</p><img src="${w2Img('a1')}" alt=""></div><div class="row"><button class="primary" onclick="closeModal()">Đã hiểu</button></div>`);
   const own=w2OwnCount(), free=H.free!==vnDay()&&w2Active(), left=Math.max(0,Math.ceil((W2_END-Date.now())/864e5));
   const order=[...W2_POOL.filter(e=>e[1]==='c'),...W2_POOL.filter(e=>e[1]==='r'),...W2_POOL.filter(e=>e[1]==='e'),...W2_POOL.filter(e=>e[1]==='s')];
-  modal(`<div class="hm-ban w2"><h3>💐 Hộp mù 20/10</h3><p>Sưu tầm đủ ${W2_GOAL} món: danh hiệu, khung và 19 mỹ phẩm độc quyền!</p><span class="t">${w2Active()?(W2_TEST&&Date.now()<W2_START?'🧪 Bản chạy thử':`⏳ Còn ${left} ngày`):'Sự kiện đã kết thúc'} · 18/10 → 31/10</span><img src="${w2Img('a1')}" alt=""></div>
+  modal(`<div class="hm-ban w2"><h3>💐 Hộp mù 20/10</h3><p>Sưu tầm đủ ${W2_GOAL} món: danh hiệu, khung và 19 mỹ phẩm độc quyền!</p><span class="t">${w2Active()?(W2_TEST&&Date.now()<W2_START?'🧪 Bản chạy thử':`⏳ Còn ${left} ngày`):'Sự kiện đã kết thúc'} · 12/10 → 31/10</span><img src="${w2Img('a1')}" alt=""></div>
     <div class="row" style="justify-content:space-between;margin:0 0 4px"><b>Bộ sưu tập</b><b style="color:#8a4fd8">${own}/${W2_POOL.length}${H.done?' ✓':''}</b></div>
     <div class="hm-grid">${order.map(e=>w2Cell(e,H.own[e[0]])).join('')}</div>
     <div class="hm-leg"><span class="hr-c">Thường 65%</span><span class="hr-r">Hiếm 28%</span><span class="hr-e">Cực hiếm 6%</span><span class="hr-s">✨ Bí ẩn 1%</span></div>
@@ -4107,7 +4107,7 @@ window.w2Done=function(){ const V=PRODUCTS.filter(p=>p.need==='done20');
     <div class="row"><button onclick="openW2()">Quay lại</button><button class="primary" onclick="closeModal();gotoTab('kho');catFilter='mp20';renderKho()">📦 Nhập hàng</button></div></div>`); };
 // bảng giới thiệu khi sự kiện mở (mỗi ngày 1 lần nếu chưa mở hộp miễn phí)
 function w2Popup(){ if(!S||!w2Active()) return false; const H=w2State(); if(H.seen===vnDay()) return false; H.seen=vnDay();
-  modal(`<div class="hm-ban w2"><h3>💐 Hộp mù 20/10</h3><p>Mừng 20/10! ${W2_POOL.length} món: áo, tóc, mắt, môi, linh vật…</p><span class="t">18/10 → 31/10</span><img src="${w2Img('a1')}" alt=""></div>
+  modal(`<div class="hm-ban w2"><h3>💐 Hộp mù 20/10</h3><p>Mừng 20/10! ${W2_POOL.length} món: áo, tóc, mắt, môi, linh vật…</p><span class="t">12/10 → 31/10</span><img src="${w2Img('a1')}" alt=""></div>
     <div style="display:flex;justify-content:center;gap:8px">${['t2','h3','a3'].map(k=>`<img src="${w2Img(k)}" style="width:70px;height:70px;object-fit:contain;background:#f6efff;border-radius:12px;border:2px solid #e3d6f0">`).join('')}</div>
     ${H.free!==vnDay()?'<p style="text-align:center;color:#2f9e5b;font-size:13px;margin:8px 0">🎟️ Hôm nay bạn có 1 hộp miễn phí</p>':''}
     <div class="row"><button onclick="closeModal()">Để sau</button><button class="primary" onclick="openW2()">💐 Mở hộp ngay</button></div>`); return true; }
@@ -5705,8 +5705,13 @@ window.doRename=function(){ const n=($('#rnName').value||'').replace(/[<>\u0000-
 /* ====== 📢 Bảng cập nhật: báo người chơi game vừa có gì mới ====== */
 // Thêm bản mới lên ĐẦU danh sách. v phải khác nhau; người chơi thấy bảng tự bật 1 lần cho mỗi v mới.
 const CHANGELOG=[
-  {v:'2026-10-18-w20',date:'18/10/2026',title:'💐 Hộp mù 20/10 · Vườn Hoa',items:[
-    ['💐','Sự kiện Hộp mù 20/10 (18/10 → 31/10): 100 món áo, tóc, mắt, môi, phụ kiện, linh vật. Mở ở ☰ Menu → 💐 Hộp mù 20/10','new'],
+  {v:'2026-10-12-w20open',date:'12/10/2026',title:'💐 Hộp mù 20/10 mở bán sớm!',items:[
+    ['🎉','Hộp mù 20/10 mở bán sớm từ hôm nay 12/10 đến hết 31/10. Mở ở ☰ Menu → 💐 Hộp mù 20/10','new'],
+    ['✨','Món Bí ẩn mới: Nền tiệm 20/10 (tiệm hồng kiểu pixel) và Màn hình vào game 20/10','new'],
+    ['🐾','Linh vật bạn chọn sẽ thay chỗ con mèo trên quầy','new'],
+    ['🎟️','Mỗi ngày 1 hộp miễn phí, Bí Ngô vẫn mở song song tới hết 17/10','new']]},
+  {v:'2026-10-18-w20',date:'12/10/2026',title:'💐 Hộp mù 20/10 · Vườn Hoa',items:[
+    ['💐','Sự kiện Hộp mù 20/10 (12/10 → 31/10): 100 món áo, tóc, mắt, môi, phụ kiện, linh vật. Mở ở ☰ Menu → 💐 Hộp mù 20/10','new'],
     ['✨','Hàng Bí ẩn: 5 linh vật, Nền tiệm 20/10 (cả tiệm đổi tông hồng) và Màn hình vào game 20/10','new'],
     ['🎟️','Mỗi ngày 1 hộp miễn phí. Mỗi 10 hộp chắc chắn có món Hiếm, 150 hộp chắc chắn có món Bí ẩn','new'],
     ['🏆','Sưu tầm đủ 100 món: danh hiệu 🌹 Bông Hồng Của Chợ, khung "Vòng Hoa Hồng" và 19 mỹ phẩm độc quyền để bán','new'],
