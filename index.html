@@ -1989,11 +1989,16 @@ function renderOrder(){
 }
 // bong bóng hỏi hàng trôi khỏi màn hình (kéo xuống quầy) → hiện thanh gọn ghim dưới đầu trang
 function orderMini(c,r){ const m=$('#orderMini'); if(!m) return;
-  const hb=$('#hdr').getBoundingClientRect().bottom, bb=$('#orderBubble').getBoundingClientRect(), show=!!c&&activeTab==='store'&&bb.height>0&&bb.top+bb.height*0.55<hb;
+  // khung cố định tạo 1 lần: phần món chỉ vẽ lại khi món đổi, thanh kiên nhẫn chỉ đổi độ dài → không chớp
+  if(!m._top){ m.innerHTML='<div class="om-top"></div><div class="pb"><i></i></div>'; m._top=m.firstChild; m._bar=m.querySelector('.pb i'); }
+  const hb=$('#hdr').getBoundingClientRect().bottom, bb=$('#orderBubble').getBoundingClientRect(), on=!!c&&activeTab==='store'&&bb.height>0;
+  // có khoảng đệm giữa lúc hiện và lúc ẩn → dừng cuộn ngay ngưỡng không bị nhấp nháy
+  const show=on&&(m.hidden?bb.top+bb.height*0.6<hb:bb.top+bb.height*0.35<hb);
   if(m.hidden===show) m.hidden=!show; if(!show) return;
-  document.documentElement.style.setProperty('--hdrH',Math.round(hb)+'px');
+  const H=Math.round(hb); if(orderMini.h!==H){ orderMini.h=H; document.documentElement.style.setProperty('--hdrH',H+'px'); }
   const chips=c.stage==='order'?c.want.map(w=>{ const p=PMAP[w.id], done=w.got>=w.q; return `<span class="ochip ${done?'done':w.out?'outc':''}" data-cat="${p.cat}">${pic(p)} ${esc(p.name)} ${w.got}/${w.q}${done?' ✓':''}</span>`; }).join(''):`<span class="ochip done">💵 ${fmtS(c.total)} · bấm Nhận tiền</span>`;
-  setHTML(m,`<div class="om-top"><span class="who">${esc(c.name)}:</span>${chips}<span class="om-up">▲ Xem</span></div><div class="pb"><i style="width:${Math.round(r*100)}%;background:${patColor(r)}"></i></div>`); }
+  setHTML(m._top,`<span class="who">${esc(c.name)}:</span>${chips}<span class="om-up">▲ Xem</span>`);
+  const wd=Math.round(r*100)+'%', col=patColor(r); if(m._bar._w!==wd){ m._bar._w=wd; m._bar.style.width=wd; } if(m._bar._c!==col){ m._bar._c=col; m._bar.style.background=col; } }
 function renderTray(){
   const tray=$('#tray');
   if(!tray._body){ tray.innerHTML='<span class="sign">GIỎ HÀNG</span><button class="owner" data-owner="1" title="Chủ tiệm – mở Tủ đồ"><img alt="Chủ tiệm"></button><div class="tbody" style="display:contents"></div>'; tray._body=tray.querySelector('.tbody'); }
