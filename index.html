@@ -499,11 +499,13 @@ span.pill.bad{background:#fde6e3;color:var(--bad)} span.pill.good{background:#e1
 #tab-reviews .grid2{grid-template-columns:1fr!important}
 
 /* ---------- Modal, toast, tutorial ---------- */
-#ytMini{position:fixed;right:8px;bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:35;width:204px;background:#111;border:2px solid #fff;border-radius:12px;box-shadow:0 6px 18px rgba(0,0,0,.35);overflow:hidden}
-#ytMini[hidden]{display:none}#ytMini.drag{opacity:.85}
-.ytm-bar{display:flex;align-items:center;gap:6px;padding:3px 6px;background:#ff4f7b;color:#fff;font:800 11px var(--body);cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none}
-.ytm-bar b{flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.ytm-bar button{all:unset;cursor:pointer;padding:0 5px;font-size:14px;line-height:1}
-#ytmBox,#ytmBox iframe{width:200px;height:200px;display:block;border:0}.ytm-load{color:#fff;font:700 12px var(--body);display:grid;place-items:center;height:200px}
+#radioCard{margin:14px 10px 8px;background:#1b1420;border:3px solid var(--ink);border-radius:16px;overflow:hidden;box-shadow:0 4px 0 rgba(90,58,50,.18)}
+#radioCard[hidden]{display:none}
+.rc-bar{display:flex;align-items:center;gap:6px;padding:6px 8px;background:#ff4f7b;color:#fff;font:800 12.5px var(--body)}
+.rc-bar b{flex:1;min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.rc-ic{font-size:16px}
+.rc-bar button{border:0;background:rgba(255,255,255,.22);color:#fff;font:800 12px var(--body);border-radius:999px;padding:3px 9px;white-space:nowrap}
+#ytmBox{width:100%;aspect-ratio:16/9;min-height:200px;background:#000}#ytmBox:empty{display:none}#ytmBox iframe{width:100%;height:100%;display:block;border:0}
+.ytm-load{color:#fff;font:700 12px var(--body);display:grid;place-items:center;height:100%;min-height:200px}
 .mu-now{display:flex;align-items:center;gap:8px;justify-content:space-between;background:#fff0f5;border:2px solid #f6c3d4;border-radius:12px;padding:6px 10px;margin-bottom:8px;font-size:13.5px}
 .mu-h{margin:12px 0 4px;font:800 15px var(--display)}.mu-row{display:flex;gap:6px}.mu-row input{flex:1;min-width:0}.mu-note{font-size:12px;margin:4px 0 0}
 .mu-list{display:flex;flex-direction:column;gap:4px}.mu-list button{display:flex;gap:6px;text-align:left;font-size:13px;padding:6px 10px;border-radius:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -814,6 +816,8 @@ span.pill.bad{background:#fde6e3;color:var(--bad)} span.pill.good{background:#e1
     <div class="row"><button id="btnTutAgain">📘 Xem lại hướng dẫn từng bước</button></div>
   </section>
 
+  <div id="radioCard" hidden><div class="rc-bar"><span class="rc-ic" id="rcIc">📻</span><b id="ytmTitle">Radio</b><button type="button" onclick="openMusicPanel()">🎵 Đổi bài</button><button type="button" onclick="extStop()">⏹ Tắt</button></div><div id="ytmBox"></div></div>
+
   <nav class="bnav" id="tabs">
     <button data-tab="store" class="on"><span class="i">🏪</span>Tiệm</button>
     <button data-tab="wardrobe"><span class="i">👗</span>Tủ đồ</button>
@@ -833,7 +837,6 @@ span.pill.bad{background:#fde6e3;color:var(--bad)} span.pill.good{background:#e1
 
 <div class="modal" id="modal"><div class="box" id="modalBox" role="dialog" aria-modal="true"></div></div>
 <div class="toast" id="toast"></div>
-<div id="ytMini" hidden><div class="ytm-bar"><span>⠿</span><b id="ytmTitle">Nhạc YouTube</b><button type="button" onclick="extStop()" title="Tắt nhạc">✕</button></div><div id="ytmBox"></div></div>
 <div class="thiefpop" id="thiefPop" hidden></div>
 <div class="tut" id="tut" hidden></div>
 
@@ -1783,10 +1786,11 @@ function musicStop(){ clearInterval(MUSIC.timer); MUSIC.timer=null; if(MUSIC.gai
 document.addEventListener('visibilitychange',()=>{ if(document.hidden){ silentLoop(false); return; } if(SFX.ctx&&(SFX.on||MUSIC.on)){ SFX.ctx.resume().catch(()=>{}); silentLoop(true); } if(MUSIC.on&&SFX.ctx) MUSIC.next=0; });
 window.toggleMusic=function(){ MUSIC.on=!MUSIC.on; try{ localStorage.setItem('clx-music',MUSIC.on?'1':'0'); }catch(e){} if(MUSIC.on) audioUnlock(); else { musicStop(); if(!SFX.on) silentLoop(false); } audioHint(); toast(MUSIC.on?'🎵 Đã bật nhạc nền':'🎵 Đã tắt nhạc nền'); };
 
-/* ====== 🎶 Nhạc tự chọn: dán link YouTube (khung video nhỏ ở góc — YouTube bắt buộc hiện khung ≥200×200) hoặc link file .mp3 (phát ẩn) ======
+/* ====== 🎶 Nhạc tự chọn: dán link YouTube (phát trong thẻ 📻 Radio ở cuối trang — YouTube bắt buộc hiện khung video ≥200×200) hoặc link file .mp3 (phát ẩn) ======
    Đang thử: chỉ bật ở ?choithu (hoặc ?nhactu). Bật cho mọi người: đổi EXTM_ON thành true. */
 const EXTM_ON=TESTMODE||/nhactu/.test(location.search+location.hash);
 const EXT={kind:'',el:null,yt:null,api:null,cur:null};
+const muOpen=()=>$('#modal').classList.contains('show')&&!!$('#muPanel'); // bảng nhạc đang mở thật (không phải còn sót trong DOM)
 const extLS=(k,v)=>{ try{ if(v===undefined) return JSON.parse(localStorage.getItem(k)||'null'); if(v===null) localStorage.removeItem(k); else localStorage.setItem(k,JSON.stringify(v)); }catch(e){ return null; } };
 function ytParse(u){ u=String(u||'').trim(); let m;
   const id=(m=/(?:youtu\.be\/|youtube(?:-nocookie)?\.com\/(?:watch\?(?:[^#]*&)?v=|embed\/|shorts\/|live\/|v\/))([\w-]{11})/.exec(u))?m[1]:/^[\w-]{11}$/.test(u)?u:'';
@@ -1798,54 +1802,51 @@ function audioParse(u){ u=String(u||'').trim(); if(!/^https?:\/\/\S+$/i.test(u))
   let t=''; try{ t=decodeURIComponent(new URL(u).pathname.split('/').pop()||'').replace(/\.(mp3|m4a|aac|ogg|oga|wav|flac|opus|webm)$/i,'').replace(/[_+]/g,' '); }catch(e){}
   return {url:u,title:t||'Nhạc từ link'}; }
 function extRemember(it){ const L=(extLS('clx-extm-recent')||[]).filter(x=>!(x.kind===it.kind&&JSON.stringify(x.v)===JSON.stringify(it.v))); L.unshift(it); extLS('clx-extm-recent',L.slice(0,6)); }
-function extSet(kind,v,title,ok){ EXT.cur={kind,v,title}; extLS('clx-extm',EXT.cur); if(ok) extRemember(EXT.cur); /* chỉ lưu "nghe gần đây" khi đã phát được */ const t=$('#ytmTitle'); if(t&&kind==='yt') t.textContent=title||'Nhạc YouTube'; }
+function extSet(kind,v,title,ok){ EXT.cur={kind,v,title}; extLS('clx-extm',EXT.cur); if(ok) extRemember(EXT.cur); /* chỉ lưu "nghe gần đây" khi đã phát được */ radioShow(); }
+// thẻ 📻 Radio cuối trang: YouTube thì có khung video, .mp3 thì chỉ thanh tên bài
+function radioShow(){ const c=$('#radioCard'); if(!c) return; c.hidden=!EXT.kind; if(!EXT.kind) return; $('#rcIc').textContent=EXT.kind==='yt'?'📻':'🎧'; $('#ytmTitle').textContent=(EXT.cur&&EXT.cur.title)||(EXT.kind==='yt'?'Radio YouTube':'Nhạc'); if(EXT.kind!=='yt') $('#ytmBox').innerHTML=''; }
+function radioGo(){ const c=$('#radioCard'); if(c&&!c.hidden) setTimeout(()=>c.scrollIntoView({block:'center',behavior:'smooth'}),80); }
 function ytApi(){ return EXT.api||(EXT.api=new Promise((ok,no)=>{ if(window.YT&&YT.Player) return ok(YT); const prev=window.onYouTubeIframeAPIReady; window.onYouTubeIframeAPIReady=()=>{ try{ prev&&prev(); }catch(e){} ok(YT); };
   const sc=document.createElement('script'); sc.src='https://www.youtube.com/iframe_api'; sc.onerror=()=>{ EXT.api=null; no(new Error('net')); }; document.head.appendChild(sc); setTimeout(()=>{ if(!(window.YT&&YT.Player)){ EXT.api=null; no(new Error('timeout')); } },15000); })); }
-function extHalt(keep){ const was=EXT.kind; EXT.kind=''; try{ EXT.yt&&EXT.yt.destroy(); }catch(e){} EXT.yt=null; const mini=$('#ytMini'); if(mini) mini.hidden=true;
+function extHalt(keep){ const was=EXT.kind; EXT.kind=''; try{ EXT.yt&&EXT.yt.destroy(); }catch(e){} EXT.yt=null; $('#ytmBox').innerHTML=''; radioShow();
   if(EXT.el){ EXT.el.onerror=null; EXT.el.pause(); EXT.el.removeAttribute('src'); try{ EXT.el.load(); }catch(e){} }
   if(!keep){ EXT.cur=null; extLS('clx-extm',null); if(was&&MUSIC.on) audioUnlock(); } }
-window.extStop=()=>{ extHalt(); toast('⏹ Đã tắt nhạc riêng'+(MUSIC.on?', bật lại nhạc của game':'')); if($('#muPanel')) openMusicPanel(); };
-async function extPlayYT(p,title){ extHalt(true); EXT.kind='yt'; musicStop(); const mini=$('#ytMini'); mini.hidden=false; extPlace();
-  $('#ytmTitle').textContent=title||'Đang tải…'; $('#ytmBox').innerHTML='<div class="ytm-load">Đang tải YouTube…</div>';
+window.extStop=()=>{ extHalt(); toast('⏹ Đã tắt nhạc riêng'+(MUSIC.on?', bật lại nhạc của game':'')); if(muOpen()) openMusicPanel(); };
+async function extPlayYT(p,title){ extHalt(true); EXT.kind='yt'; musicStop(); EXT.cur={kind:'yt',v:p,title:title||'Đang tải…'}; radioShow();
+  $('#ytmBox').innerHTML='<div class="ytm-load">Đang tải YouTube…</div>';
   try{ await ytApi(); }catch(e){ if(EXT.kind==='yt'){ toast('🎬 Không tải được YouTube, kiểm tra mạng rồi thử lại'); extHalt(); } return; }
   if(EXT.kind!=='yt') return; $('#ytmBox').innerHTML='<div id="ytmFrame"></div>';
   const vars={autoplay:1,playsinline:1,rel:0,fs:0,iv_load_policy:3,loop:1,origin:location.origin};
   if(p.list){ vars.listType='playlist'; vars.list=p.list; } else vars.playlist=p.id;
-  const P=EXT.yt=new YT.Player('ytmFrame',{width:200,height:200,...(p.id?{videoId:p.id}:{}),playerVars:vars,events:{
-    onReady:e=>{ try{ e.target.playVideo(); }catch(_){} setTimeout(()=>{ try{ if(EXT.yt===P&&P.getPlayerState()!==1&&P.getPlayerState()!==3) toast('▶ Bấm nút phát trên khung video để nghe nhạc'); }catch(_){} },2500); },
+  const P=EXT.yt=new YT.Player('ytmFrame',{width:'100%',height:'100%',...(p.id?{videoId:p.id}:{}),playerVars:vars,events:{
+    onReady:e=>{ try{ e.target.playVideo(); }catch(_){} setTimeout(()=>{ try{ if(EXT.yt===P&&P.getPlayerState()!==1&&P.getPlayerState()!==3){ toast('▶ Bấm nút phát trên khung Radio để nghe nhạc'); radioGo(); } }catch(_){} },2500); },
     onStateChange:e=>{ if(e.data===1){ let d=null; try{ d=P.getVideoData(); }catch(_){} extSet('yt',p,(d&&d.title)||(EXT.cur&&EXT.cur.title)||'Nhạc YouTube',true); } },
     onError:e=>{ const M={2:'Link YouTube không đúng',5:'Video không phát được trên trình duyệt này',100:'Video không tồn tại hoặc đã bị xóa',101:'Chủ video không cho phát ngoài YouTube, thử bài khác nhé',150:'Chủ video không cho phát ngoài YouTube, thử bài khác nhé'};
       toast('🎬 '+(M[e.data]||'Không phát được video này')); if(p.list&&e.data!==2){ try{ P.nextVideo(); return; }catch(_){} } if(EXT.yt===P) extHalt(); } }});
   extSet('yt',p,title||'Nhạc YouTube'); }
-function extPlayAudio(a0){ extHalt(true); EXT.kind='mp3'; musicStop(); const a=EXT.el||(EXT.el=new Audio()); a.loop=true; a.preload='auto'; a.setAttribute('playsinline','');
-  a.onerror=()=>{ if(EXT.kind!=='mp3') return; toast('🎧 Không phát được link này. Cần link thẳng tới file nhạc (.mp3, .m4a…) hoặc link Google Drive đã chia sẻ công khai'); extHalt(); if($('#muPanel')) openMusicPanel(); };
+function extPlayAudio(a0){ extHalt(true); EXT.kind='mp3'; musicStop(); EXT.cur={kind:'mp3',v:a0.url,title:a0.title}; radioShow(); const a=EXT.el||(EXT.el=new Audio()); a.loop=true; a.preload='auto'; a.setAttribute('playsinline','');
+  a.onerror=()=>{ if(EXT.kind!=='mp3') return; toast('🎧 Không phát được link này. Cần link thẳng tới file nhạc (.mp3, .m4a…) hoặc link Google Drive đã chia sẻ công khai'); extHalt(); if(muOpen()) openMusicPanel(); };
   a.onplaying=()=>{ if(EXT.kind==='mp3'&&EXT.cur) extSet('mp3',EXT.cur.v,EXT.cur.title,true); };
-  a.src=a0.url; a.play().then(()=>{ if($('#muPanel')) openMusicPanel(); }).catch(err=>{ if(err&&err.name==='NotAllowedError') toast('🎧 Chạm vào màn hình để bắt đầu phát'); });
+  a.src=a0.url; a.play().then(()=>{ if(muOpen()) openMusicPanel(); }).catch(err=>{ if(err&&err.name==='NotAllowedError') toast('🎧 Chạm vào màn hình để bắt đầu phát'); });
   extSet('mp3',a0.url,a0.title); }
 window.muPlay=function(which){ const v=($('#'+(which==='yt'?'muYt':'muMp3'))||{}).value||'';
   if(which==='yt'){ const p=ytParse(v); if(!p) return toast('Link YouTube chưa đúng. Ví dụ: https://youtu.be/…'); extPlayYT(p); }
   else { const a=audioParse(v); if(!a) return toast('Link chưa đúng, cần bắt đầu bằng https://'); if(ytParse(v)&&/youtu/.test(v)) return toast('Đây là link YouTube, dán vào ô YouTube ở trên nhé'); extPlayAudio(a); }
-  setTimeout(()=>{ if($('#muPanel')) openMusicPanel(); },300); };
-window.muRecent=function(i){ const it=(extLS('clx-extm-recent')||[])[i]; if(!it) return; if(it.kind==='yt') extPlayYT(it.v,it.title); else extPlayAudio({url:it.v,title:it.title}); setTimeout(()=>{ if($('#muPanel')) openMusicPanel(); },300); };
+  muAfterPlay(which); };
+function muAfterPlay(kind){ if(kind==='yt'){ closeMenu(); radioGo(); toast('📻 Nhạc phát ở thẻ Radio cuối trang, kéo lên chơi tiếp nhé'); } else setTimeout(()=>{ if(muOpen()) openMusicPanel(); },300); }
+window.muRecent=function(i){ const it=(extLS('clx-extm-recent')||[])[i]; if(!it) return; if(it.kind==='yt') extPlayYT(it.v,it.title); else extPlayAudio({url:it.v,title:it.title}); muAfterPlay(it.kind); };
 window.openMusicPanel=function(){ const cur=EXT.kind&&EXT.cur, L=extLS('clx-extm-recent')||[];
   modal(`<div id="muPanel"><h3>🎵 Nhạc nền</h3>
     ${cur?`<div class="mu-now"><span>${cur.kind==='yt'?'🎬':'🎧'} Đang phát: <b>${esc(cur.title||'')}</b></span><button class="sm" onclick="extStop()">⏹ Tắt</button></div>`:''}
     <label class="toggle" style="padding:2px 0"><input type="checkbox" ${MUSIC.on?'checked':''} onchange="toggleMusic()"> Nhạc của game ${cur?'(tạm dừng khi đang phát nhạc riêng)':''}</label>
     <h4 class="mu-h">🎬 Dán link YouTube</h4>
     <div class="mu-row"><input type="text" id="muYt" inputmode="url" autocomplete="off" placeholder="https://youtu.be/… (video hoặc playlist)"><button class="primary" onclick="muPlay('yt')">Phát</button></div>
-    <p class="muted mu-note">Video hiện trong khung nhỏ ở góc màn hình (YouTube bắt buộc). Kéo thanh hồng trên khung để dời chỗ. Trên iPhone, tắt màn hình là nhạc dừng. Một số bài bị chủ kênh chặn phát ngoài YouTube.</p>
-    <h4 class="mu-h">🎧 Dán link file nhạc (.mp3)</h4>
+    <p class="muted mu-note">Video phát trong thẻ <b>📻 Radio ở cuối trang</b> (YouTube bắt buộc hiện khung video). Kéo lên chơi tiếp, nhạc vẫn chạy, đổi tab cũng không dừng. Trên iPhone, tắt màn hình là nhạc dừng. Một số bài bị chủ kênh chặn phát ngoài YouTube.</p>
+    <h4 class="mu-h">🎧 Nghe ẩn: dán link file nhạc (.mp3)</h4>
     <div class="mu-row"><input type="text" id="muMp3" inputmode="url" autocomplete="off" placeholder="https://…/bai-hat.mp3 hoặc link Google Drive"><button class="primary" onclick="muPlay('mp3')">Phát</button></div>
-    <p class="muted mu-note">Phát ẩn, không cần khung, tự lặp lại. Google Drive: bấm Chia sẻ → "Bất kỳ ai có đường liên kết" rồi dán link.</p>
+    <p class="muted mu-note">Phát ẩn hoàn toàn, không cần khung video, tự lặp lại. Google Drive: bấm Chia sẻ → "Bất kỳ ai có đường liên kết" rồi dán link.</p>
     ${L.length?`<h4 class="mu-h">🕘 Nghe gần đây</h4><div class="mu-list">${L.map((x,i)=>`<button onclick="muRecent(${i})"><span>${x.kind==='yt'?'🎬':'🎧'}</span>${esc(x.title||'Bài hát')}</button>`).join('')}</div>`:''}
     <div class="row" style="margin-top:10px"><button onclick="openMenu()">← Menu</button><button class="primary" onclick="closeMenu()">Xong</button></div></div>`); };
-// kéo khung YouTube đi chỗ khác (nhớ vị trí)
-function extPlace(){ const m=$('#ytMini'), P=extLS('clx-ytmini-pos'); if(!m) return; if(P){ const x=Math.min(Math.max(4,P.x),innerWidth-m.offsetWidth-4), y=Math.min(Math.max(4,P.y),innerHeight-m.offsetHeight-4); m.style.left=x+'px'; m.style.top=y+'px'; m.style.right='auto'; m.style.bottom='auto'; } }
-(function(){ const m=$('#ytMini'), bar=m&&m.querySelector('.ytm-bar'); if(!bar) return; let d=null;
-  bar.addEventListener('pointerdown',e=>{ if(e.target.closest('button')) return; const r=m.getBoundingClientRect(); d={dx:e.clientX-r.left,dy:e.clientY-r.top}; bar.setPointerCapture(e.pointerId); m.classList.add('drag'); });
-  bar.addEventListener('pointermove',e=>{ if(!d) return; const x=Math.min(Math.max(4,e.clientX-d.dx),innerWidth-m.offsetWidth-4), y=Math.min(Math.max(4,e.clientY-d.dy),innerHeight-m.offsetHeight-4); m.style.left=x+'px'; m.style.top=y+'px'; m.style.right='auto'; m.style.bottom='auto'; });
-  const up=()=>{ if(!d) return; d=null; m.classList.remove('drag'); const r=m.getBoundingClientRect(); extLS('clx-ytmini-pos',{x:Math.round(r.left),y:Math.round(r.top)}); };
-  bar.addEventListener('pointerup',up); bar.addEventListener('pointercancel',up); window.addEventListener('resize',()=>{ if(!m.hidden) extPlace(); }); })();
 // mở lại game: chạm lần đầu thì phát tiếp bài đang nghe dở
 if(EXTM_ON){ const go=()=>{ ['pointerdown','touchend','click'].forEach(ev=>window.removeEventListener(ev,go,true)); const c=extLS('clx-extm'); if(!c||EXT.kind) return; if(c.kind==='yt') extPlayYT(c.v,c.title); else if(c.kind==='mp3') extPlayAudio({url:c.v,title:c.title}); };
   ['pointerdown','touchend','click'].forEach(ev=>window.addEventListener(ev,go,true)); }
