@@ -499,6 +499,14 @@ span.pill.bad{background:#fde6e3;color:var(--bad)} span.pill.good{background:#e1
 #tab-reviews .grid2{grid-template-columns:1fr!important}
 
 /* ---------- Modal, toast, tutorial ---------- */
+#ytMini{position:fixed;right:8px;bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:35;width:204px;background:#111;border:2px solid #fff;border-radius:12px;box-shadow:0 6px 18px rgba(0,0,0,.35);overflow:hidden}
+#ytMini[hidden]{display:none}#ytMini.drag{opacity:.85}
+.ytm-bar{display:flex;align-items:center;gap:6px;padding:3px 6px;background:#ff4f7b;color:#fff;font:800 11px var(--body);cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none}
+.ytm-bar b{flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.ytm-bar button{all:unset;cursor:pointer;padding:0 5px;font-size:14px;line-height:1}
+#ytmBox,#ytmBox iframe{width:200px;height:200px;display:block;border:0}.ytm-load{color:#fff;font:700 12px var(--body);display:grid;place-items:center;height:200px}
+.mu-now{display:flex;align-items:center;gap:8px;justify-content:space-between;background:#fff0f5;border:2px solid #f6c3d4;border-radius:12px;padding:6px 10px;margin-bottom:8px;font-size:13.5px}
+.mu-h{margin:12px 0 4px;font:800 15px var(--display)}.mu-row{display:flex;gap:6px}.mu-row input{flex:1;min-width:0}.mu-note{font-size:12px;margin:4px 0 0}
+.mu-list{display:flex;flex-direction:column;gap:4px}.mu-list button{display:flex;gap:6px;text-align:left;font-size:13px;padding:6px 10px;border-radius:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .modal{position:fixed;inset:0;background:rgba(90,58,50,.45);display:none;align-items:center;justify-content:center;z-index:40;padding:16px}
 .modal.show{display:flex}
 .mbar{height:8px;border-radius:6px;background:#eee;overflow:hidden;margin:3px 0 2px}.mbar i{display:block;height:100%;border-radius:6px}
@@ -825,6 +833,7 @@ span.pill.bad{background:#fde6e3;color:var(--bad)} span.pill.good{background:#e1
 
 <div class="modal" id="modal"><div class="box" id="modalBox" role="dialog" aria-modal="true"></div></div>
 <div class="toast" id="toast"></div>
+<div id="ytMini" hidden><div class="ytm-bar"><span>⠿</span><b id="ytmTitle">Nhạc YouTube</b><button type="button" onclick="extStop()" title="Tắt nhạc">✕</button></div><div id="ytmBox"></div></div>
 <div class="thiefpop" id="thiefPop" hidden></div>
 <div class="tut" id="tut" hidden></div>
 
@@ -1766,13 +1775,80 @@ function musicTick(){ const a=SFX.ctx; if(!a||!MUSIC.on||document.hidden) return
     const m=phrase[st]; if(m) mNote(mhz(m),t,M_EIGHTH*(phrase[st+1]===_?2.2:1.2),'square',0.018);            // giai điệu
     if(i%2===1) { const n=a.createBufferSource(), b=a.createBuffer(1,a.sampleRate*0.02,a.sampleRate), d=b.getChannelData(0); for(let k=0;k<d.length;k++) d[k]=(Math.random()*2-1)*(1-k/d.length); n.buffer=b; const hp=a.createBiquadFilter(); hp.type='highpass'; hp.frequency.value=7000; const g=a.createGain(); g.gain.value=0.025; n.connect(hp); hp.connect(g); g.connect(MUSIC.gain); n.start(t); } // hi-hat nhẹ
     MUSIC.step++; MUSIC.next+=M_EIGHTH; } }
-function musicStart(){ if(!MUSIC.on) return; const a=sfxCtx(); if(!a) return;
+function musicStart(){ if(!MUSIC.on||EXT.kind) return; /* đang phát nhạc riêng (YouTube/mp3) thì nhạc game nghỉ */ const a=sfxCtx(); if(!a) return;
   if(!MUSIC.gain){ MUSIC.gain=a.createGain(); MUSIC.gain.gain.value=0.55; MUSIC.gain.connect(a.destination); }
   MUSIC.gain.gain.setTargetAtTime(0.55,a.currentTime,0.3);
   if(!MUSIC.timer) MUSIC.timer=setInterval(musicTick,90); }
 function musicStop(){ clearInterval(MUSIC.timer); MUSIC.timer=null; if(MUSIC.gain&&SFX.ctx) MUSIC.gain.gain.setTargetAtTime(0.0001,SFX.ctx.currentTime,0.15); }
 document.addEventListener('visibilitychange',()=>{ if(document.hidden){ silentLoop(false); return; } if(SFX.ctx&&(SFX.on||MUSIC.on)){ SFX.ctx.resume().catch(()=>{}); silentLoop(true); } if(MUSIC.on&&SFX.ctx) MUSIC.next=0; });
 window.toggleMusic=function(){ MUSIC.on=!MUSIC.on; try{ localStorage.setItem('clx-music',MUSIC.on?'1':'0'); }catch(e){} if(MUSIC.on) audioUnlock(); else { musicStop(); if(!SFX.on) silentLoop(false); } audioHint(); toast(MUSIC.on?'🎵 Đã bật nhạc nền':'🎵 Đã tắt nhạc nền'); };
+
+/* ====== 🎶 Nhạc tự chọn: dán link YouTube (khung video nhỏ ở góc — YouTube bắt buộc hiện khung ≥200×200) hoặc link file .mp3 (phát ẩn) ======
+   Đang thử: chỉ bật ở ?choithu (hoặc ?nhactu). Bật cho mọi người: đổi EXTM_ON thành true. */
+const EXTM_ON=TESTMODE||/nhactu/.test(location.search+location.hash);
+const EXT={kind:'',el:null,yt:null,api:null,cur:null};
+const extLS=(k,v)=>{ try{ if(v===undefined) return JSON.parse(localStorage.getItem(k)||'null'); if(v===null) localStorage.removeItem(k); else localStorage.setItem(k,JSON.stringify(v)); }catch(e){ return null; } };
+function ytParse(u){ u=String(u||'').trim(); let m;
+  const id=(m=/(?:youtu\.be\/|youtube(?:-nocookie)?\.com\/(?:watch\?(?:[^#]*&)?v=|embed\/|shorts\/|live\/|v\/))([\w-]{11})/.exec(u))?m[1]:/^[\w-]{11}$/.test(u)?u:'';
+  const list=(m=/[?&]list=([\w-]{10,80})/.exec(u))?m[1]:'';
+  return id||list?{id,list}:null; }
+function audioParse(u){ u=String(u||'').trim(); if(!/^https?:\/\/\S+$/i.test(u)) return null; let m;
+  if((m=/drive\.google\.com\/(?:file\/d\/|open\?id=|uc\?(?:[^#]*&)?id=)([\w-]{20,})/.exec(u))) return {url:'https://drive.google.com/uc?export=download&id='+m[1],title:'Nhạc từ Google Drive'};
+  if(/dropbox\.com\//.test(u)) u=/[?&]dl=0/.test(u)?u.replace(/([?&])dl=0/,'$1raw=1'):u+(u.includes('?')?'&':'?')+'raw=1';
+  let t=''; try{ t=decodeURIComponent(new URL(u).pathname.split('/').pop()||'').replace(/\.(mp3|m4a|aac|ogg|oga|wav|flac|opus|webm)$/i,'').replace(/[_+]/g,' '); }catch(e){}
+  return {url:u,title:t||'Nhạc từ link'}; }
+function extRemember(it){ const L=(extLS('clx-extm-recent')||[]).filter(x=>!(x.kind===it.kind&&JSON.stringify(x.v)===JSON.stringify(it.v))); L.unshift(it); extLS('clx-extm-recent',L.slice(0,6)); }
+function extSet(kind,v,title,ok){ EXT.cur={kind,v,title}; extLS('clx-extm',EXT.cur); if(ok) extRemember(EXT.cur); /* chỉ lưu "nghe gần đây" khi đã phát được */ const t=$('#ytmTitle'); if(t&&kind==='yt') t.textContent=title||'Nhạc YouTube'; }
+function ytApi(){ return EXT.api||(EXT.api=new Promise((ok,no)=>{ if(window.YT&&YT.Player) return ok(YT); const prev=window.onYouTubeIframeAPIReady; window.onYouTubeIframeAPIReady=()=>{ try{ prev&&prev(); }catch(e){} ok(YT); };
+  const sc=document.createElement('script'); sc.src='https://www.youtube.com/iframe_api'; sc.onerror=()=>{ EXT.api=null; no(new Error('net')); }; document.head.appendChild(sc); setTimeout(()=>{ if(!(window.YT&&YT.Player)){ EXT.api=null; no(new Error('timeout')); } },15000); })); }
+function extHalt(keep){ const was=EXT.kind; EXT.kind=''; try{ EXT.yt&&EXT.yt.destroy(); }catch(e){} EXT.yt=null; const mini=$('#ytMini'); if(mini) mini.hidden=true;
+  if(EXT.el){ EXT.el.onerror=null; EXT.el.pause(); EXT.el.removeAttribute('src'); try{ EXT.el.load(); }catch(e){} }
+  if(!keep){ EXT.cur=null; extLS('clx-extm',null); if(was&&MUSIC.on) audioUnlock(); } }
+window.extStop=()=>{ extHalt(); toast('⏹ Đã tắt nhạc riêng'+(MUSIC.on?', bật lại nhạc của game':'')); if($('#muPanel')) openMusicPanel(); };
+async function extPlayYT(p,title){ extHalt(true); EXT.kind='yt'; musicStop(); const mini=$('#ytMini'); mini.hidden=false; extPlace();
+  $('#ytmTitle').textContent=title||'Đang tải…'; $('#ytmBox').innerHTML='<div class="ytm-load">Đang tải YouTube…</div>';
+  try{ await ytApi(); }catch(e){ if(EXT.kind==='yt'){ toast('🎬 Không tải được YouTube, kiểm tra mạng rồi thử lại'); extHalt(); } return; }
+  if(EXT.kind!=='yt') return; $('#ytmBox').innerHTML='<div id="ytmFrame"></div>';
+  const vars={autoplay:1,playsinline:1,rel:0,fs:0,iv_load_policy:3,loop:1,origin:location.origin};
+  if(p.list){ vars.listType='playlist'; vars.list=p.list; } else vars.playlist=p.id;
+  const P=EXT.yt=new YT.Player('ytmFrame',{width:200,height:200,...(p.id?{videoId:p.id}:{}),playerVars:vars,events:{
+    onReady:e=>{ try{ e.target.playVideo(); }catch(_){} setTimeout(()=>{ try{ if(EXT.yt===P&&P.getPlayerState()!==1&&P.getPlayerState()!==3) toast('▶ Bấm nút phát trên khung video để nghe nhạc'); }catch(_){} },2500); },
+    onStateChange:e=>{ if(e.data===1){ let d=null; try{ d=P.getVideoData(); }catch(_){} extSet('yt',p,(d&&d.title)||(EXT.cur&&EXT.cur.title)||'Nhạc YouTube',true); } },
+    onError:e=>{ const M={2:'Link YouTube không đúng',5:'Video không phát được trên trình duyệt này',100:'Video không tồn tại hoặc đã bị xóa',101:'Chủ video không cho phát ngoài YouTube, thử bài khác nhé',150:'Chủ video không cho phát ngoài YouTube, thử bài khác nhé'};
+      toast('🎬 '+(M[e.data]||'Không phát được video này')); if(p.list&&e.data!==2){ try{ P.nextVideo(); return; }catch(_){} } if(EXT.yt===P) extHalt(); } }});
+  extSet('yt',p,title||'Nhạc YouTube'); }
+function extPlayAudio(a0){ extHalt(true); EXT.kind='mp3'; musicStop(); const a=EXT.el||(EXT.el=new Audio()); a.loop=true; a.preload='auto'; a.setAttribute('playsinline','');
+  a.onerror=()=>{ if(EXT.kind!=='mp3') return; toast('🎧 Không phát được link này. Cần link thẳng tới file nhạc (.mp3, .m4a…) hoặc link Google Drive đã chia sẻ công khai'); extHalt(); if($('#muPanel')) openMusicPanel(); };
+  a.onplaying=()=>{ if(EXT.kind==='mp3'&&EXT.cur) extSet('mp3',EXT.cur.v,EXT.cur.title,true); };
+  a.src=a0.url; a.play().then(()=>{ if($('#muPanel')) openMusicPanel(); }).catch(err=>{ if(err&&err.name==='NotAllowedError') toast('🎧 Chạm vào màn hình để bắt đầu phát'); });
+  extSet('mp3',a0.url,a0.title); }
+window.muPlay=function(which){ const v=($('#'+(which==='yt'?'muYt':'muMp3'))||{}).value||'';
+  if(which==='yt'){ const p=ytParse(v); if(!p) return toast('Link YouTube chưa đúng. Ví dụ: https://youtu.be/…'); extPlayYT(p); }
+  else { const a=audioParse(v); if(!a) return toast('Link chưa đúng, cần bắt đầu bằng https://'); if(ytParse(v)&&/youtu/.test(v)) return toast('Đây là link YouTube, dán vào ô YouTube ở trên nhé'); extPlayAudio(a); }
+  setTimeout(()=>{ if($('#muPanel')) openMusicPanel(); },300); };
+window.muRecent=function(i){ const it=(extLS('clx-extm-recent')||[])[i]; if(!it) return; if(it.kind==='yt') extPlayYT(it.v,it.title); else extPlayAudio({url:it.v,title:it.title}); setTimeout(()=>{ if($('#muPanel')) openMusicPanel(); },300); };
+window.openMusicPanel=function(){ const cur=EXT.kind&&EXT.cur, L=extLS('clx-extm-recent')||[];
+  modal(`<div id="muPanel"><h3>🎵 Nhạc nền</h3>
+    ${cur?`<div class="mu-now"><span>${cur.kind==='yt'?'🎬':'🎧'} Đang phát: <b>${esc(cur.title||'')}</b></span><button class="sm" onclick="extStop()">⏹ Tắt</button></div>`:''}
+    <label class="toggle" style="padding:2px 0"><input type="checkbox" ${MUSIC.on?'checked':''} onchange="toggleMusic()"> Nhạc của game ${cur?'(tạm dừng khi đang phát nhạc riêng)':''}</label>
+    <h4 class="mu-h">🎬 Dán link YouTube</h4>
+    <div class="mu-row"><input type="text" id="muYt" inputmode="url" autocomplete="off" placeholder="https://youtu.be/… (video hoặc playlist)"><button class="primary" onclick="muPlay('yt')">Phát</button></div>
+    <p class="muted mu-note">Video hiện trong khung nhỏ ở góc màn hình (YouTube bắt buộc). Kéo thanh hồng trên khung để dời chỗ. Trên iPhone, tắt màn hình là nhạc dừng. Một số bài bị chủ kênh chặn phát ngoài YouTube.</p>
+    <h4 class="mu-h">🎧 Dán link file nhạc (.mp3)</h4>
+    <div class="mu-row"><input type="text" id="muMp3" inputmode="url" autocomplete="off" placeholder="https://…/bai-hat.mp3 hoặc link Google Drive"><button class="primary" onclick="muPlay('mp3')">Phát</button></div>
+    <p class="muted mu-note">Phát ẩn, không cần khung, tự lặp lại. Google Drive: bấm Chia sẻ → "Bất kỳ ai có đường liên kết" rồi dán link.</p>
+    ${L.length?`<h4 class="mu-h">🕘 Nghe gần đây</h4><div class="mu-list">${L.map((x,i)=>`<button onclick="muRecent(${i})"><span>${x.kind==='yt'?'🎬':'🎧'}</span>${esc(x.title||'Bài hát')}</button>`).join('')}</div>`:''}
+    <div class="row" style="margin-top:10px"><button onclick="openMenu()">← Menu</button><button class="primary" onclick="closeMenu()">Xong</button></div></div>`); };
+// kéo khung YouTube đi chỗ khác (nhớ vị trí)
+function extPlace(){ const m=$('#ytMini'), P=extLS('clx-ytmini-pos'); if(!m) return; if(P){ const x=Math.min(Math.max(4,P.x),innerWidth-m.offsetWidth-4), y=Math.min(Math.max(4,P.y),innerHeight-m.offsetHeight-4); m.style.left=x+'px'; m.style.top=y+'px'; m.style.right='auto'; m.style.bottom='auto'; } }
+(function(){ const m=$('#ytMini'), bar=m&&m.querySelector('.ytm-bar'); if(!bar) return; let d=null;
+  bar.addEventListener('pointerdown',e=>{ if(e.target.closest('button')) return; const r=m.getBoundingClientRect(); d={dx:e.clientX-r.left,dy:e.clientY-r.top}; bar.setPointerCapture(e.pointerId); m.classList.add('drag'); });
+  bar.addEventListener('pointermove',e=>{ if(!d) return; const x=Math.min(Math.max(4,e.clientX-d.dx),innerWidth-m.offsetWidth-4), y=Math.min(Math.max(4,e.clientY-d.dy),innerHeight-m.offsetHeight-4); m.style.left=x+'px'; m.style.top=y+'px'; m.style.right='auto'; m.style.bottom='auto'; });
+  const up=()=>{ if(!d) return; d=null; m.classList.remove('drag'); const r=m.getBoundingClientRect(); extLS('clx-ytmini-pos',{x:Math.round(r.left),y:Math.round(r.top)}); };
+  bar.addEventListener('pointerup',up); bar.addEventListener('pointercancel',up); window.addEventListener('resize',()=>{ if(!m.hidden) extPlace(); }); })();
+// mở lại game: chạm lần đầu thì phát tiếp bài đang nghe dở
+if(EXTM_ON){ const go=()=>{ ['pointerdown','touchend','click'].forEach(ev=>window.removeEventListener(ev,go,true)); const c=extLS('clx-extm'); if(!c||EXT.kind) return; if(c.kind==='yt') extPlayYT(c.v,c.title); else if(c.kind==='mp3') extPlayAudio({url:c.v,title:c.title}); };
+  ['pointerdown','touchend','click'].forEach(ev=>window.addEventListener(ev,go,true)); }
 
 /* ====== 📲 Loa báo chuyển khoản (ting ting + giọng đọc) ====== */
 const VOICE={on:true,v:null};
@@ -4640,7 +4716,7 @@ function openMenu(){
         ['news','📢','Có gì mới',newsUnseen()?'MỚI':''],['lb','🏆','Xếp hạng',''],['finance','🏦','Vay & đổi',''],['rename','✏️','Đổi tên tiệm','']]
         .map(([k,ic,t,b])=>`<button data-m="${k}"><span>${ic}</span>${t}${b?`<i>${b}</i>`:''}</button>`).join('')}</div>
       <div class="mgrid mg2">${[owns('theme_moon')?['theme',S.wear.theme==='theme_moon'?'🌙':'🍃','Giao diện mùa',S.wear.theme==='theme_moon'?'Bật':'Tắt']:null,
-        ['save','💾','Lưu game',R?'🔒':''],['sound',SFX.on?'🔊':'🔇','Âm thanh',SFX.on?'Bật':'Tắt'],['music','🎵','Nhạc nền',MUSIC.on?'Bật':'Tắt'],['voice','🗣️','Loa báo CK',VOICE.on?'Bật':'Tắt'],
+        ['save','💾','Lưu game',R?'🔒':''],['sound',SFX.on?'🔊':'🔇','Âm thanh',SFX.on?'Bật':'Tắt'],['music','🎵','Nhạc nền',EXT.kind==='yt'?'YouTube':EXT.kind==='mp3'?'MP3':MUSIC.on?'Bật':'Tắt'],['voice','🗣️','Loa báo CK',VOICE.on?'Bật':'Tắt'],
         ['help','❓','Hướng dẫn',''],['tut','📘','Từng bước',''],isStandalone()?null:['install','📱','Cài app','']].filter(Boolean)
         .map(([k,ic,t,b])=>`<button data-m="${k}" ${k==='save'&&R?'disabled':''}><span>${ic}</span>${t}${b?`<i class="${b==='Bật'?'on':b==='Tắt'?'off':''}">${b}</i>`:''}</button>`).join('')}</div>
       ${zaloURL()?'<button data-m="support">🐞 Báo lỗi / Hỗ trợ qua Zalo</button>':''}
@@ -4659,6 +4735,7 @@ $('#modalBox').addEventListener('click',e=>{
   else if(m==='tut'){ closeMenu(); startTut(); }
   else if(m==='support'){ openSupport(''); }
   else if(m==='sound'){ toggleSound(); b.textContent=SFX.on?'🔊 Âm thanh: Bật':'🔇 Âm thanh: Tắt'; }
+  else if(m==='music'&&EXTM_ON){ openMusicPanel(); }
   else if(m==='music'){ toggleMusic(); b.textContent=MUSIC.on?'🎵 Nhạc nền: Bật':'🎵 Nhạc nền: Tắt'; }
   else if(m==='voice'){ toggleVoice(); b.textContent=VOICE.on?'🗣️ Loa báo CK: Bật':'🗣️ Loa báo CK: Tắt'; }
   else if(m==='early'){ closeMenu(); askCloseEarly(); }
