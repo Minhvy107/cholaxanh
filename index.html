@@ -1787,8 +1787,8 @@ document.addEventListener('visibilitychange',()=>{ if(document.hidden){ silentLo
 window.toggleMusic=function(){ MUSIC.on=!MUSIC.on; try{ localStorage.setItem('clx-music',MUSIC.on?'1':'0'); }catch(e){} if(MUSIC.on) audioUnlock(); else { musicStop(); if(!SFX.on) silentLoop(false); } audioHint(); toast(MUSIC.on?'🎵 Đã bật nhạc nền':'🎵 Đã tắt nhạc nền'); };
 
 /* ====== 🎶 Nhạc tự chọn: dán link YouTube (phát trong thẻ 📻 Radio ở cuối trang — YouTube bắt buộc hiện khung video ≥200×200) hoặc link file .mp3 (phát ẩn) ======
-   Đang thử: chỉ bật ở ?choithu (hoặc ?nhactu). Bật cho mọi người: đổi EXTM_ON thành true. */
-const EXTM_ON=TESTMODE||/nhactu/.test(location.search+location.hash);
+   Đã bật cho mọi người (13/10/2026). Muốn tắt lại: đổi EXTM_ON thành false (nút Nhạc nền quay về bật/tắt như cũ). */
+const EXTM_ON=true;
 const EXT={kind:'',el:null,yt:null,api:null,cur:null};
 const muOpen=()=>$('#modal').classList.contains('show')&&!!$('#muPanel'); // bảng nhạc đang mở thật (không phải còn sót trong DOM)
 const extLS=(k,v)=>{ try{ if(v===undefined) return JSON.parse(localStorage.getItem(k)||'null'); if(v===null) localStorage.removeItem(k); else localStorage.setItem(k,JSON.stringify(v)); }catch(e){ return null; } };
@@ -5841,6 +5841,11 @@ window.doRename=function(){ const n=($('#rnName').value||'').replace(/[<>\u0000-
 /* ====== 📢 Bảng cập nhật: báo người chơi game vừa có gì mới ====== */
 // Thêm bản mới lên ĐẦU danh sách. v phải khác nhau; người chơi thấy bảng tự bật 1 lần cho mỗi v mới.
 const CHANGELOG=[
+  {v:'2026-10-13-music',date:'13/10/2026',title:'🎵 Tự chọn nhạc nền',items:[
+    ['🎬','Dán link YouTube (bài hát hoặc playlist) để nghe trong lúc chơi. Mở ở ☰ Menu → 🎵 Nhạc nền','new'],
+    ['📻','Nhạc YouTube phát trong thẻ Radio ở cuối trang, không che game. Đổi tab vẫn nghe liền','new'],
+    ['🎧','Muốn nghe ẩn: dán link file nhạc .mp3 hoặc link Google Drive chia sẻ công khai','new'],
+    ['📱','Trên điện thoại, ra ngoài app thì YouTube tạm dừng, quay lại game sẽ tự phát tiếp','new']]},
   {v:'2026-10-12-w20open',date:'12/10/2026',title:'💐 Hộp mù 20/10 mở bán sớm!',items:[
     ['🎉','Hộp mù 20/10 mở bán sớm từ hôm nay 12/10 đến hết 31/10. Mở ở ☰ Menu → 💐 Hộp mù 20/10','new'],
     ['✨','Món Bí ẩn mới: Nền tiệm 20/10 (tiệm hồng kiểu pixel) và Màn hình vào game 20/10','new'],
