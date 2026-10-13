@@ -1826,7 +1826,7 @@ async function extPlayYT(p,title){ extHalt(true); EXT.kind='yt'; musicStop(); EX
   extSet('yt',p,title||'Nhạc YouTube'); }
 function extPlayAudio(a0){ extHalt(true); EXT.kind='mp3'; musicStop(); EXT.cur={kind:'mp3',v:a0.url,title:a0.title}; radioShow(); const a=EXT.el||(EXT.el=new Audio()); a.loop=true; a.preload='auto'; a.setAttribute('playsinline','');
   a.onerror=()=>{ if(EXT.kind!=='mp3') return; toast('🎧 Không phát được link này. Cần link thẳng tới file nhạc (.mp3, .m4a…) hoặc link Google Drive đã chia sẻ công khai'); extHalt(); if(muOpen()) openMusicPanel(); };
-  a.onplaying=()=>{ if(EXT.kind==='mp3'&&EXT.cur) extSet('mp3',EXT.cur.v,EXT.cur.title,true); };
+  a.onplaying=()=>{ if(EXT.kind==='mp3'&&EXT.cur){ extSet('mp3',EXT.cur.v,EXT.cur.title,true); extMedia(); } };
   a.src=a0.url; a.play().then(()=>{ if(muOpen()) openMusicPanel(); }).catch(err=>{ if(err&&err.name==='NotAllowedError') toast('🎧 Chạm vào màn hình để bắt đầu phát'); });
   extSet('mp3',a0.url,a0.title); }
 window.muPlay=function(which){ const v=($('#'+(which==='yt'?'muYt':'muMp3'))||{}).value||'';
@@ -1841,12 +1841,23 @@ window.openMusicPanel=function(){ const cur=EXT.kind&&EXT.cur, L=extLS('clx-extm
     <label class="toggle" style="padding:2px 0"><input type="checkbox" ${MUSIC.on?'checked':''} onchange="toggleMusic()"> Nhạc của game ${cur?'(tạm dừng khi đang phát nhạc riêng)':''}</label>
     <h4 class="mu-h">🎬 Dán link YouTube</h4>
     <div class="mu-row"><input type="text" id="muYt" inputmode="url" autocomplete="off" placeholder="https://youtu.be/… (video hoặc playlist)"><button class="primary" onclick="muPlay('yt')">Phát</button></div>
-    <p class="muted mu-note">Video phát trong thẻ <b>📻 Radio ở cuối trang</b> (YouTube bắt buộc hiện khung video). Kéo lên chơi tiếp, nhạc vẫn chạy, đổi tab cũng không dừng. Trên iPhone, tắt màn hình là nhạc dừng. Một số bài bị chủ kênh chặn phát ngoài YouTube.</p>
+    <p class="muted mu-note">Video phát trong thẻ <b>📻 Radio ở cuối trang</b> (YouTube bắt buộc hiện khung video). Kéo lên chơi tiếp, nhạc vẫn chạy, đổi tab trong game cũng không dừng. Trên điện thoại, <b>ra khỏi trình duyệt hoặc tắt màn hình là YouTube dừng</b> (quay lại game sẽ tự phát tiếp). Một số bài bị chủ kênh chặn phát ngoài YouTube.</p>
     <h4 class="mu-h">🎧 Nghe ẩn: dán link file nhạc (.mp3)</h4>
     <div class="mu-row"><input type="text" id="muMp3" inputmode="url" autocomplete="off" placeholder="https://…/bai-hat.mp3 hoặc link Google Drive"><button class="primary" onclick="muPlay('mp3')">Phát</button></div>
-    <p class="muted mu-note">Phát ẩn hoàn toàn, không cần khung video, tự lặp lại. Google Drive: bấm Chia sẻ → "Bất kỳ ai có đường liên kết" rồi dán link.</p>
+    <p class="muted mu-note">Phát ẩn hoàn toàn, không cần khung video, tự lặp lại. Thường vẫn nghe được khi ra ngoài app khác hoặc tắt màn hình (mở game bằng Safari/Chrome; trong Zalo/Facebook có thể bị dừng). Google Drive: bấm Chia sẻ → "Bất kỳ ai có đường liên kết" rồi dán link.</p>
     ${L.length?`<h4 class="mu-h">🕘 Nghe gần đây</h4><div class="mu-list">${L.map((x,i)=>`<button onclick="muRecent(${i})"><span>${x.kind==='yt'?'🎬':'🎧'}</span>${esc(x.title||'Bài hát')}</button>`).join('')}</div>`:''}
     <div class="row" style="margin-top:10px"><button onclick="openMenu()">← Menu</button><button class="primary" onclick="closeMenu()">Xong</button></div></div>`); };
+// màn hình khóa / trung tâm điều khiển: tên bài + nút phát/dừng cho nhạc .mp3 (iPhone, Android)
+function extMedia(){ try{ if(!('mediaSession' in navigator)||EXT.kind!=='mp3') return; navigator.mediaSession.metadata=new MediaMetadata({title:(EXT.cur&&EXT.cur.title)||'Nhạc',artist:'Chợ Lá Xanh',artwork:[{src:'icon-192.png',sizes:'192x192',type:'image/png'}]});
+  navigator.mediaSession.setActionHandler('play',()=>EXT.el&&EXT.el.play().catch(()=>{})); navigator.mediaSession.setActionHandler('pause',()=>EXT.el&&EXT.el.pause()); }catch(e){} }
+// ra khỏi tab/app rồi quay lại: phát tiếp nếu trình duyệt đã tự dừng nhạc (YouTube trên điện thoại luôn bị dừng khi ra ngoài)
+const extPlaying=()=>{ try{ return EXT.kind==='yt'?!!EXT.yt&&[1,3].includes(EXT.yt.getPlayerState()):EXT.kind==='mp3'?!!EXT.el&&!EXT.el.paused:false; }catch(e){ return false; } };
+document.addEventListener('visibilitychange',()=>{ if(!EXT.kind) return;
+  if(document.hidden){ EXT.wasOn=extPlaying(); return; } if(!EXT.wasOn) return; EXT.wasOn=false;
+  setTimeout(()=>{ if(!EXT.kind||extPlaying()) return; try{ if(EXT.kind==='yt') EXT.yt.playVideo(); else EXT.el.play().catch(()=>{}); }catch(e){}
+    setTimeout(()=>{ if(!EXT.kind||extPlaying()) return;
+      if(EXT.kind==='mp3'){ const go=()=>{ ['pointerdown','touchend'].forEach(ev=>window.removeEventListener(ev,go,true)); if(EXT.kind==='mp3'&&EXT.el) EXT.el.play().catch(()=>{}); }; ['pointerdown','touchend'].forEach(ev=>window.addEventListener(ev,go,true)); toast('🎧 Chạm màn hình để nghe tiếp'); }
+      else toast('📻 Nhạc tạm dừng khi bạn ra ngoài. Bấm ▶ ở thẻ Radio cuối trang để nghe tiếp'); },1200); },300); });
 // mở lại game: chạm lần đầu thì phát tiếp bài đang nghe dở
 if(EXTM_ON){ const go=()=>{ ['pointerdown','touchend','click'].forEach(ev=>window.removeEventListener(ev,go,true)); const c=extLS('clx-extm'); if(!c||EXT.kind) return; if(c.kind==='yt') extPlayYT(c.v,c.title); else if(c.kind==='mp3') extPlayAudio({url:c.v,title:c.title}); };
   ['pointerdown','touchend','click'].forEach(ev=>window.addEventListener(ev,go,true)); }
