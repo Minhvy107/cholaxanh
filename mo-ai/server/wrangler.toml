@@ -1,0 +1,32 @@
+name = "mo-ai-bot"
+main = "worker.js"
+compatibility_date = "2026-09-01"
+compatibility_flags = ["nodejs_compat"]
+
+# Tạo: npx wrangler d1 create mo-ai  → dán database_id vào đây
+# (GitHub Actions .github/workflows/deploy-mo-ai.yml tự tìm/tạo và điền)
+[[d1_databases]]
+binding = "DB"
+database_name = "mo-ai"
+database_id = "DIEN_ID_D1_VAO_DAY"
+
+[vars]
+# Địa chỉ trang app (Mini App), phải là https
+APP_URL = "https://minhvy107.github.io/cholaxanh/mo-ai/"
+# Model Claude dùng để trò chuyện (xem README: chi phí mỗi tin nhắn)
+CLAUDE_MODEL = "claude-opus-5-5"
+# Liên hệ hỗ trợ thanh toán, ví dụ "@ten_cua_ban"
+SUPPORT = ""
+ALLOWED_ORIGIN = "*"
+
+# 💳 Tài khoản nhận chuyển khoản (không phải bí mật)
+PAY_BIN = "970415"
+PAY_ACCT = "107873840539"
+PAY_HOLDER = "TRAN NGOC HOAI NHU"
+PAY_MEMO = "SEVQR"
+
+# Khóa bí mật KHÔNG ghi ở đây (GitHub Actions tự nạp từ secret MOAI_*):
+#   TG_BOT_TOKEN       token bot từ @BotFather
+#   ADMIN_KEY          mật khẩu tự đặt ≥ 8 ký tự (cho /setup, /refund)
+#   ANTHROPIC_API_KEY  khóa Claude API (console.anthropic.com)
+#   SEPAY_API_KEY      (tùy chọn) khóa API webhook SePay → bật chuyển khoản

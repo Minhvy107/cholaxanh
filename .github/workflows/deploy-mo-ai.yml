@@ -1,0 +1,102 @@
+# 💞 Mơ AI: đưa máy chủ (mo-ai/server) lên Cloudflare mỗi khi code thay đổi trên main, hoặc bấm chạy tay.
+# Dùng chung secret CLOUDFLARE_API_TOKEN (cần quyền "D1: Edit").
+# Thêm secret trong GitHub: Settings → Secrets and variables → Actions:
+#   MOAI_BOT_TOKEN      token bot lấy từ @BotFather
+#   MOAI_ADMIN_KEY      mật khẩu tự đặt (≥ 8 ký tự), dùng cho /setup và /refund
+#   MOAI_ANTHROPIC_KEY  khóa Claude API (console.anthropic.com) → bật trò chuyện AI
+#   MOAI_SEPAY_KEY      (tùy chọn) khóa API điền trong webhook SePay → bật chuyển khoản VietQR
+name: Cập nhật máy chủ Mơ AI
+
+on:
+  push:
+    branches: [main]
+    paths: ['mo-ai/server/**', '.github/workflows/deploy-mo-ai.yml']
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      CF_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CF_ACCOUNT: ${{ secrets.CLOUDFLARE_ACCOUNT_ID || '2aafd661337f1c25f504edf3203914b3' }}
+      TG_BOT_TOKEN: ${{ secrets.MOAI_BOT_TOKEN }}
+      ADMIN_KEY: ${{ secrets.MOAI_ADMIN_KEY }}
+      SEPAY_API_KEY: ${{ secrets.MOAI_SEPAY_KEY }}
+      ANTHROPIC_API_KEY: ${{ secrets.MOAI_ANTHROPIC_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Kiểm tra khóa
+        id: chk
+        run: |
+          if [ -z "$CF_TOKEN" ]; then echo "::warning::Chưa có CLOUDFLARE_API_TOKEN, bỏ qua."; echo "ok=false" >> "$GITHUB_OUTPUT"; exit 0; fi
+          echo "ok=true" >> "$GITHUB_OUTPUT"
+          if [ -n "$TG_BOT_TOKEN" ] && [ -n "$ADMIN_KEY" ]; then echo "bot=true" >> "$GITHUB_OUTPUT"; else echo "::warning::Chưa có MOAI_BOT_TOKEN / MOAI_ADMIN_KEY: chỉ cập nhật code, chưa gắn bot."; echo "bot=false" >> "$GITHUB_OUTPUT"; fi
+
+      - name: Tìm hoặc tạo cơ sở dữ liệu D1 "mo-ai"
+        if: steps.chk.outputs.ok == 'true'
+        run: |
+          API="https://api.cloudflare.com/client/v4/accounts/$CF_ACCOUNT/d1/database"
+          ID=$(curl -fsS -H "Authorization: Bearer $CF_TOKEN" "$API?name=mo-ai" | jq -r '.result[] | select(.name=="mo-ai") | .uuid' | head -n1)
+          if [ -z "$ID" ]; then
+            ID=$(curl -fsS -X POST -H "Authorization: Bearer $CF_TOKEN" -H 'content-type: application/json' -d '{"name":"mo-ai"}' "$API" | jq -r '.result.uuid')
+            echo "Đã tạo D1 mới"
+          fi
+          if [ -z "$ID" ] || [ "$ID" = "null" ]; then echo "::error::Không tạo được D1. Token Cloudflare cần quyền D1: Edit."; exit 1; fi
+          sed -i "s/DIEN_ID_D1_VAO_DAY/$ID/" mo-ai/server/wrangler.toml
+          echo "Dùng D1: $ID"
+
+      # Gọi wrangler trực tiếp (bản 4.x) và tự thử lại: API Cloudflare đôi khi trả 504 Gateway Timeout
+      - name: Cài wrangler và thư viện
+        if: steps.chk.outputs.ok == 'true'
+        run: |
+          npm install -g wrangler@4.149.0
+          cd mo-ai/server && npm ci
+
+      - name: Đưa máy chủ lên Cloudflare
+        id: dep
+        if: steps.chk.outputs.ok == 'true'
+        shell: bash
+        working-directory: mo-ai/server
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ env.CF_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ env.CF_ACCOUNT }}
+        run: |
+          for i in 1 2 3 4; do
+            wrangler deploy 2>&1 | tee /tmp/deploy.log && break
+            [ "$i" = 4 ] && { echo "::error::Cloudflare lỗi 4 lần liền, thử lại sau ít phút (Actions → Run workflow)"; exit 1; }
+            echo "Lỗi, thử lại sau $((i * 20)) giây…"; sleep $((i * 20))
+          done
+          echo "url=$(grep -oE 'https://[a-z0-9.-]+\.workers\.dev' /tmp/deploy.log | head -n1)" >> "$GITHUB_OUTPUT"
+
+      - name: Nạp khóa bot vào máy chủ
+        if: steps.chk.outputs.ok == 'true' && steps.chk.outputs.bot == 'true'
+        shell: bash
+        working-directory: mo-ai/server
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ env.CF_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ env.CF_ACCOUNT }}
+        run: |
+          for name in TG_BOT_TOKEN ADMIN_KEY ANTHROPIC_API_KEY SEPAY_API_KEY; do
+            [ -z "${!name}" ] && { echo "Bỏ qua $name (chưa đặt secret)"; continue; }
+            for i in 1 2 3 4; do
+              printf '%s' "${!name}" | wrangler secret put "$name" && break
+              [ "$i" = 4 ] && { echo "::error::Không nạp được $name"; exit 1; }
+              echo "Lỗi, thử lại sau $((i * 20)) giây…"; sleep $((i * 20))
+            done
+          done
+
+      - name: Gắn bot (tạo bảng, webhook, lệnh, nút Chơi)
+        if: steps.chk.outputs.ok == 'true' && steps.chk.outputs.bot == 'true'
+        shell: bash
+        env:
+          URL: ${{ steps.dep.outputs.url }}
+        run: |
+          U="${URL:-https://mo-ai-bot.tnhn1311.workers.dev}"
+          echo "Máy chủ: $U"
+          for i in 1 2 3 4 5; do
+            sleep $((i * 5))
+            curl -sS -H "x-admin-key: $ADMIN_KEY" "$U/setup" | tee /tmp/setup.json; echo
+            jq -e '.ok == true' /tmp/setup.json > /dev/null 2>&1 && exit 0
+          done
+          echo "::error::Gắn bot thất bại (xem các dòng trên)"; exit 1
