@@ -54,6 +54,19 @@ Những thông tin này không phải bí mật, vì khi chuyển khoản ngư�
 
 Gói p1–p5: **lần nạp đầu mỗi gói được x2 kim cương gốc**.
 
+### 🌾 Nông Trại Pixel (`nong-trai/`)
+Dùng chung máy chủ, tài khoản nhận tiền và mã đơn `CLX…` với Chợ Lá Xanh. Giá khai báo ở `GEM_PACKS` trong `nong-trai/index.html` và các gói `nt*` trong `PACKS` của `server/worker.js`.
+
+| Gói | Giá | Nhận |
+|---|---|---|
+| nt1 | 22.000đ | 60💎 |
+| nt2 | 49.000đ | 150💎 |
+| nt3 | 99.000đ | 330💎 |
+| nt4 | 199.000đ | 700💎 |
+| 🌱 nt_st Khởi nghiệp (1 lần) | 29.000đ | 200💎 + Cây hoa anh đào + Áo hoa |
+
+Máy chủ chỉ nhận đơn các gói `nt*` sau khi `server/worker.js` mới được đưa lên Cloudflare (tự động khi gộp vào `main`).
+
 Giá đang được khai báo ở **hai nơi** và phải khớp nhau:
 - `GEM_PACKS` / `GEM_OFFERS` trong `index.html`
 - `PACKS` trong `server/worker.js` (số 💎 ở đây đã gồm quà tặng; thưởng x2, vật phẩm, thẻ tháng do game tự cộng)

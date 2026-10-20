@@ -24,6 +24,12 @@ Game nông trại pixel chơi trên trình duyệt, chỉ cần mở `index.html
 - **🎣 Câu cá:** quăng câu ở ao hoặc suối, thấy **!** thì bấm, rồi bấm khi vạch trắng nằm trong vùng xanh.
   - Ao có cá rô, cá chép, cá lóc, cá trê (ban đêm).
   - Suối có cá bống, cá hồi suối, cá chép vàng hiếm.
+- **🎁 Gói quà:** gói nông sản, cá, hàng chế biến bằng giấy kraft (×1,5 tình cảm), giấy hoa (×2) hoặc hộp nhung đỏ (×3) trong 🎒 Túi đồ rồi tặng dân làng. Mỗi người có một ngày sinh nhật: tặng quà đúng ngày được ×2 nữa.
+- **🖌️ Chế độ trang trí** (nút cọ hoặc phím T): thời gian tạm dừng, kéo để xem chỗ khác, chạm ô trống để đặt đồ, chạm đồ để cất hoặc dời chỗ. Thêm bụi hoa hồng, bồn hoa đá, nhà chim, đèn đá, bàn picnic, cổng hoa, hồ cá mini. Điểm đẹp giúp tăng giá bán tới +25%.
+- **💎 Kim cương & nạp tiền:**
+  - Nhận 💎 khi lên cấp (+5) và giúp dân làng (+2), hoặc nạp qua chuyển khoản VietQR (dùng chung máy chủ nạp với Chợ Lá Xanh, xem `server/HUONG_DAN_NAP.md`).
+  - Cửa hàng 💎 có đồ trang trí độc quyền (cây hoa anh đào, xích đu, tượng thỏ ngọc, cối xay gió quay cánh), trang phục (áo, quần yếm, mũ), hộp nhung, phân bón thần tốc, cà phê, cỏ khô.
+  - Gói Khởi nghiệp 29.000đ (1 lần): 200💎 + cây anh đào + áo hoa.
 - Lên cấp để mở khoá hạt giống, dụng cụ và công trình mới. Có thêm nâng cấp bình tưới lớn, cuốc bạc, bình tưới bạc; cà phê sữa hồi năng lượng.
 - Quạ ăn cây từ ngày 4 nên cần dựng **bù nhìn**. Có thời tiết, dự báo ngày mai, ngày–đêm, bướm, đom đóm.
 - Tự lưu trên máy (bản lưu cũ được tự chuyển sang bản mới). Âm thanh và nhạc nền 8-bit bật/tắt trong menu ☰.

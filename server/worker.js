@@ -20,6 +20,12 @@ const PACKS = {
   lux: { vnd: 149000, gems: 700 },
   // Season Pass (game tự mở Pass cao cấp + giao diện mùa)
   pass_s1: { vnd: 40000, gems: 0 },
+  // 🌾 Nông Trại Pixel (nong-trai/index.html, GEM_PACKS): cây anh đào + áo hoa của gói nt_st do game tự cộng
+  nt1: { vnd: 22000, gems: 60 },
+  nt2: { vnd: 49000, gems: 150 },
+  nt3: { vnd: 99000, gems: 330 },
+  nt4: { vnd: 199000, gems: 700 },
+  nt_st: { vnd: 29000, gems: 200 },
 };
 const CODE_RE = /CLX[A-Z0-9]{10}/;
 const PENDING_TTL = 24 * 3600;      // đơn chưa trả hết hạn sau 1 ngày

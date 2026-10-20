@@ -22,7 +22,7 @@ img.px{image-rendering:pixelated;image-rendering:crisp-edges}
 .lbl{display:flex;justify-content:space-between;gap:6px;font-size:11px;margin-top:2px}
 #hr{text-align:right}
 #hMoney{font-size:15px}
-#side{position:absolute;right:8px;top:calc(max(8px,env(safe-area-inset-top)) + 84px);display:flex;flex-direction:column;gap:6px}
+#side{position:absolute;right:8px;top:calc(max(8px,env(safe-area-inset-top)) + 102px);display:flex;flex-direction:column;gap:6px}
 .rb{width:42px;height:42px;font-size:20px;padding:0;background:#f6e7c1;border:3px solid #7a4a26;border-radius:8px;box-shadow:0 3px 0 #4e2c12;position:relative}
 .rb:active{transform:translateY(2px);box-shadow:0 1px 0 #4e2c12}
 .rb .dot{position:absolute;right:-4px;top:-4px;width:12px;height:12px;border-radius:50%;background:#e0583c;border:2px solid #fff;display:none}
@@ -37,6 +37,7 @@ img.px{image-rendering:pixelated;image-rendering:crisp-edges}
 #bAct{position:absolute;right:14px;bottom:calc(max(8px,env(safe-area-inset-bottom)) + 62px);width:62px;height:62px;border-radius:50%;font-size:22px;font-weight:900;color:#fff;background:#e0583c;border:4px solid #7a2a18;box-shadow:0 4px 0 #4e1a0e;display:none}
 #bAct:active{transform:translateY(3px);box-shadow:0 1px 0 #4e1a0e}
 body.touch #bAct{display:block}
+body.deco #bAct{display:none}
 #toasts{position:absolute;left:50%;transform:translateX(-50%);top:calc(max(8px,env(safe-area-inset-top)) + 70px);display:flex;flex-direction:column;align-items:center;gap:4px;pointer-events:none;width:min(92%,420px)}
 .toast{background:rgba(40,24,10,.9);color:#fff;border:2px solid #f6c23c;border-radius:6px;padding:5px 10px;font-weight:800;font-size:13px;text-align:center;animation:tt 2.8s forwards}
 @keyframes tt{0%{opacity:0;transform:translateY(-6px)}8%{opacity:1;transform:none}80%{opacity:1}100%{opacity:0}}
@@ -74,6 +75,19 @@ ul.help{padding-left:18px;margin:6px 0}
 .gift{width:64px;padding:3px;border:2px solid #c99a5b;border-radius:6px;background:#fff6d8;text-align:center;font-size:10px;font-weight:800;line-height:1.2}
 .gift img{width:28px;height:28px;display:block;margin:0 auto 2px}
 #fade{position:absolute;inset:0;background:#000;opacity:0;pointer-events:none;transition:opacity .6s;z-index:6}
+.rb.on{background:#ffe08a;border-color:#c0392b}
+#hGem{color:#2a6ab0;font-size:13px}
+.gift.on{border-color:#e0405a;background:#ffe0ea}
+.pack{display:flex;align-items:center;gap:10px;padding:8px;margin:6px 0;border:2px solid #c99a5b;border-radius:8px;background:#fff6d8}
+.pack .t{flex:1;min-width:0}.pack b{display:block;font-size:15px}
+.pack .tag{display:inline-block;background:#e0583c;color:#fff;border-radius:4px;padding:0 5px;font-size:10px;font-weight:900;margin-left:4px;vertical-align:middle}
+.payqr{display:flex;justify-content:center;padding:6px;background:#fff;border-radius:8px;margin:6px 0;min-height:120px;align-items:center}
+.payqr img{width:min(240px,70vw);height:auto;image-rendering:pixelated}
+.paytbl{width:100%;border-collapse:collapse;font-size:13px}.paytbl td{padding:3px 4px;border-bottom:1px dashed #e0c88f;vertical-align:middle}
+.paytbl td:first-child{color:#7a5a3a;white-space:nowrap}.paytbl button{margin-left:6px;font-size:11px;padding:1px 6px;border:2px solid #9a6a10;border-radius:5px;background:#f6c23c;font-weight:800}
+.paydemo{background:#ffe0d8;border:2px solid #e0583c;border-radius:6px;padding:5px 8px;font-size:12px;font-weight:800}
+.paystat{text-align:center;font-weight:800;padding:6px}
+.sw{display:inline-block;width:12px;height:12px;border-radius:3px;border:1px solid #4e2c12;vertical-align:-2px;margin-right:4px}
 </style>
 </head>
 <body>
@@ -87,6 +101,7 @@ ul.help{padding-left:18px;margin:6px 0}
   </div>
   <div class="panel" id="hr">
     <div id="hMoney"></div>
+    <div id="hGem"></div>
     <div class="lbl"><span>⚡</span><span id="hE"></span></div>
     <div class="bar e"><i id="eBar"></i></div>
     <div class="lbl"><span>💧</span><span id="hW"></span></div>
@@ -95,6 +110,8 @@ ul.help{padding-left:18px;margin:6px 0}
 </div>
 <div id="side">
   <button class="rb" id="bBag" title="Túi đồ (B)">🎒<span class="dot"></span></button>
+  <button class="rb" id="bGem" title="Cửa hàng kim cương">💎</button>
+  <button class="rb" id="bDeco" title="Chế độ trang trí (T)">🖌️</button>
   <button class="rb" id="bMenu" title="Menu (Esc)">☰</button>
 </div>
 <div id="hotbar"></div>
@@ -147,6 +164,8 @@ const SHOPIT={
   coffee:{n:'Cà phê sữa',d:'Uống hồi 40 ⚡',p:80,lv:1,kind:'item'},
   bunhin:{n:'Bù nhìn',d:'Đuổi quạ trong bán kính 6 ô',p:150,lv:1,kind:'item'},
   hay:{n:'Cỏ khô ×10',d:'Thức ăn cho gà, bò (mỗi con 1/ngày)',p:150,lv:1,kind:'hay'},
+  giay:{n:'Giấy kraft',d:'Gói quà: tình cảm ×1,5',p:30,lv:1,kind:'item'},
+  giayhoa:{n:'Giấy hoa',d:'Gói quà: tình cảm ×2',p:80,lv:1,kind:'item'},
   canBig:{n:'Bình tưới lớn',d:'Chứa 40 lượt nước',p:600,lv:2,kind:'up'},
   hoeSilver:{n:'Cuốc bạc',d:'Cuốc 3 ô thẳng hàng',p:1500,lv:3,kind:'up'},
   canSilver:{n:'Bình tưới bạc',d:'Tưới 3 ô thẳng hàng',p:2000,lv:4,kind:'up'},
@@ -159,7 +178,40 @@ const DECO={
   tuong:{n:'Tượng gà vàng',d:'+15 điểm đẹp',p:3000,b:15,lv:4},
   haorao:{n:'Hàng rào gỗ',d:'Gói 10 cái',p:80,pack:10,lv:1},
   dalat:{n:'Đá lát đường',d:'Gói 5 viên, lát lên ô cỏ',p:60,pack:5,lv:1},
+  hoahong:{n:'Bụi hoa hồng',d:'+2 điểm đẹp',p:120,b:2,lv:1},
+  bonhoa:{n:'Bồn hoa đá',d:'+3 điểm đẹp',p:180,b:3,lv:1},
+  nhachim:{n:'Nhà chim',d:'+3 điểm đẹp',p:220,b:3,lv:2},
+  denda:{n:'Đèn đá',d:'+4 điểm đẹp, sáng ban đêm',p:300,b:4,lv:2},
+  banpicnic:{n:'Bàn picnic',d:'+4 điểm đẹp',p:350,b:4,lv:2},
+  conghoa:{n:'Cổng hoa',d:'+5 điểm đẹp',p:500,b:5,lv:3},
+  ho:{n:'Hồ cá mini',d:'+6 điểm đẹp',p:600,b:6,lv:3},
+  anhdao:{n:'Cây hoa anh đào',d:'+12 điểm đẹp, hoa rơi lãng mạn',g:40,b:12},
+  xichdu:{n:'Xích đu',d:'+10 điểm đẹp',g:35,b:10},
+  tuongtho:{n:'Tượng thỏ ngọc',d:'+12 điểm đẹp',g:50,b:12},
+  coixay:{n:'Cối xay gió mini',d:'+15 điểm đẹp, cánh quạt quay',g:60,b:15},
 };
+const GLOW={den:[11,-1],denda:[8,2]};
+const WRAP={giay:{n:'Giấy kraft',m:1.5,c:'#c8a060',r:'#c0392b'},giayhoa:{n:'Giấy hoa',m:2,c:'#ffb0cc',r:'#e0405a'},hopnhung:{n:'Hộp nhung đỏ',m:3,c:'#b0203a',r:'#f6c23c'}};
+const GEMIT={
+  hopnhung:{n:'Hộp nhung đỏ',d:'Gói quà ×3 tình cảm',g:5,give:['hopnhung',1]},
+  phanbon:{n:'Phân bón thần tốc ×5',d:'Bón vào cây: lớn thêm 1 ngày ngay',g:12,give:['phanbon',5]},
+  coffee5:{n:'Cà phê sữa ×5',d:'Mỗi ly hồi 40 ⚡',g:15,give:['coffee',5]},
+  hay20:{n:'Cỏ khô ×20',d:'Thức ăn cho vật nuôi',g:10,hay:20},
+};
+const OUTFIT={
+  shirt:{do:{n:'Áo đỏ',c:'#d64b3e',l:'#f07a6a'},xanh:{n:'Áo xanh lá',c:'#3f9a4a',l:'#6ac070',g:30},hong:{n:'Áo hồng',c:'#f07aa8',l:'#ffb0cc',g:30},
+    tim:{n:'Áo tím',c:'#8a5ac8',l:'#b08ae0',g:30},vang:{n:'Áo vàng',c:'#e8b830',l:'#f6d870',g:30},hoa:{n:'Áo hoa (Gói Khởi nghiệp)',c:'#4ab0d8',l:'#ffffff',pack:1}},
+  pants:{xanh:{n:'Yếm xanh',c:'#3e64b0',d:'#2f4d8a'},nau:{n:'Yếm nâu',c:'#8a5a2c',d:'#6e4426',g:20},hong:{n:'Yếm hồng',c:'#e05a8a',d:'#b84470',g:20},den:{n:'Yếm đen',c:'#3a3a4a',d:'#2a2a36',g:20}},
+  hat:{rom:{n:'Mũ rơm',hat:'straw',c:'#e9c45b'},tron:{n:'Đầu trần',hat:'none',c:'#7a4320'},non:{n:'Nón lá',hat:'non',c:'#e8d9a0',g:25},mu:{n:'Mũ lưỡi trai đỏ',hat:'cap',cap:'#c0392b',capD:'#8e2a22',c:'#c0392b',g:25}},
+};
+const OUTCAT={shirt:'Áo',pants:'Quần yếm',hat:'Mũ'};
+const GEM_PACKS=[
+  {id:'nt_st',vnd:29000,gems:200,once:1,name:'🌱 Gói Khởi nghiệp',desc:'200💎 + Cây hoa anh đào + Áo hoa · mua 1 lần',items:['anhdao'],outfit:'shirt:hoa'},
+  {id:'nt1',vnd:22000,gems:60,name:'60 💎'},
+  {id:'nt2',vnd:49000,gems:150,name:'150 💎',tag:'Phổ biến'},
+  {id:'nt3',vnd:99000,gems:330,name:'330 💎',tag:'+10%'},
+  {id:'nt4',vnd:199000,gems:700,name:'700 💎',tag:'+17%'},
+];
 const MACH={
   nmut:{n:'Nồi nấu mứt',d:'Trái cây → mứt (10 giờ)',p:500,lv:2,time:600,acc:k=>!!(CROPS[k]&&CROPS[k].fruit),out:k=>['mut_'+k,1]},
   mayep:{n:'Máy ép nước',d:'Rau củ → nước ép (8 giờ)',p:800,lv:2,time:480,acc:k=>!!(CROPS[k]&&!CROPS[k].fruit),out:k=>['ep_'+k,1]},
@@ -174,7 +226,7 @@ const BUILD={
 };
 const ANIMAL={ga:{n:'Gà',p:400,cap:6,need:'coop'},bo:{n:'Bò',p:1500,cap:4,need:'barn'}};
 const NAMES=['Mít','Bông','Cốm','Xôi','Bơ','Đậu','Mận','Bắp','Kem','Tôm','Mơ','Lu','Bin','Gấu','Nếp','Su'];
-const PLACE_ORDER=['bunhin','chauhoa','ghe','den','tuong','haorao','dalat','nmut','mayep','lobanh','mayphomai'];
+const PLACE_ORDER=['bunhin','chauhoa','hoahong','bonhoa','ghe','nhachim','den','denda','banpicnic','conghoa','ho','tuong','anhdao','xichdu','tuongtho','coixay','haorao','dalat','nmut','mayep','lobanh','mayphomai'];
 const xpNeed=lv=>50*lv;
 const OPEN=8*60, CLOSE=18*60, DAY_START=6*60, PASS_OUT=26*60;
 // ground: 0 cỏ, 1 đường, 2 nước, 3 đất cuốc
@@ -226,7 +278,7 @@ function newState(){
     weather:'sun',tomorrow:'sun',px:DOOR.x*T+8,py:DOOR.y*T+12,dir:0,sel:'hoe',sound:1,music:1,seen:0,
     stats:{earned:0,harvest:0,fish:0},lateWarn:0,built:{},hay:0,animals:[],aid:1,
     npc:{ongtu:{f:0,talk:0,gift:0,met:0,got:{}},bena:{f:0,talk:0,gift:0,met:0,got:{}},chubay:{f:0,talk:0,gift:0,met:0,got:{}}},
-    quest:null,seenItems:{}};
+    quest:null,seenItems:{},gems:0,pid:'',payOrder:null,payLog:[],payBought:{},gifts:[],outfit:{shirt:'do',pants:'xanh',hat:'rom'},owned:{}};
   for(let y=12;y<=13;y++)for(let x=5;x<=7;x++){S.ground[y*MW+x]=3;S.soil[x+','+y]={w:0,c:null}}
   return S;
 }
@@ -262,7 +314,7 @@ function info(k){
   return{n:k,sell:0,cat:'?'};
 }
 const beauty=()=>{let b=0;for(const k in S.pl)b+=(DECO[S.pl[k].k]&&DECO[S.pl[k].k].b)||0;return b};
-const bonus=()=>Math.min(.15,beauty()/200);
+const bonus=()=>Math.min(.25,beauty()/300);
 const priceOf=k=>Math.max(1,Math.round(info(k).sell*(1+bonus())));
 const absNow=()=>(S.day-1)*1440+S.min;
 
@@ -380,6 +432,24 @@ function placeDraw(g,k){
     case'nmut':R(g,'#9a5030',3,22,10,9);R(g,'#b0603a',3,22,10,2);R(g,'#2a1a10',6,26,4,3);R(g,'#f6a03c',7,27,2,2);circ(g,'#5a5a66',8,19,5,3);R(g,'#7a7a86',3,17,10,2);R(g,'#c0392b',6,15,4,2);R(g,'#8e2a22',7,14,2,1);break;
     case'mayep':R(g,'#8a5a2c',3,18,10,13);R(g,'#6e4426',3,21,10,1);R(g,'#6e4426',3,27,10,1);R(g,'#b07a40',4,18,1,13);R(g,'#7a7a86',7,10,2,8);R(g,'#5a5a66',3,10,10,2);R(g,'#c0c8d0',4,10,2,1);R(g,'#4fa3e0',12,26,3,2);break;
     case'lobanh':circ(g,'#8a3a22',8,22,7,7);circ(g,'#b0503a',8,21.5,6,6);for(let y=17;y<28;y+=3)R(g,'#8a3a22',3,y,10,1);R(g,'#1a1010',5,23,6,5);R(g,'#f6a03c',6,26,4,2);R(g,'#8d8d98',11,13,3,4);R(g,'#8d8d98',2,28,12,3);break;
+    case'hoahong':circ(g,'#2f6e2a',8,24,6.5,5.5);circ(g,'#3f8c36',8,23,5.2,4.4);[[4,21],[9,19],[11,24],[6,25],[8,22]].forEach(([x,y])=>{circ(g,'#d0304a',x+1,y+1,1.6);R(g,'#ff8aa0',x,y,1,1)});break;
+    case'bonhoa':circ(g,'#7c7c86',8,27,7.5,3.6);circ(g,'#a4a4ae',8,26.5,7,3);circ(g,'#6e4426',8,26,5.5,2.2);
+      [[4,22,'#ff6a9a'],[7,20,'#f6d33c'],[10,21,'#ffffff'],[12,23,'#9a6ae0'],[6,23,'#ff8a3a'],[9,23,'#ff6a9a']].forEach(([x,y,c])=>{R(g,PAL.leaf,x,y+2,1,2);R(g,c,x-1,y,3,2);R(g,'#f6a03c',x,y,1,1)});break;
+    case'nhachim':R(g,'#7a4a26',7,16,2,15);R(g,'#5a3418',5,30,6,1);R(g,'#c08a4c',4,8,8,8);R(g,'#9a6a3a',4,15,8,1);circ(g,'#2a1a10',8,11.5,1.6);R(g,'#7a4a26',7,14,2,1);
+      for(let i=0;i<5;i++)R(g,'#c0392b',3+i,7-i,10-2*i,1);R(g,'#3f8fd8',10,4,3,2);R(g,'#f6a03c',13,5,1,1);break;
+    case'denda':R(g,'#7c7c86',4,28,8,3);R(g,'#9a9aa4',6,22,4,6);R(g,'#8a8a94',3,14,10,8);R(g,'#f6d33c',5,16,6,4);R(g,'#ffef9a',6,17,2,2);R(g,'#6c6c76',2,12,12,2);R(g,'#8a8a94',5,10,6,2);R(g,'#9a9aa4',7,8,2,2);break;
+    case'banpicnic':R(g,'#7a4a26',3,22,2,7);R(g,'#7a4a26',11,22,2,7);R(g,'#c08a4c',1,19,14,3);R(g,'#e04a3a',1,19,14,1);for(let x=1;x<15;x+=4)R(g,'#ffffff',x,19,2,1);
+      R(g,'#9a6a3a',0,26,16,2);R(g,'#7a4a26',1,28,2,3);R(g,'#7a4a26',13,28,2,3);R(g,'#f6d33c',4,17,3,2);R(g,'#e02a4a',9,17,2,2);break;
+    case'conghoa':R(g,'#f4efe4',1,10,2,21);R(g,'#f4efe4',13,10,2,21);for(let i=0;i<7;i++){const h=i<3?i:i<4?3:6-i;R(g,'#f4efe4',2+i,9-h,1,2);R(g,'#f4efe4',13-i,9-h,1,2)}
+      [[1,12],[13,15],[1,19],[13,22],[1,25],[3,7],[11,7],[7,5]].forEach(([x,y],i)=>{R(g,PAL.leaf,x,y,2,3);R(g,i%2?'#ff6a9a':'#ffffff',x+(i%2),y,1,1)});break;
+    case'ho':circ(g,'#7c7c86',8,25,7.8,5.4);circ(g,'#a4a4ae',8,24.5,7,4.6);circ(g,'#3c8fd8',8,25,5.6,3.4);R(g,'#7cc4f5',5,23,3,1);circ(g,'#3f9a3a',11,26,1.8,1.2);R(g,'#ff8a3a',6,26,2,1);R(g,'#ff8a3a',5,26,1,1);break;
+    case'anhdao':circ(g,'rgba(0,0,0,.2)',8,29.5,7,2.2);R(g,'#5a3418',7,18,3,13);R(g,'#5a3418',4,18,3,2);R(g,'#5a3418',10,16,3,2);
+      circ(g,'#e08aaa',8,12,7.8,8);circ(g,'#f4a8c4',8,11,6.6,6.8);circ(g,'#ffd0e2',6,9,3,2.8);[[3,14],[12,9],[9,16],[5,6]].forEach(([x,y])=>R(g,'#ffffff',x,y,1,1));break;
+    case'xichdu':R(g,'#7a4a26',1,6,2,25);R(g,'#7a4a26',13,6,2,25);R(g,'#9a6a3a',0,5,16,2);R(g,'#d8c9a0',4,7,1,16);R(g,'#d8c9a0',11,7,1,16);R(g,'#c08a4c',3,23,10,2);R(g,'#9a6a3a',3,25,10,1);
+      R(g,PAL.leaf,1,10,2,2);R(g,'#ff6a9a',1,10,1,1);R(g,PAL.leaf,13,14,2,2);R(g,'#ffffff',14,14,1,1);break;
+    case'tuongtho':R(g,'#8d8d98',3,26,10,5);R(g,'#b0b0ba',3,26,10,1);circ(g,'#f6e7a0',8,13,6,6);circ(g,'#ffffff',8,21,4.2,4);circ(g,'#ffffff',8,15,3.2,3);
+      R(g,'#ffffff',6,8,2,5);R(g,'#ffffff',9,8,2,5);R(g,'#ffb0c0',7,9,1,3);R(g,'#ffb0c0',10,9,1,3);R(g,'#e04a5a',7,15,1,1);R(g,'#e04a5a',9,15,1,1);R(g,'#ffb0c0',8,17,1,1);break;
+    case'coixay':R(g,'#e8d6a8',5,14,6,17);R(g,'#d0b880',5,14,1,17);R(g,'#c0b080',4,28,8,3);R(g,'#6b3f1f',7,24,2,4);R(g,'#9fd6f2',7,18,2,2);for(let i=0;i<4;i++)R(g,'#c0392b',4+i,13-i,8-2*i,1);break;
     case'mayphomai':R(g,'#e8e8f0',2,19,12,12);R(g,'#c8c8d4',2,29,12,2);R(g,'#b0b0bc',2,19,12,1);R(g,'#f6d33c',5,23,6,4);R(g,'#e0b020',5,26,6,1);R(g,'#7a7a86',7,13,2,6);circ(g,'#5a5a66',8,13,3,1.2);break;
   }
 }
@@ -437,6 +507,10 @@ function goodDraw(g,k){
   if(k==='phomai'||k==='phomaingon'){for(let i=0;i<9;i++)R(g,k==='phomai'?'#f6d33c':'#f0b030',3+i,12-i,12-i,i+1);R(g,'#d9a820',3,12,12,1);R(g,'#e0b020',6,9,2,2);R(g,'#e0b020',10,10,1,1);return}
   if(k==='banhflan'){R(g,'#d8d0c0',2,13,12,2);circ(g,'#f6d880',8,10,5,3.5);R(g,'#f6d880',3,9,10,4);circ(g,'#8a4a1a',8,7,4,1.6);R(g,'#ffffff',5,9,2,1);return}
   if(k.startsWith('mut_')){const c=CROPS[k.slice(4)].col;R(g,'#a0c8e0',4,4,8,10);R(g,c,5,6,6,7);R(g,'#ffffff',5,6,1,3);R(g,'#c0392b',3,2,10,3);R(g,'#ffffff',4,3,2,1);R(g,'#e8d6a8',5,9,6,3);R(g,c,6,10,4,1);return}
+  if(WRAP[k]){const w=WRAP[k];if(k==='hopnhung'){R(g,w.c,3,6,10,8);R(g,'#801828',3,6,10,2);R(g,w.r,7,6,2,8);circ(g,w.r,6,4,2,1.5);circ(g,w.r,10,4,2,1.5);return}
+    R(g,w.c,2,4,12,8);for(let x=3;x<14;x+=3)R(g,w.r,x,5+(x%2),1,1);R(g,'rgba(0,0,0,.2)',2,11,12,1);circ(g,'#e8e0d0',2,8,1.5,4);return}
+  if(k.startsWith('gift_')){const w=WRAP[k.slice(5)]||WRAP.giay;R(g,'rgba(0,0,0,.2)',3,14,10,1);R(g,w.c,2,6,12,8);R(g,'rgba(0,0,0,.15)',2,12,12,2);R(g,w.c,1,5,14,2);R(g,w.r,7,5,2,9);R(g,w.r,1,5,14,1);circ(g,w.r,5,3,2.4,1.6);circ(g,w.r,11,3,2.4,1.6);R(g,'#ffffff',4,7,1,1);return}
+  if(k==='phanbon'){R(g,'#8a6a4a',3,4,10,11);R(g,'#a08060',3,4,10,2);R(g,'#7fc24a',5,8,6,4);R(g,'#4f9a2e',7,7,2,2);R(g,'#f6d33c',11,2,2,2);R(g,'#f6d33c',2,1,1,1);return}
   if(k.startsWith('ep_')){const c=CROPS[k.slice(3)].col;R(g,'#a0c8e0',5,4,6,11);R(g,c,6,7,4,7);R(g,'#ffffff',6,7,1,3);R(g,'#a0c8e0',6,1,4,3);R(g,'#7a4a26',6,0,4,1);return}
 }
 const ICONC={};
@@ -458,6 +532,7 @@ ICON.coffee=tc(g=>{R(g,'#ffffff',4,4,8,10);R(g,'#e0e0e0',4,12,8,2);R(g,'#ffffff'
 ICON.hay=tc(g=>{R(g,'#c8a040',2,5,12,9);R(g,'#e8c860',2,5,12,2);for(let x=3;x<14;x+=2)R(g,'#a07820',x,7,1,7);R(g,'#c0392b',2,9,12,1);R(g,'#e8c860',1,4,2,2);R(g,'#e8c860',13,3,2,2)});
 ICON.heart=tc(g=>{R(g,'#e0405a',4,5,3,2);R(g,'#e0405a',9,5,3,2);R(g,'#e0405a',3,6,10,3);R(g,'#e0405a',4,9,8,1);R(g,'#e0405a',5,10,6,1);R(g,'#e0405a',6,11,4,1);R(g,'#e0405a',7,12,2,1);R(g,'#ffb0c0',4,6,1,1)});
 ICON.fence=tc(g=>{R(g,'#c08a4c',0,5,16,2);R(g,'#c08a4c',0,10,16,2);R(g,'#8a5a2c',3,2,3,13);R(g,'#8a5a2c',10,2,3,13);R(g,'#b07a40',3,2,3,2);R(g,'#b07a40',10,2,3,2)});
+ICON.hand=tc(g=>{R(g,'#f6c9a0',4,6,8,8);R(g,'#f6c9a0',4,2,2,5);R(g,'#f6c9a0',7,1,2,6);R(g,'#f6c9a0',10,2,2,5);R(g,'#f6c9a0',12,6,2,4);R(g,'#d8a070',4,13,8,1);R(g,'#d8a070',6,3,1,4);R(g,'#d8a070',9,3,1,4)});
 ICON.stone=tc(g=>{R(g,PAL.path,1,1,14,14);circ(g,'#a8a0a0',5,5,3.5,3);circ(g,'#b8b0b0',11,6,3,3);circ(g,'#9a9292',7,11,4,3)});
 ICONC.haorao=ICON.fence;ICONC.dalat=ICON.stone;ICONC.coffee=ICON.coffee;ICONC.hay=ICON.hay;
 ICONC.canBig=ICON.can;ICONC.hoeSilver=ICON.hoeS;ICONC.canSilver=ICON.canS;
@@ -511,6 +586,10 @@ const LOOK={
   chubay:{hat:'cap',cap:'#3f7a3a',capD:'#2a5a28',hair:'#3a2412',style:'short',skin:'#d8a070',shirt:'#e8e0c8',shirtL:'#ffffff',pants:'#6a4a2a',pantsD:'#5a3a1a',boot:'#3a2a1a',beard:'#3a2412',beardSmall:1,overall:1},
 };
 const CSPR={};for(const id in LOOK)CSPR[id]=[0,1,2].map(d=>[0,1,2].map(f=>tc(g=>charDraw(g,d,f,LOOK[id]),16,20)));
+function ownsOutfit(cat,id){const o=OUTFIT[cat][id];return!!o&&((!o.g&&!o.pack)||!!S.owned[cat+':'+id])}
+function applyOutfit(){const o=S.outfit||{},sh=OUTFIT.shirt[o.shirt]||OUTFIT.shirt.do,pa=OUTFIT.pants[o.pants]||OUTFIT.pants.xanh,ha=OUTFIT.hat[o.hat]||OUTFIT.hat.rom;
+  Object.assign(LOOK.player,{shirt:sh.c,shirtL:sh.l,pants:pa.c,pantsD:pa.d,hat:ha.hat,cap:ha.cap,capD:ha.capD});
+  CSPR.player=[0,1,2].map(d=>[0,1,2].map(f=>tc(g=>charDraw(g,d,f,LOOK.player),16,20)))}
 // Vật nuôi
 function chickDraw(g,f){circ(g,'rgba(0,0,0,.2)',8,15,5,1.2);R(g,'#f6a03c',6,13,1,2);R(g,'#f6a03c',9,13,1,2);
   circ(g,'#e0e0e0',7.5,10.5,5,3.5);circ(g,'#ffffff',7.5,10,4.5,3);R(g,'#e0e0e0',4,10,4,2);R(g,'#ffffff',2,7,2,3);
@@ -558,17 +637,17 @@ setInterval(()=>{if(!S||!S.music||!S.sound||!AC||AC.state!=='running'||modalKind
 
 /* ================= NHÂN VẬT LÀNG ================= */
 const NPCS={
-  ongtu:{n:'Ông Tư',spot:[22,16,2],hours:[6*60,18*60],love:['cahoi','cachepvang','caloc','phomai','phomaingon'],like:['fish'],hate:['dep','duahau'],
+  ongtu:{n:'Ông Tư',spot:[22,16,2],bday:[2,9],hours:[6*60,18*60],love:['cahoi','cachepvang','caloc','phomai','phomaingon'],like:['fish'],hate:['dep','duahau'],
     first:'Chào cháu! Ông là Tư, cả đời gắn với cái ao này. Cầm lấy cây cần câu này mà dùng – câu cá vui lắm đó!',
     lines:['Cá rô sáng sớm cắn câu mạnh lắm.','Đêm xuống thì cá trê mới chịu lên ăn mồi.','Nghe nói suối phía Đông có cá chép vàng, ông chưa câu được con nào…','Câu cá phải kiên nhẫn: thấy dấu ! mới giật, rồi canh vạch xanh mà kéo.','Ông thích nhất là cá hồi suối nướng muối ớt.'],
     ss:['Xuân về, cá chép bơi đầy ao.','Hè nóng, cá lóc hay núp dưới bèo.','Thu sang, nước suối lạnh, cá hồi bắt đầu về.','Lạnh quá… nhưng cá trê vẫn ăn khỏe.'],
     warm:['Có cháu về làng, ông vui hẳn.','Mai mốt ông dạy cháu câu cá chép vàng nhé.']},
-  bena:{n:'Bé Na',hours:[8*60,19*60],wander:1,love:['dautay','duahau','banhflan','mut_*'],like:['crop','ani'],hate:['dep','caithao','catre'],
+  bena:{n:'Bé Na',bday:[0,12],hours:[8*60,19*60],wander:1,love:['dautay','duahau','banhflan','mut_*'],like:['crop','ani'],hate:['dep','caithao','catre'],
     first:'Chào chủ trại mới! Em là Na, nhà em ở cuối xóm. Em thích dâu tây với bánh flan lắm lắm!',
     lines:['Hôm nay em đếm được bảy con bướm!','Mứt dâu là món ngon nhất thế giới!','Mẹ em bảo không được chơi gần ao một mình.','Bạn có thấy con quạ nào không? Em sợ quạ lắm.','Gà nhà bạn có đẻ trứng to không?'],
     ss:['Mùa xuân hoa nở khắp nơi, em thích lắm!','Mùa hè ăn dưa hấu là nhất!','Lá vàng rơi đầy đường, em nhặt về làm tranh.','Tuyết rơi kìa! Mình nặn người tuyết đi!'],
     warm:['Bạn là bạn thân nhất của em đó!','Em vẽ tặng bạn một bức tranh nông trại nè.']},
-  chubay:{n:'Chú Bảy',spot:[29,6,0],hours:[8*60,18*60],love:['bingo','bap','sua','suangon','ep_*'],like:['ani','art'],hate:['dep','cucai'],
+  chubay:{n:'Chú Bảy',bday:[1,5],spot:[29,6,0],hours:[8*60,18*60],love:['bingo','bap','sua','suangon','ep_*'],like:['ani','art'],hate:['dep','cucai'],
     first:'Chú là Bảy, thợ mộc trong làng. Cần xây chuồng trại, đóng máy móc hay đồ trang trí thì cứ tìm chú ở xưởng nhé!',
     lines:['Gỗ tốt thì chuồng mới bền.','Bụi gai phía Nam với phía Đông dày lắm, nhưng chú dọn được – có tiền là xong!','Đặt vài chậu hoa, đèn lồng cho đẹp, nông sản bán cũng được giá hơn.','Máy ép nước của chú làm từ gỗ mít đấy.','Hôm nay chú vừa đóng xong cái ghế, ngồi êm lắm.'],
     ss:['Xuân là mùa xây dựng, nắng ráo dễ làm.','Hè nóng quá, chú làm việc sáng sớm thôi.','Thu gió mát, đóng đồ gỗ là sướng nhất.','Đông lạnh, nhớ giữ ấm chuồng gà nhé!'],
@@ -599,16 +678,18 @@ function addItem(k,n=1){S.items[k]=(S.items[k]||0)+n}
 function fmtTime(m){m=Math.floor(m/10)*10;return String(Math.floor(m/60)%24).padStart(2,'0')+':'+String(m%60).padStart(2,'0')}
 
 function hotbarList(){
+  if(DM){const L=[{k:'hand',img:ICON.hand,n:'Tay không – chạm đồ để cất'}];for(const k of PLACE_ORDER)if(S.items[k]>0)L.push({k,img:iconOf(k),n:(DECO[k]||MACH[k]).n,c:S.items[k]});return L}
   const L=[{k:'hoe',img:S.up.hoeSilver?ICON.hoeS:ICON.hoe,n:S.up.hoeSilver?'Cuốc bạc':'Cuốc'},{k:'can',img:S.up.canSilver?ICON.canS:ICON.can,n:S.up.canSilver?'Bình tưới bạc':'Bình tưới'}];
   if(S.up.rod)L.push({k:'rod',img:ICON.rod,n:'Cần câu'});
   for(const t in CROPS)if(S.seeds[t]>0)L.push({k:'seed:'+t,img:iconOf('seed:'+t),n:'Hạt '+CROPS[t].n,c:S.seeds[t]});
+  if(S.items.phanbon>0)L.push({k:'phanbon',img:iconOf('phanbon'),n:'Phân bón thần tốc',c:S.items.phanbon});
   for(const k of PLACE_ORDER)if(S.items[k]>0)L.push({k,img:iconOf(k),n:(DECO[k]||MACH[k]).n,c:S.items[k]});
   return L;
 }
-function selKey(){const L=hotbarList();if(!L.find(o=>o.k===S.sel))S.sel='hoe';return S.sel}
+function selKey(){const L=hotbarList();if(!L.find(o=>o.k===S.sel))S.sel=L[0].k;return S.sel}
 let hbSig='';
 function renderHotbar(force){
-  const L=hotbarList();selKey();const sig=L.map(o=>o.k+':'+(o.c||0)).join('|')+'#'+S.sel+(S.up.hoeSilver?1:0)+(S.up.canSilver?1:0);
+  const L=hotbarList();selKey();const sig=(DM?'D':'')+L.map(o=>o.k+':'+(o.c||0)).join('|')+'#'+S.sel+(S.up.hoeSilver?1:0)+(S.up.canSilver?1:0);
   if(!force&&sig===hbSig)return;hbSig=sig;
   $('#hotbar').innerHTML=L.map((o,i)=>`<button class="slot${o.k===S.sel?' sel':''}" data-k="${o.k}" title="${esc(o.n)}">${i<9?`<span class="k">${i+1}</span>`:''}<img class="px" src="${src(o.img)}" alt="">${o.c!=null?`<span class="n">${o.c}</span>`:''}</button>`).join('');
   const hb=$('#hotbar'),sel=hb.querySelector('.sel');if(sel&&hb.scrollWidth>hb.clientWidth)hb.scrollLeft=sel.offsetLeft-hb.clientWidth/2+21;
@@ -621,7 +702,7 @@ function burst(x,y,col,n=6,up=1){for(let i=0;i<n;i++)parts.push({x,y,vx:(Math.ra
 function useEnergy(n){if(S.energy<n){toast('😮‍💨 Mệt quá rồi… uống cà phê hoặc đi ngủ nhé!');SFX.err();return false}S.energy-=n;return true}
 function gainXp(n){S.xp+=n;while(S.xp>=xpNeed(S.lv)){S.xp-=xpNeed(S.lv);S.lv++;SFX.lvl();
   const un=[...Object.keys(CROPS).filter(t=>CROPS[t].lv===S.lv).map(t=>'hạt '+CROPS[t].n),...[SHOPIT,DECO,MACH,BUILD].flatMap(o=>Object.keys(o).filter(k=>o[k].lv===S.lv).map(k=>o[k].n))];
-  toast(`⭐ Lên cấp ${S.lv}!`+(un.length?' Mở khoá: '+un.join(', '):''));S.maxE=100+(S.lv-1)*10;S.energy=Math.min(S.maxE,S.energy+20)}}
+  S.gems+=5;toast(`⭐ Lên cấp ${S.lv}! +5💎`+(un.length?' · Mở khoá: '+un.join(', '):''));S.maxE=100+(S.lv-1)*10;S.energy=Math.min(S.maxE,S.energy+20)}}
 function actAnim(tool){P.act=.28;P.actTool=tool}
 function lineTiles(tx,ty,n){const [dx,dy]=DIRV[P.dir];const out=[[tx,ty]];for(let i=1;i<n;i++)out.push([tx+dx*i,ty+dy*i]);return out}
 
@@ -675,6 +756,9 @@ function doAction(tx,ty){
     if(!useEnergy(1))return;actAnim(tool);SFX.water();
     tiles.forEach(([x,y])=>{if(S.water<=0)return;S.water--;S.soil[x+','+y].w=1;burst(x*T+8,y*T+6,['#7cc4f5','#bfe6f7','#4fa3e0'],6,.3)});
     return}
+  if(tool==='phanbon'){
+    if(!s||!s.c){toast('Bón phân vào cây đang lớn nhé 🌱');SFX.err();return}
+    s.c.a++;S.items.phanbon--;actAnim('hand');SFX.plant();burst(cxp,cyp,['#f6d33c','#7fc24a','#ffffff'],10);toast(isMature(s.c)?'✨ Cây đã chín!':'✨ Cây lớn vù vù!');renderHotbar();return}
   if(tool.startsWith('seed:')){
     const t=tool.slice(5),ss=seasonOf(S.day);
     if(!s){toast('Phải cuốc đất trước khi gieo hạt 🌱');SFX.err();return}
@@ -682,13 +766,36 @@ function doAction(tx,ty){
     if(!CROPS[t].ss.includes(ss)){toast(`❄️ ${CROPS[t].n} không trồng được vào mùa ${SEASONS[ss].n}`);SFX.err();return}
     if(!(S.seeds[t]>0))return;
     S.seeds[t]--;s.c={t,a:0};actAnim('hand');SFX.plant();burst(cxp,cyp+3,[PAL.leafL],4);renderHotbar();return}
-  if(DECO[tool]||MACH[tool]){
-    const p=ptile();if(p.x===tx&&p.y===ty){toast('Bước sang bên rồi đặt nhé');return}
-    if(tool==='dalat'){if(g!==0||o!==0){toast('Lát đá lên ô cỏ trống');SFX.err();return}S.ground[i]=1;S.items.dalat--;SFX.rock();renderHotbar();return}
-    if((g!==0&&g!==1)||o!==0||s){toast('Đặt lên ô cỏ hoặc đường trống');SFX.err();return}
-    if(tool==='haorao'){S.obj[i]=2;S.items.haorao--;SFX.hoe();renderHotbar();return}
-    S.obj[i]=8;S.pl[key]={k:tool};S.items[tool]--;actAnim('hand');SFX.plant();
-    toast(MACH[tool]?'⚙️ Đã đặt '+MACH[tool].n+' – chạm vào để cho nguyên liệu':tool==='bunhin'?'🧑‍🌾 Đã dựng bù nhìn – quạ sẽ tránh xa!':'✨ Đã đặt '+DECO[tool].n);renderHotbar();return}
+  if(DECO[tool]||MACH[tool])return placeItem(tool,tx,ty);
+}
+function placeItem(tool,tx,ty){
+  const i=idx(tx,ty),o=S.obj[i],g=S.ground[i],key=tx+','+ty,s=S.soil[key];
+  if(!(S.items[tool]>0))return false;
+  const p=ptile();if(p.x===tx&&p.y===ty){toast('Bước sang bên rồi đặt nhé');return false}
+  if(npcAt(tx,ty)||animalAt(tx,ty)||dropAt(tx,ty)>=0){SFX.err();return false}
+  if(tool==='dalat'){if(g!==0||o!==0){toast('Lát đá lên ô cỏ trống');SFX.err();return false}S.ground[i]=1;S.items.dalat--;SFX.rock();renderHotbar();return true}
+  if((g!==0&&g!==1)||o!==0||s){toast('Đặt lên ô cỏ hoặc đường trống');SFX.err();return false}
+  if(tool==='haorao'){S.obj[i]=2;S.items.haorao--;SFX.hoe();renderHotbar();return true}
+  S.obj[i]=8;S.pl[key]={k:tool};S.items[tool]--;if(!DM)actAnim('hand');SFX.plant();burst(tx*T+8,ty*T+8,['#ffffff','#f6d33c'],5);
+  if(!DM||MACH[tool])toast(MACH[tool]?'⚙️ Đã đặt '+MACH[tool].n+' – chạm vào để cho nguyên liệu':tool==='bunhin'?'🧑‍🌾 Đã dựng bù nhìn – quạ sẽ tránh xa!':'✨ Đã đặt '+DECO[tool].n);
+  renderHotbar();return true;
+}
+/* ---- Chế độ trang trí ---- */
+let DM=null,drag=null;
+function toggleDeco(){
+  F=null;P.path=null;DM=DM?null:{ox:0,oy:0};document.body.classList.toggle('deco',!!DM);$('#bDeco').classList.toggle('on',!!DM);
+  if(DM){const L=hotbarList();if(!L.find(o=>o.k===S.sel))S.sel=L[1]?L[1].k:'hand';toast('🖌️ Chế độ trang trí: chạm ô trống để đặt, chạm đồ để cất, kéo để xem chỗ khác. Thời gian tạm dừng.')}
+  else toast('Đã thoát chế độ trang trí');
+  SFX.ui();renderHotbar(true);
+}
+function decoTap(tx,ty){
+  if(!inMap(tx,ty))return;
+  const i=idx(tx,ty),o=S.obj[i],key=tx+','+ty;
+  if(o===8&&S.pl[key]){const p=S.pl[key];if(MACH[p.k]&&p.job){toast('⚙️ Máy đang làm hàng, chưa cất được');SFX.err();return}
+    delete S.pl[key];S.obj[i]=0;addItem(p.k);S.sel=p.k;SFX.ui();toast('Đã cất '+(DECO[p.k]||MACH[p.k]).n+' – chạm ô trống để đặt lại');renderHotbar(true);return}
+  if(o===2){S.obj[i]=0;addItem('haorao');S.sel='haorao';SFX.ui();renderHotbar(true);return}
+  const tool=selKey();if(tool==='hand'){if(o)SFX.err();return}
+  placeItem(tool,tx,ty);
 }
 function refill(){S.water=canCap();SFX.water();actAnim('can');toast('💧 Đã múc đầy bình tưới')}
 function harvest(tx,ty,s){
@@ -783,15 +890,20 @@ function talk(id){
   if(!s.talk){s.talk=1;addFriend(id,2)}
   renderTalk(id,line);
 }
+const isBday=id=>{const b=NPCS[id].bday;return seasonOf(S.day)===b[0]&&sDay(S.day)===b[1]};
 function renderTalk(id,line){
-  const N=NPCS[id],s=S.npc[id],h=hearts(s.f),q=S.quest&&S.quest.id===id?S.quest:null;
+  const N=NPCS[id],s=S.npc[id],h=hearts(s.f),q=S.quest&&S.quest.id===id?S.quest:null,bd=NPCS[id].bday;
   let qh='';
   if(q){const have=S.inv[q.k]||0;qh=`<div class="quest">📋 <b>Nhờ bạn:</b> mang ${q.n} <b>${info(q.k).n}</b> <span class="muted">(bạn có ${have} · còn ${q.until-S.day+1} ngày)</span><br>Thưởng: ${fmt(q.reward)} xu + tình cảm
     ${have>=q.n?`<button class="btn big" data-act="deliver">✅ Giao hàng</button>`:''}</div>`}
-  const gifts=s.gift?'<p class="muted">🎁 Hôm nay đã tặng quà rồi.</p>':(()=>{const ks=Object.keys(S.inv).filter(k=>S.inv[k]>0);return ks.length?`<div class="sec">🎁 Tặng quà (1 món/ngày)</div><div class="grid">${ks.map(k=>`<button class="gift" data-act="gift" data-k="${k}"><img class="px" src="${src(iconOf(k))}">${esc(info(k).n)}</button>`).join('')}</div>`:'<p class="muted">🎁 Chưa có gì để tặng.</p>'})();
+  const gifts=s.gift?'<p class="muted">🎁 Hôm nay đã tặng quà rồi.</p>':(()=>{const ks=Object.keys(S.inv).filter(k=>S.inv[k]>0);
+    const wr=S.gifts.map((x,i)=>`<button class="gift on" data-act="giftw" data-i="${i}"><img class="px" src="${src(iconOf('gift_'+x.p))}">${esc(info(x.k).n)}<br>×${WRAP[x.p].m}♥</button>`).join('');
+    return ks.length||wr?`<div class="sec">🎁 Tặng quà (1 món/ngày${isBday(id)?' · 🎂 sinh nhật: ×2':''})</div><div class="grid">${wr}${ks.map(k=>`<button class="gift" data-act="gift" data-k="${k}"><img class="px" src="${src(iconOf(k))}">${esc(info(k).n)}</button>`).join('')}</div>
+      <p class="muted">Quà gói bằng giấy đẹp được thêm tình cảm. Gói quà trong 🎒 Túi đồ.</p>`:'<p class="muted">🎁 Chưa có gì để tặng.</p>'})();
   openModal(`<h2>${N.n} <button data-act="close">✕</button></h2><div class="bd">
     <div class="npchead"><img class="px" src="${src(CSPR[id][0][0])}"><div><b>${N.n}</b><br><span class="hearts">${'♥'.repeat(h)}${'♡'.repeat(10-h)}</span></div></div>
-    <div class="say">${esc(line)}</div>${qh}
+    <div class="say">${isBday(id)?'🎂 Hôm nay là sinh nhật '+(id==='bena'?'em':id==='ongtu'?'ông':'chú')+' đó! ':''}${esc(line)}</div>
+    <p class="muted">🎂 Sinh nhật: ngày ${bd[1]} mùa ${SEASONS[bd[0]].n}</p>${qh}
     ${id==='chubay'?'<button class="btn o big" data-act="work">🔨 Xem đồ ở xưởng</button>':''}
     ${gifts}</div>`,'npc');modalArg=id;
 }
@@ -866,7 +978,7 @@ function newDay(passOut){
     else{hungry++;a.f=Math.max(0,a.f-20)}}
   if(eggs||milk)msgs.push(`🐣 Sáng nay: ${eggs?eggs+' quả trứng':''}${eggs&&milk?', ':''}${milk?milk+' con bò có sữa':''}.`);
   if(hungry)msgs.push(`😢 ${hungry} con vật bị đói vì hết cỏ khô! Mua thêm ở chuồng hoặc tiệm Cô Ba.`);
-  for(const id in S.npc){S.npc[id].talk=0;S.npc[id].gift=0}
+  for(const id in S.npc){S.npc[id].talk=0;S.npc[id].gift=0;if(S.npc[id].met&&isBday(id))msgs.push(`🎂 Hôm nay là sinh nhật ${NPCS[id].n}! Tặng quà hôm nay được ×2 tình cảm.`)}
   if(S.quest&&S.day>S.quest.until){msgs.push(`⌛ Hết hạn giúp ${NPCS[S.quest.id].n} rồi…`);addFriend(S.quest.id,-3);S.quest=null}
   if(!S.quest&&Math.random()<.55){const m=newQuest();if(m)msgs.push(m)}
   S.energy=passOut?Math.round(S.maxE*.5):S.maxE;
@@ -906,7 +1018,7 @@ function sellRows(){
   for(const k of ks){const p=priceOf(k);total+=p*S.inv[k];
     body+=`<div class="row"><img class="px" src="${src(iconOf(k))}"><div class="t"><b>${esc(info(k).n)} ×${S.inv[k]}</b><small>${p} xu / cái</small></div>
     <button class="btn" data-act="sell" data-k="${k}" data-n="1">Bán 1</button><button class="btn" data-act="sell" data-k="${k}" data-n="${S.inv[k]}">Hết</button></div>`}
-  return`<p class="muted">✨ Điểm đẹp nông trại: <b>${beauty()}</b> → giá bán +${Math.round(bonus()*100)}% (tối đa 15%)</p>`+(ks.length?body+`<button class="btn big" data-act="sellall">💰 Bán tất cả (${fmt(total)} xu)</button>`:'<p class="muted" style="text-align:center;padding:16px 0">Chưa có gì để bán.<br>Thu hoạch, câu cá, nuôi gà bò hoặc chế biến rồi mang ra đây nhé!</p>');
+  return`<p class="muted">✨ Điểm đẹp nông trại: <b>${beauty()}</b> → giá bán +${Math.round(bonus()*100)}% (tối đa 25%)</p>`+(ks.length?body+`<button class="btn big" data-act="sellall">💰 Bán tất cả (${fmt(total)} xu)</button>`:'<p class="muted" style="text-align:center;padding:16px 0">Chưa có gì để bán.<br>Thu hoạch, câu cá, nuôi gà bò hoặc chế biến rồi mang ra đây nhé!</p>');
 }
 function renderShop(){
   let body='';const ss=seasonOf(S.day);
@@ -939,9 +1051,9 @@ function renderWork(){
       body+=row(iconOf(k),d.n,(lock?`🔒 Mở ở cấp ${d.lv}`:esc(d.d))+(S.items[k]?` · đang có ${S.items[k]}`:''),lock,`<button class="btn o" data-act="buydeco" data-k="${k}" ${lock||S.money<pr(d.p)?'disabled':''}>${fmt(pr(d.p))}</button>`)}
     body+='<p class="muted">Mua xong, máy nằm trên thanh công cụ – chọn rồi chạm vào ô trống để đặt.</p>';
   }else{
-    for(const k in DECO){if(k==='bunhin')continue;const d=DECO[k],lock=S.lv<d.lv;
+    for(const k in DECO){if(k==='bunhin'||DECO[k].g)continue;const d=DECO[k],lock=S.lv<d.lv;
       body+=row(iconOf(k),d.n,(lock?`🔒 Mở ở cấp ${d.lv}`:esc(d.d))+(S.items[k]?` · đang có ${S.items[k]}`:''),lock,`<button class="btn o" data-act="buydeco" data-k="${k}" ${lock||S.money<pr(d.p)?'disabled':''}>${fmt(pr(d.p))}</button>`)}
-    body+=`<p class="muted">✨ Điểm đẹp hiện tại: ${beauty()} (+${Math.round(bonus()*100)}% giá bán). Cầm cuốc chạm vào đồ trang trí để nhặt lên.</p>`;
+    body+=`<p class="muted">✨ Điểm đẹp hiện tại: ${beauty()} (+${Math.round(bonus()*100)}% giá bán). Bấm 🖌️ để vào chế độ trang trí. Đồ đẹp độc quyền có ở cửa hàng 💎.</p>`;
   }
   openModal(`<h2>🔨 Xưởng mộc Chú Bảy <button data-act="close">✕</button></h2>
     <div class="tabs"><button class="tab ${workTab==='build'?'on':''}" data-act="wtab" data-t="build">Công trình</button><button class="tab ${workTab==='mach'?'on':''}" data-act="wtab" data-t="mach">Máy móc</button><button class="tab ${workTab==='deco'?'on':''}" data-act="wtab" data-t="deco">Trang trí</button></div>
@@ -957,10 +1069,23 @@ function openBag(){
   body+='<div class="sec">Vật phẩm</div>';
   body+=`<div class="row"><img class="px" src="${src(ICON.coffee)}"><div class="t"><b>Cà phê sữa ×${S.items.coffee||0}</b><small>Hồi 40 ⚡</small></div><button class="btn" data-act="drink" ${S.items.coffee?'':'disabled'}>Uống</button></div>`;
   for(const k of PLACE_ORDER)if(S.items[k]>0)body+=`<div class="row"><img class="px" src="${src(iconOf(k))}"><div class="t"><b>${(DECO[k]||MACH[k]).n} ×${S.items[k]}</b><small>Chọn rồi chạm vào ô trống để đặt</small></div><button class="btn o" data-act="pick" data-k="${k}">Cầm</button></div>`;
+  for(const k of [...Object.keys(WRAP),'phanbon'])if(S.items[k]>0)body+=`<div class="row"><img class="px" src="${src(iconOf(k))}"><div class="t"><b>${k==='phanbon'?'Phân bón thần tốc':WRAP[k].n} ×${S.items[k]}</b><small>${k==='phanbon'?'Chọn trên thanh công cụ rồi chạm vào cây':'Dùng để gói quà'}</small></div></div>`;
+  body+=`<button class="btn o big" data-act="wrapui">🎁 Gói quà${S.gifts.length?` (đã gói ${S.gifts.length})`:''}</button>`;
   body+=`<div class="row"><img class="px" src="${src(ICON.hay)}"><div class="t"><b>Cỏ khô ×${S.hay}</b><small>Thức ăn cho vật nuôi</small></div></div>`;
   body+='<div class="sec">Dân làng</div>'+Object.keys(NPCS).map(id=>{const h=hearts(S.npc[id].f);return`<div class="row"><img class="px" src="${src(CSPR[id][0][0])}" style="width:24px;height:30px"><div class="t"><b>${NPCS[id].n}</b><span class="hearts">${S.npc[id].met?'♥'.repeat(h)+'♡'.repeat(10-h):'<span class="muted">chưa gặp</span>'}</span></div></div>`}).join('');
   body+=`<p class="muted" style="margin-top:10px">📊 Thu hoạch ${fmt(S.stats.harvest)} · câu ${fmt(S.stats.fish)} con cá · vật nuôi ${S.animals.length} · điểm đẹp ${beauty()} · kiếm được ${fmt(S.stats.earned)} xu</p>`;
   openModal(`<h2>🎒 Túi đồ <button data-act="close">✕</button></h2><div class="bd">${body}</div>`,'bag');
+}
+let wrapPaper=null;
+function openWrap(){
+  const papers=Object.keys(WRAP).filter(k=>S.items[k]>0);if(!wrapPaper||!(S.items[wrapPaper]>0))wrapPaper=papers[0]||null;
+  const ks=Object.keys(S.inv).filter(k=>S.inv[k]>0&&info(k).cat!=='junk');
+  let body='<div class="sec">1. Chọn giấy gói</div><div class="grid">'+Object.keys(WRAP).map(k=>`<button class="gift${k===wrapPaper?' on':''}" data-act="wpaper" data-k="${k}" ${S.items[k]>0?'':'disabled'}><img class="px" src="${src(iconOf(k))}">${WRAP[k].n}<br>×${S.items[k]||0} · ${WRAP[k].m}♥</button>`).join('')+'</div>';
+  if(!papers.length)body+='<p class="muted">Chưa có giấy gói. Mua giấy kraft, giấy hoa ở tiệm Cô Ba, hộp nhung đỏ ở cửa hàng 💎.</p>';
+  body+='<div class="sec">2. Chọn món để gói</div>'+(ks.length?`<div class="grid">${ks.map(k=>`<button class="gift" data-act="wrapit" data-k="${k}" ${wrapPaper?'':'disabled'}><img class="px" src="${src(iconOf(k))}">${esc(info(k).n)}<br>×${S.inv[k]}</button>`).join('')}</div>`:'<p class="muted">Chưa có món nào.</p>');
+  if(S.gifts.length)body+='<div class="sec">Quà đã gói</div>'+S.gifts.map((x,i)=>`<div class="row"><img class="px" src="${src(iconOf('gift_'+x.p))}"><div class="t"><b>${esc(info(x.k).n)}</b><small>${WRAP[x.p].n} · tình cảm ×${WRAP[x.p].m}</small></div><button class="btn o" data-act="unwrap" data-i="${i}">Mở ra</button></div>`).join('');
+  body+='<p class="muted">Tặng quà đã gói cho dân làng để được thêm tình cảm. Tặng đúng ngày sinh nhật còn được ×2 nữa!</p>';
+  openModal(`<h2>🎁 Gói quà <button data-act="close">✕</button></h2><div class="bd">${body}</div>`,'wrap');
 }
 function helpHtml(){return `<ul class="help">
   <li><b>Di chuyển:</b> phím mũi tên / WASD, hoặc <b>chạm</b> vào nơi muốn đến.</li>
@@ -973,6 +1098,9 @@ function helpHtml(){return `<ul class="help">
   <li>🐔 Nuôi gà, bò: cho ăn cỏ khô, vuốt ve mỗi ngày. Trứng nằm trên sân, chạm vào bò để vắt sữa.</li>
   <li>⚙️ Máy chế biến biến nông sản thành mứt, nước ép, bánh flan, phô mai – giá cao hơn nhiều.</li>
   <li>💝 Trò chuyện, tặng quà, giúp việc cho dân làng để nhận quà khi đủ ♥.</li>
+  <li>🎁 Gói quà bằng giấy kraft, giấy hoa hay hộp nhung để được thêm tình cảm; mỗi người có một ngày sinh nhật.</li>
+  <li>🖌️ Bấm nút cọ (phím T) để vào chế độ trang trí: đặt, cất, dời đồ mà không cần đi lại.</li>
+  <li>💎 Kim cương nhận được khi lên cấp, giúp dân làng, hoặc nạp qua VietQR để mua đồ trang trí độc quyền, trang phục, phân bón.</li>
   <li>🏠 Vào nhà để ngủ. Quá 2 giờ sáng sẽ ngất xỉu! Từ ngày 4 có quạ – dựng bù nhìn.</li></ul>`}
 function openMenu(){
   SFX.ui();openModal(`<h2>☰ ${esc(S.name)} <button data-act="close">✕</button></h2><div class="bd">
@@ -1013,31 +1141,147 @@ $('#mbox').addEventListener('click',e=>{
   else if(a==='sell'){const k=b.dataset.k,n=Math.min(+b.dataset.n,S.inv[k]||0);if(!n)return;S.inv[k]-=n;const m=n*priceOf(k);S.money+=m;S.stats.earned+=m;SFX.coin();renderShop()}
   else if(a==='sellall'){let m=0;for(const k in S.inv){m+=(S.inv[k]||0)*priceOf(k);S.inv[k]=0}S.money+=m;S.stats.earned+=m;SFX.coin();toast(`💰 +${fmt(m)} xu`);renderShop()}
   else if(a==='drink'){if(!S.items.coffee)return;S.items.coffee--;S.energy=Math.min(S.maxE,S.energy+40);SFX.drink();toast('☕ Tỉnh cả người! +40 ⚡');openBag()}
+  else if(a==='wrapui'){SFX.ui();openWrap()}
+  else if(a==='wpaper'){wrapPaper=b.dataset.k;SFX.ui();openWrap()}
+  else if(a==='wrapit'){const k=b.dataset.k;if(!wrapPaper||!(S.items[wrapPaper]>0)||!(S.inv[k]>0))return;S.inv[k]--;S.items[wrapPaper]--;S.gifts.push({k,p:wrapPaper});SFX.heart();toast('🎁 Đã gói '+info(k).n);openWrap()}
+  else if(a==='unwrap'){const g=S.gifts.splice(+b.dataset.i,1)[0];if(!g)return;addInv(g.k);SFX.ui();toast('Đã mở quà – giấy gói rách mất rồi');openWrap()}
+  else if(a==='gtab'){gemTab=b.dataset.t;SFX.ui();renderGem()}
+  else if(a==='gbuy'||a==='gbuyi'||a==='gbuyo'){const k=b.dataset.k,d=a==='gbuy'?DECO[k]:a==='gbuyi'?GEMIT[k]:(([c,i])=>OUTFIT[c][i])(k.split(':'));
+    if(!d)return;if(S.gems<d.g){toast('Chưa đủ 💎 – nạp thêm ở tab Nạp 💎');SFX.err();gemTab='nap';return renderGem()}
+    S.gems-=d.g;SFX.coin();
+    if(a==='gbuy'){addItem(k);S.sel=k;toast('✨ Đã mua '+d.n+' – bấm 🖌️ để đặt vào vườn')}
+    else if(a==='gbuyi'){if(d.give)addItem(d.give[0],d.give[1]);if(d.hay)S.hay+=d.hay;toast('✨ Đã mua '+d.n)}
+    else{S.owned[k]=1;const[c,i]=k.split(':');S.outfit[c]=i;applyOutfit();toast('👕 Đã mặc '+d.n)}
+    save();renderHotbar();renderGem()}
+  else if(a==='wear'){const[c,i]=b.dataset.k.split(':');if(!ownsOutfit(c,i))return;S.outfit[c]=i;applyOutfit();SFX.ui();save();renderGem()}
+  else if(a==='pay')payOpen(b.dataset.k);
+  else if(a==='payshow')payShow();
+  else if(a==='payreplace'){S.payOrder=null;payOpen(b.dataset.k)}
+  else if(a==='paycancel')openModal(`<h2>Hủy đơn?</h2><div class="bd"><p>Nếu bạn <b>đã chuyển khoản</b> cho đơn này thì đừng hủy, hãy chờ vài phút để nhận 💎.</p><button class="btn r big" data-act="paycancel2">Hủy đơn</button><button class="btn o big" data-act="payshow">Quay lại</button></div>`,'pay');
+  else if(a==='paycancel2'){S.payOrder=null;save();closeModal();toast('Đã hủy đơn')}
+  else if(a==='copy'){const v=b.dataset.v;try{navigator.clipboard.writeText(v).then(()=>toast('Đã sao chép: '+v),()=>toast(v))}catch(e){toast(v)}}
   else if(a==='pick'){S.sel=b.dataset.k;renderHotbar(true);closeModal()}
   else if(a==='load'){const key=modalArg,p=S.pl[key],k=b.dataset.k;if(!p||p.job||!(S.inv[k]>0))return;const M=MACH[p.k],[o,n]=M.out(k);S.inv[k]--;p.job={out:o,n,ready:absNow()+M.time};SFX.plant();toast(`⚙️ Đang làm ${info(o).n}…`);closeModal()}
   else if(a==='pickup'){const key=modalArg,p=S.pl[key];if(!p||p.job)return;const[x,y]=key.split(',').map(Number);delete S.pl[key];S.obj[idx(x,y)]=0;addItem(p.k);renderHotbar();closeModal()}
-  else if(a==='gift'){const id=modalArg,k=b.dataset.k,s=S.npc[id];if(s.gift||!(S.inv[k]>0))return;S.inv[k]--;s.gift=1;const pf=prefOf(id,k);
-    const pts={love:8,like:4,neutral:2,hate:-4}[pf];const say={love:'Ôi! Đây đúng là thứ tôi thích nhất! Cảm ơn nhiều lắm!',like:'Cảm ơn nhé, quà dễ thương quá.',neutral:'Ồ, cảm ơn bạn.',hate:'Ơ… cái này thì… thôi, cảm ơn vậy.'}[pf];
-    pf==='hate'?SFX.err():SFX.heart();addFriend(id,pts);renderTalk(id,say)}
-  else if(a==='deliver'){const q=S.quest;if(!q||(S.inv[q.k]||0)<q.n)return;S.inv[q.k]-=q.n;S.money+=q.reward;S.stats.earned+=q.reward;const id=q.id;S.quest=null;SFX.coin();SFX.heart();gainXp(15);addFriend(id,10);toast(`📋 Hoàn thành! +${fmt(q.reward)} xu`);renderTalk(id,'Cảm ơn bạn nhiều lắm! Đúng thứ mình đang cần.')}
+  else if(a==='gift'||a==='giftw'){const id=modalArg,s=S.npc[id];if(s.gift)return;let k,m=1,wrapped=false;
+    if(a==='giftw'){const gf=S.gifts[+b.dataset.i];if(!gf)return;S.gifts.splice(+b.dataset.i,1);k=gf.k;m=WRAP[gf.p].m;wrapped=true}
+    else{k=b.dataset.k;if(!(S.inv[k]>0))return;S.inv[k]--}
+    s.gift=1;const pf=prefOf(id,k);if(isBday(id))m*=2;
+    const pts=pf==='hate'?(wrapped?-2:-4):Math.round({love:8,like:4,neutral:2}[pf]*m);const say={love:'Ôi! Đây đúng là thứ tôi thích nhất! Cảm ơn nhiều lắm!',like:'Cảm ơn nhé, quà dễ thương quá.',neutral:'Ồ, cảm ơn bạn.',hate:'Ơ… cái này thì… thôi, cảm ơn vậy.'}[pf];
+    pf==='hate'?SFX.err():SFX.heart();addFriend(id,pts);if(pts>0&&NE[id])addFloat(NE[id].x,NE[id].y-24,ICON.heart,'');
+    renderTalk(id,(wrapped&&pf!=='hate'?'Ôi, gói quà đẹp quá! ':'')+(isBday(id)&&pf!=='hate'?'Cảm ơn đã nhớ sinh nhật! ':'')+say)}
+  else if(a==='deliver'){const q=S.quest;if(!q||(S.inv[q.k]||0)<q.n)return;S.inv[q.k]-=q.n;S.money+=q.reward;S.stats.earned+=q.reward;const id=q.id;S.quest=null;SFX.coin();SFX.heart();gainXp(15);addFriend(id,10);S.gems+=2;toast(`📋 Hoàn thành! +${fmt(q.reward)} xu, +2💎`);renderTalk(id,'Cảm ơn bạn nhiều lắm! Đúng thứ mình đang cần.')}
   else if(a==='snd'){S.sound=S.sound?0:1;save();openMenu()}
   else if(a==='mus'){S.music=S.music?0:1;save();openMenu()}
   else if(a==='help'){openModal(`<h2>❓ Hướng dẫn <button data-act="close">✕</button></h2><div class="bd">${helpHtml()}<button class="btn big" data-act="close">Đã hiểu</button></div>`,'help')}
   else if(a==='save'){save();toast('💾 Đã lưu');closeModal()}
   else if(a==='reset'){openModal(`<h2>🗑️ Chơi lại?</h2><div class="bd"><p>Toàn bộ nông trại, tiền và vật phẩm sẽ bị xoá.</p><button class="btn r big" data-act="reset2">Xoá và chơi lại</button><button class="btn o big" data-act="close">Huỷ</button></div>`,'reset')}
-  else if(a==='reset2'){try{localStorage.removeItem(SAVE_KEY)}catch(e){}S=newState();syncP();AE=[];syncAnimals();talkLine={};renderHotbar(true);intro()}
+  else if(a==='reset2'){try{localStorage.removeItem(SAVE_KEY)}catch(e){}S=newState();applyOutfit();syncP();AE=[];syncAnimals();talkLine={};renderHotbar(true);intro()}
   else if(a==='start'){const v=($('#farmName').value||'').trim();if(v)S.name=v.slice(0,24);S.seen=1;save();SFX.harvest();closeModal();toast('🌱 Thử cuốc ô cỏ, gieo hạt củ cải rồi tưới nước nhé!');setTimeout(()=>toast('🎣 Ông Tư đang câu cá ở bờ ao, ghé chào ông nhé!'),3000)}
 });
 $('#modal').addEventListener('click',e=>{if(e.target.id==='modal'&&!['intro','morning','fade','reset'].includes(modalKind))closeModal()});
 $('#bBag').onclick=()=>{ac();if(!modalOpen)openBag()};
 $('#bMenu').onclick=()=>{ac();if(!modalOpen)openMenu()};
+$('#bGem').onclick=()=>{ac();if(!modalOpen)openGem()};
+$('#hGem').onclick=()=>{ac();if(!modalOpen)openGem()};
+$('#bDeco').onclick=()=>{ac();if(!modalOpen)toggleDeco()};
 $('#bAct').addEventListener('pointerdown',e=>{e.preventDefault();ac();actFacing()});
 function actFacing(){
-  if(modalOpen)return;if(F)return fishAction();
+  if(modalOpen||DM)return;if(F)return fishAction();
   const p=ptile(),[dx,dy]=DIRV[P.dir],fx=p.x+dx,fy=p.y+dy;
   const here=S.soil[p.x+','+p.y],front=S.soil[fx+','+fy];
   if(here&&here.c&&isMature(here.c)&&!(front&&front.c&&isMature(front.c))&&!npcAt(fx,fy)&&!animalAt(fx,fy))return doAction(p.x,p.y);
   doAction(fx,fy)}
+
+/* ================= KIM CƯƠNG & NẠP TIỀN ================= */
+// Dùng chung máy chủ nạp với Chợ Lá Xanh (server/worker.js): giá các gói nt* phải khớp PACKS ở đó.
+const PAY_CFG={bin:'970415',acct:'107873840539',holder:'TRAN NGOC HOAI NHU',api:'https://cholaxanh-nap.tnhn1311.workers.dev',site:'https://minhvy107.github.io/cholaxanh/nong-trai/',memo:'SEVQR'};
+const PAY_BANKS={'970436':'Vietcombank','970415':'VietinBank','970418':'BIDV','970405':'Agribank','970422':'MB Bank','970407':'Techcombank','970416':'ACB','970423':'TPBank','970432':'VPBank','970403':'Sacombank','970441':'VIB','970443':'SHB'};
+const fmtVND=v=>v.toLocaleString('vi-VN')+'đ';
+function tlv(id,v){return id+String(v.length).padStart(2,'0')+v}
+function crc16(str){let c=0xFFFF;for(let i=0;i<str.length;i++){c^=str.charCodeAt(i)<<8;for(let k=0;k<8;k++)c=c&0x8000?((c<<1)^0x1021)&0xFFFF:(c<<1)&0xFFFF}return c.toString(16).toUpperCase().padStart(4,'0')}
+function vietQR(bin,acct,amount,memo){const mai=tlv('00','A000000727')+tlv('01',tlv('00',bin)+tlv('01',acct))+tlv('02','QRIBFTTA');
+  const body=tlv('00','01')+tlv('01','12')+tlv('38',mai)+tlv('53','704')+tlv('54',String(amount))+tlv('58','VN')+tlv('62',tlv('08',memo))+'6304';return body+crc16(body)}
+let qrLib=null;
+function loadQR(){if(qrLib)return qrLib;qrLib=new Promise((ok,no)=>{if(window.qrcode)return ok(window.qrcode);const sc=document.createElement('script');sc.src='https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js';sc.onload=()=>ok(window.qrcode);sc.onerror=()=>{qrLib=null;no()};document.head.appendChild(sc)});return qrLib}
+function payId(){if(!S.pid){const A='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';S.pid=Array.from({length:6},()=>A[Math.random()*A.length|0]).join('')}return S.pid}
+async function payApi(path,body,retry=1){
+  let r;try{r=await fetch(PAY_CFG.api+path,body?{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)}:{})}
+  catch(e){if(retry>0){await new Promise(ok=>setTimeout(ok,1500));return payApi(path,body,retry-1)}const x=new Error(e.message||'mạng');x.net=true;throw x}
+  if(!r.ok){let d='';try{const j=await r.json();d=j.detail||j.error||''}catch(e){}throw new Error('HTTP '+r.status+(d?' · '+d:''))}
+  return r.json()}
+let gemTab='nap';
+function openGem(){SFX.ui();renderGem()}
+function renderGem(){
+  let body='';
+  if(gemTab==='nap'){
+    if(S.payOrder){const o=S.payOrder;body+=`<div class="quest">💳 Đơn <b>${o.code}</b> (${fmtVND(o.vnd)} → ${o.gems}💎) đang chờ thanh toán.<button class="btn big" data-act="payshow">Xem mã QR</button></div>`}
+    for(const p of GEM_PACKS){const done=p.once&&S.payBought[p.id];
+      body+=`<div class="pack"${done?' style="opacity:.55"':''}><div style="font-size:26px">${p.once?'🌱':'💎'}</div><div class="t"><b>${p.name}${p.tag?`<span class="tag">${p.tag}</span>`:''}</b><small class="muted">${p.desc||'Kim cương dùng mua đồ trang trí, trang phục, tiện ích'}</small></div>
+        <button class="btn o" data-act="pay" data-k="${p.id}" ${done?'disabled':''}>${done?'Đã mua':fmtVND(p.vnd)}</button></div>`}
+    body+=`<p class="muted">Thanh toán bằng chuyển khoản VietQR, 💎 tự cộng sau khoảng 1 phút. Không nạp cũng có 💎: lên cấp +5💎, giúp dân làng +2💎.</p>`;
+  }else if(gemTab==='deco'){
+    for(const k in DECO){const d=DECO[k];if(!d.g)continue;
+      body+=`<div class="row"><img class="px" src="${src(iconOf(k))}"><div class="t"><b>${d.n}</b><small>${esc(d.d)}${S.items[k]?` · đang có ${S.items[k]}`:''}</small></div><button class="btn o" data-act="gbuy" data-k="${k}">${d.g} 💎</button></div>`}
+    body+='<p class="muted">Mua xong bấm 🖌️ để đặt vào vườn.</p>';
+  }else if(gemTab==='outfit'){
+    for(const c in OUTFIT){body+=`<div class="sec">${OUTCAT[c]}</div>`;
+      for(const id in OUTFIT[c]){const o=OUTFIT[c][id],own=ownsOutfit(c,id),on=S.outfit[c]===id;
+        body+=`<div class="row"><span class="sw" style="background:${o.c}"></span><div class="t"><b>${o.n}</b></div>${on?'<button class="btn" disabled>Đang mặc</button>':own?`<button class="btn" data-act="wear" data-k="${c}:${id}">Mặc</button>`:o.pack?'<button class="btn o" disabled>Trong gói</button>':`<button class="btn o" data-act="gbuyo" data-k="${c}:${id}">${o.g} 💎</button>`}</div>`}}
+  }else{
+    for(const k in GEMIT){const d=GEMIT[k];body+=`<div class="row"><img class="px" src="${src(iconOf(d.give?d.give[0]:'hay'))}"><div class="t"><b>${d.n}</b><small>${esc(d.d)}</small></div><button class="btn o" data-act="gbuyi" data-k="${k}">${d.g} 💎</button></div>`}
+  }
+  const tb=(t,n)=>`<button class="tab ${gemTab===t?'on':''}" data-act="gtab" data-t="${t}">${n}</button>`;
+  openModal(`<h2>💎 Cửa hàng kim cương <button data-act="close">✕</button></h2>
+    <div class="tabs">${tb('nap','Nạp 💎')}${tb('deco','Trang trí')}${tb('outfit','Trang phục')}${tb('tien','Tiện ích')}</div>
+    <div class="bd" style="border-top:2px solid #7a4a26"><div style="text-align:right;font-weight:900">Bạn có 💎 ${fmt(S.gems)}</div>${body}</div>`,'gem');
+}
+async function payOpen(id){
+  const p=GEM_PACKS.find(x=>x.id===id);if(!p)return;
+  if(p.once&&S.payBought[id])return toast('Gói này chỉ mua được 1 lần');
+  if(S.payOrder){if(S.payOrder.pack===id)return payShow();
+    return openModal(`<h2>💳 Còn đơn chưa thanh toán <button data-act="close">✕</button></h2><div class="bd"><p>Bạn còn đơn <b>${S.payOrder.code}</b> (${fmtVND(S.payOrder.vnd)}) chưa thanh toán. Nếu đã chuyển khoản cho đơn đó, hãy chờ nhận 💎 trước.</p>
+      <button class="btn big" data-act="payshow">Xem đơn cũ</button><button class="btn r big" data-act="payreplace" data-k="${id}">Hủy đơn cũ, tạo đơn mới</button></div>`,'pay')}
+  const A='ABCDEFGHJKLMNPQRSTUVWXYZ23456789',code='CLX'+payId()+Array.from({length:4},()=>A[Math.random()*A.length|0]).join('');
+  openModal(`<h2>💳 Đang tạo đơn…</h2><div class="bd"><p class="paystat">⏳ Đang kết nối máy chủ nạp…</p></div>`,'pay');
+  try{await payApi('/order',{code,pack:id})}
+  catch(e){if(!/^HTTP 409/.test(e.message)){
+    const onSite=location.href.startsWith(PAY_CFG.site);
+    return openModal(onSite?`<h2>💳 Không kết nối được máy chủ nạp <button data-act="close">✕</button></h2><div class="bd"><p>${e.net?'Máy chưa kết nối được tới máy chủ nạp. Hãy thử <b>đổi Wi-Fi ↔ 4G</b>, tắt VPN / chặn quảng cáo, rồi bấm lại.':'Máy chủ nạp đang gặp lỗi, vui lòng thử lại sau ít phút.'}</p><p class="muted">Chi tiết: ${esc(e.message)}</p><button class="btn big" data-act="close">Đóng</button></div>`
+      :`<h2>💳 Nạp trên trang chính của game <button data-act="close">✕</button></h2><div class="bd"><p>Trang bạn đang mở không kết nối được máy chủ nạp. Hãy mở game tại trang chính để nạp 💎:</p>
+        <p style="text-align:center"><a href="${PAY_CFG.site}" target="_blank" rel="noopener"><b>${PAY_CFG.site.replace(/^https:\/\//,'')}</b></a></p>
+        <p class="muted">Mỗi trang lưu tiến trình riêng trên máy của bạn.</p><button class="btn o big" data-act="copy" data-v="${PAY_CFG.site}">Chép link</button><button class="btn big" data-act="close">Đóng</button></div>`,'pay')}}
+  S.payOrder={code,pack:id,gems:p.gems,vnd:p.vnd,at:Date.now()};save();payShow();
+}
+function payShow(){
+  const o=S.payOrder;if(!o)return;const memo=(PAY_CFG.memo?PAY_CFG.memo+' ':'')+o.code;
+  const cp=v=>`<button data-act="copy" data-v="${v}">Chép</button>`;
+  openModal(`<h2>💳 Nạp ${o.gems} 💎 · ${fmtVND(o.vnd)} <button data-act="close">✕</button></h2><div class="bd">
+    <div class="payqr" id="payQr"><span class="muted">Đang tạo mã QR…</span></div>
+    <table class="paytbl"><tr><td>Ngân hàng</td><td><b>${PAY_BANKS[PAY_CFG.bin]||PAY_CFG.bin}</b></td></tr>
+      <tr><td>Số tài khoản</td><td><b>${PAY_CFG.acct}</b>${cp(PAY_CFG.acct)}</td></tr><tr><td>Chủ tài khoản</td><td><b>${esc(PAY_CFG.holder)}</b></td></tr>
+      <tr><td>Số tiền</td><td><b>${fmtVND(o.vnd)}</b>${cp(o.vnd)}</td></tr><tr><td>Nội dung</td><td><b style="color:#c0392b">${memo}</b>${cp(memo)}</td></tr></table>
+    <p class="muted">Quét mã bằng app ngân hàng, giữ nguyên <b>số tiền</b> và <b>nội dung</b> (kể cả chữ SEVQR). 💎 được cộng tự động khoảng 1 phút sau khi tiền về. Có thể đóng bảng này, đơn được giữ 24 giờ.</p>
+    <div class="paystat" id="payStat">⏳ Đang chờ tiền về…</div>
+    <button class="btn r big" data-act="paycancel">Hủy đơn</button></div>`,'pay');
+  loadQR().then(qr=>{const q=qr(0,'M');q.addData(vietQR(PAY_CFG.bin,PAY_CFG.acct,o.vnd,memo));q.make();const el=$('#payQr');if(el)el.innerHTML=q.createImgTag(5,8)})
+    .catch(()=>{const el=$('#payQr');if(el)el.innerHTML='<span class="muted">Không tải được mã QR. Bạn chuyển khoản thủ công theo thông tin bên dưới.</span>'});
+  payTick();
+}
+let payBusy=false,payLast=0;
+async function payTick(){const o=S&&S.payOrder;if(!o||payBusy)return;payBusy=true;payLast=Date.now();
+  try{const r=await payApi('/order/'+o.code);
+    if(r.status==='paid'){const c=await payApi('/order/'+o.code+'/claim',{});if(c.gems!=null&&S.payOrder&&S.payOrder.code===o.code)payCredit(c.gems)}
+    else if(r.status==='expired'||r.status==='missing'){if(S.payOrder&&S.payOrder.code===o.code){S.payOrder=null;save()}const st=$('#payStat');if(st)st.textContent='Đơn đã hết hạn, vui lòng tạo đơn mới.'}
+  }catch(e){}finally{payBusy=false}}
+setInterval(()=>{if(S&&S.payOrder&&Date.now()-payLast>=(document.hidden?30000:5000))payTick()},2500);
+function payCredit(g){
+  const o=S.payOrder||{},p=GEM_PACKS.find(x=>x.id===o.pack)||{},extra=[];
+  S.gems+=g;for(const k of p.items||[]){addItem(k);extra.push('🌸 '+DECO[k].n)}
+  if(p.outfit){S.owned[p.outfit]=1;const[c,i]=p.outfit.split(':');extra.push('👕 '+OUTFIT[c][i].n)}
+  S.payBought[o.pack]=(S.payBought[o.pack]||0)+1;S.payLog.push({code:o.code,pack:o.pack,g,at:Date.now()});S.payOrder=null;save();SFX.lvl();renderHotbar(true);
+  openModal(`<h2>🎉 Nạp thành công!</h2><div class="bd"><p>Đơn <b>${esc(o.code||'')}</b> đã thanh toán. Bạn nhận được <b>${g} 💎</b>.</p>${extra.length?`<ul>${extra.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`:''}<p>Cảm ơn bạn đã ủng hộ nông trại!</p><button class="btn big" data-act="close">Tuyệt vời</button></div>`,'paid');
+}
 
 /* ================= INPUT ================= */
 const keys=new Set();
@@ -1047,6 +1291,7 @@ addEventListener('keydown',e=>{
   if(e.target&&e.target.tagName==='INPUT')return;
   if(e.code==='Escape'){if(modalOpen){if(!['intro','morning','fade'].includes(modalKind))closeModal()}else openMenu();return}
   if(modalOpen){if(e.code==='Enter'&&modalKind==='morning')closeModal();return}
+  if(e.code==='KeyT'){toggleDeco();return}
   if(KMAP[e.code]){if(F){F=null;toast('Thu cần câu')}keys.add(KMAP[e.code]);P.path=null;e.preventDefault();return}
   if(e.code==='Space'||e.code==='KeyJ'||e.code==='Enter'){e.preventDefault();if(!(e.repeat&&F))actFacing();return}
   if(e.code==='KeyB'||e.code==='KeyI'){openBag();return}
@@ -1060,9 +1305,13 @@ cv.addEventListener('wheel',e=>{if(modalOpen)return;const L=hotbarList(),i=L.fin
 cv.addEventListener('pointerdown',e=>{
   ac();if(modalOpen)return;if(e.pointerType==='touch')document.body.classList.add('touch');
   if(F)return fishAction();
+  if(DM){drag={x:e.clientX,y:e.clientY,ox:DM.ox,oy:DM.oy,moved:false};try{cv.setPointerCapture(e.pointerId)}catch(_){}return}
   const r=cv.getBoundingClientRect();const x=(e.clientX-r.left)/view.s+cam.x,y=(e.clientY-r.top)/view.s+cam.y;
   handleTap(Math.floor(x/T),Math.floor(y/T));
 });
+cv.addEventListener('pointermove',e=>{if(!drag||!DM)return;const dx=e.clientX-drag.x,dy=e.clientY-drag.y;if(!drag.moved&&Math.hypot(dx,dy)>8)drag.moved=true;if(drag.moved){DM.ox=drag.ox-dx/view.s;DM.oy=drag.oy-dy/view.s}});
+cv.addEventListener('pointerup',e=>{const d=drag;drag=null;if(!d||!DM||d.moved||modalOpen)return;const r=cv.getBoundingClientRect();decoTap(Math.floor(((e.clientX-r.left)/view.s+cam.x)/T),Math.floor(((e.clientY-r.top)/view.s+cam.y)/T))});
+cv.addEventListener('pointercancel',()=>{drag=null});
 if(matchMedia('(pointer:coarse)').matches)document.body.classList.add('touch');
 
 /* ================= MÀN HÌNH ================= */
@@ -1089,6 +1338,7 @@ function update(dt){
   if(tapMark){tapMark.t-=dt;if(tapMark.t<=0)tapMark=null}
   updateAmbient(dt);
   if(modalOpen)return;
+  if(DM){let vx=0,vy=0;if(keys.has('u'))vy-=1;if(keys.has('d'))vy+=1;if(keys.has('l'))vx-=1;if(keys.has('r'))vx+=1;DM.ox+=vx*140*dt;DM.oy+=vy*140*dt;return}
   const before=S.min;S.min+=dt/0.6;
   if(Math.floor(before/60)!==Math.floor(S.min/60))save();
   if(S.min>=22*60&&!S.lateWarn){S.lateWarn=1;toast('🌙 Khuya rồi, về nhà ngủ thôi!')}
@@ -1146,12 +1396,15 @@ function drawNPC(id){
   if(d===3){cx.save();cx.translate(x,0);cx.scale(-1,1);cx.drawImage(img,-8,y-19);cx.restore()}else cx.drawImage(img,x-8,y-19);
   if(id==='ongtu'&&d===2){pline(x+5,y-8,x+14,y-20,'#c8a050');const bx=x+28,by=y-4+Math.round(Math.sin(tAll*3));pline(x+14,y-20,bx,by,'rgba(230,230,230,.8)');R(cx,'#e04a3a',bx,by,2,1);R(cx,'#ffffff',bx,by+1,2,1)}
   if(S.quest&&S.quest.id===id){const by=y-28+Math.round(Math.sin(tAll*4));R(cx,'#4e2c12',x-3,by-1,7,9);R(cx,'#fff6d8',x-2,by,5,7);R(cx,'#e0583c',x,by+1,1,3);R(cx,'#e0583c',x,by+5,1,1)}
+  else if(isBday(id)&&!S.npc[id].gift){const by=y-27+Math.round(Math.sin(tAll*4));R(cx,'#4e2c12',x-4,by-1,9,8);R(cx,'#fff6d8',x-3,by,7,6);R(cx,'#ff8ab0',x-2,by+3,5,2);R(cx,'#ffffff',x-2,by+2,5,1);R(cx,'#f6a03c',x,by,1,2)}
   else if(!S.npc[id].met){const by=y-27+Math.round(Math.sin(tAll*4));R(cx,'#4e2c12',x-3,by-1,7,7);R(cx,'#fff6d8',x-2,by,5,5);R(cx,'#4a8a2a',x-1,by+2,1,1);R(cx,'#4a8a2a',x+1,by+2,1,1)}
 }
 function draw(){
   const mapW=MW*T,mapH=MH*T,ss=seasonOf(S.day);
-  cam.x=view.w>=mapW?(mapW-view.w)/2:Math.max(0,Math.min(mapW-view.w,P.x-view.w/2));
-  cam.y=view.h>=mapH?(mapH-view.h)/2:Math.max(0,Math.min(mapH-view.h,P.y-8-view.h/2));
+  const bx=P.x-view.w/2,by=P.y-8-view.h/2;
+  cam.x=view.w>=mapW?(mapW-view.w)/2:Math.max(0,Math.min(mapW-view.w,bx+(DM?DM.ox:0)));
+  cam.y=view.h>=mapH?(mapH-view.h)/2:Math.max(0,Math.min(mapH-view.h,by+(DM?DM.oy:0)));
+  if(DM){DM.ox=cam.x-bx;DM.oy=cam.y-by}
   cam.x=Math.round(cam.x);cam.y=Math.round(cam.y);
   cx.setTransform(1,0,0,1,0,0);cx.fillStyle=TREEC[ss][0];cx.fillRect(0,0,view.w,view.h);
   cx.setTransform(1,0,0,1,-cam.x,-cam.y);
@@ -1166,6 +1419,7 @@ function draw(){
     else if(g===1)cx.drawImage(TILE.path[ss],px,py);
     else{const h=hash(x,y)%100;cx.drawImage(GT[h<6?4:h<10?5:h%4],px,py);
       if(g===3){const s=S.soil[x+','+y];cx.drawImage(s&&s.w?TILE.wet:TILE.dry,px,py)}}}
+  if(DM){cx.fillStyle='rgba(255,255,255,.14)';for(let x=x0;x<=x1;x++)cx.fillRect(x*T,y0*T,1,(y1-y0+1)*T);for(let y=y0;y<=y1;y++)cx.fillRect(x0*T,y*T,(x1-x0+1)*T,1)}
   const L=[];
   for(let y=y0;y<=Math.min(MH-1,y1+1);y++)for(let x=x0;x<=x1;x++){const o=S.obj[idx(x,y)],px=x*T,py=y*T;
     if(o===1)L.push([py+15,SPR.tree[ss][hash(x,y)%5===0?1:0],px,py-16]);
@@ -1196,7 +1450,7 @@ function draw(){
     else if(it[4]==='small')cx.drawImage(it[1],it[2],it[3],8,8);
     else cx.drawImage(it[1],it[2],it[3]);
     if(it[1]===SPR.house&&ss===3){const hx=HOUSE.x*T,hy=HOUSE.y*T-18;R(cx,'#ffffff',hx+6,hy+6,68,4);R(cx,'#ffffff',hx+10,hy+3,60,3);R(cx,'#ffffff',hx+2,hy+30,76,2);R(cx,'#ffffff',hx+58,hy,8,2)}}
-  if(!modalOpen&&!F){const p=ptile(),[dx,dy]=DIRV[P.dir],fx=(p.x+dx)*T,fy=(p.y+dy)*T;cx.fillStyle='rgba(255,255,255,.75)';
+  if(!modalOpen&&!F&&!DM){const p=ptile(),[dx,dy]=DIRV[P.dir],fx=(p.x+dx)*T,fy=(p.y+dy)*T;cx.fillStyle='rgba(255,255,255,.75)';
     [[0,0,3,1],[0,0,1,3],[13,0,3,1],[15,0,1,3],[0,15,3,1],[0,13,1,3],[13,15,3,1],[15,13,1,3]].forEach(([a,b,w,h])=>cx.fillRect(fx+a,fy+b,w,h))}
   if(tapMark){cx.fillStyle=`rgba(255,240,120,${tapMark.t})`;cx.fillRect(tapMark.x*T+6,tapMark.y*T+6,4,4)}
   if(F){const x=Math.round(P.x),y=Math.round(P.y),[dx,dy]=DIRV[P.dir];const tipx=x+dx*12+(dy?4:0),tipy=y-14+dy*4-(dy<0?6:0);
@@ -1218,7 +1472,7 @@ function draw(){
       [12,54].forEach(x=>cx.fillRect(HOUSE.x*T+x+1,HOUSE.y*T-18+50,13,11));
       if(S.built.coop){cx.fillRect(COOP.x*T+6,COOP.y*T-12+24,4,4);cx.fillRect(COOP.x*T+22,COOP.y*T-12+24,4,4)}
       cx.globalCompositeOperation='lighter';
-      for(const k in S.pl)if(S.pl[k].k==='den'){const[x,y]=k.split(',').map(Number);const gx=x*T+11,gy=y*T-1;
+      for(const k in S.pl)if(GLOW[S.pl[k].k]){const[x,y]=k.split(',').map(Number),G=GLOW[S.pl[k].k];const gx=x*T+G[0],gy=y*T+G[1];
         for(const[r,al]of[[14,.06],[9,.08],[5,.12]])circ(cx,`rgba(255,200,90,${al*a*1.6})`,gx,gy,r)}
       cx.globalCompositeOperation='source-over';cx.setTransform(1,0,0,1,0,0)}}
   if(rainDrops.length){if(S.weather==='snow'){cx.fillStyle='rgba(255,255,255,.9)';for(const r of rainDrops)cx.fillRect(Math.round(r.x),Math.round(r.y),r.p>3?2:1,r.p>3?2:1)}
@@ -1231,6 +1485,8 @@ function draw(){
 function drawPl(x,y,p){
   const px=x*T,py=y*T;
   if(PLSPR[p.k])cx.drawImage(PLSPR[p.k],px,py-16);
+  if(p.k==='coixay'){const hx=px+8,hy=py-5,a0=tAll*2;for(let i=0;i<4;i++){const an=a0+i*Math.PI/2;pline(hx,hy,hx+Math.cos(an)*7,hy+Math.sin(an)*7,'#f4efe4');pline(hx+Math.cos(an+.3)*2,hy+Math.sin(an+.3)*2,hx+Math.cos(an+.2)*6,hy+Math.sin(an+.2)*6,'#c8b890')}R(cx,'#6b3f1f',hx-1,hy-1,2,2)}
+  if(p.k==='anhdao'&&seasonOf(S.day)!==3)for(let i=0;i<3;i++){const t=(tAll*.25+i/3+(x*7%5)/5)%1;cx.fillStyle='#ffc0d8';cx.fillRect(px+1+((i*5+14+Math.round(Math.sin(t*9+i)*3))%14),py-12+Math.round(t*26),1,1)}
   if(p.job){if(absNow()>=p.job.ready){const by=py-20+Math.round(Math.sin(tAll*4)*1.5);R(cx,'#4e2c12',px+2,by-1,12,12);R(cx,'#fff6d8',px+3,by,10,10);cx.drawImage(iconOf(p.job.out),px+4,by+1,8,8)}
     else{const t=(tAll*1.2)%1;cx.fillStyle=`rgba(240,240,240,${.7-t*.6})`;cx.fillRect(px+7+Math.round(Math.sin(t*6)*2),py-6-Math.round(t*8),2,2)}}
 }
@@ -1266,7 +1522,7 @@ function hud(){
   $('#hTime').textContent=`🕒 ${fmtTime(S.min)} ${wi}`;
   $('#hLv').textContent='⭐ Cấp '+S.lv;$('#hXp').textContent=`${S.xp}/${xpNeed(S.lv)}`;
   $('#xpBar').style.width=(S.xp/xpNeed(S.lv)*100)+'%';
-  $('#hMoney').textContent='💰 '+fmt(S.money);
+  $('#hMoney').textContent='💰 '+fmt(S.money);$('#hGem').textContent='💎 '+fmt(S.gems);
   $('#hE').textContent=`${Math.round(S.energy)}/${S.maxE}`;$('#eBar').style.width=(S.energy/S.maxE*100)+'%';
   $('#hW').textContent=`${S.water}/${canCap()}`;$('#wBar').style.width=(S.water/canCap()*100)+'%';
   $('#bBag').classList.toggle('has',!!S.quest);
@@ -1275,6 +1531,7 @@ function hud(){
 
 /* ================= KHỞI ĐỘNG ================= */
 S=load()||newState();
+applyOutfit();
 syncP();resize();syncAnimals();renderHotbar(true);hud();
 if(!S.seen)intro();
 let last=performance.now();
