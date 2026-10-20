@@ -20,7 +20,7 @@ Game nông trại pixel chơi trên trình duyệt, chỉ cần mở `index.html
   - Có thể trò chuyện, tặng quà (mỗi người thích/ghét món khác nhau), nhận việc nhờ giao hàng có thưởng. Đủ ♥ sẽ được tặng quà: cần câu xịn, đồ trang trí, giảm giá 10%.
 - **🏡 Mở rộng & trang trí:**
   - Dọn bụi gai phía Nam (khu đất rộng) và phía Đông (lối ra suối).
-  - Mua chậu hoa, ghế gỗ, đèn lồng (sáng ban đêm), tượng gà vàng, hàng rào, đá lát đường. Điểm đẹp giúp tăng giá bán tới +15%.
+  - Mua chậu hoa, ghế gỗ, đèn lồng (sáng ban đêm), tượng gà vàng, hàng rào, đá lát đường.
 - **🎣 Câu cá:** quăng câu ở ao hoặc suối, thấy **!** thì bấm, rồi bấm khi vạch trắng nằm trong vùng xanh.
   - Ao có cá rô, cá chép, cá lóc, cá trê (ban đêm).
   - Suối có cá bống, cá hồi suối, cá chép vàng hiếm.
