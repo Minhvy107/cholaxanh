@@ -18,5 +18,6 @@ Game quản lý quán ăn pixel chơi trên trình duyệt, chỉ cần mở `in
 - **Nâng cấp**: thêm bàn (4 → 12), thêm bếp (1 → 5), bếp ga xịn (nấu nhanh), trang trí (khách kiên nhẫn hơn, thêm cây cảnh, đèn lồng, loa, biển OPEN, mèo thần tài), quảng cáo (thêm khách).
 - **Nhân viên**: đầu bếp tự nấu khi sắp hết món, phục vụ tự bưng món ra bàn, quản lý kho tự nhập hàng; đào tạo để làm nhanh hơn.
 - **Nhiệm vụ** liên tục (bán N phần món, phục vụ N bàn, đạt combo, kiếm doanh thu) có thưởng tiền và XP. Lên cấp có thưởng và mở món, mở quán mới.
+- Đồ hoạ pixel chi tiết: nhân vật chibi có viền, mắt long lanh, nhiều kiểu tóc; bàn đá cẩm thạch chân vàng, ghế đẩu đỏ; quán lẩu 2 tầng có khách ngồi tầng trên, cầu thang, ban công hoa giấy và biển neon; nhà phố hai bên; bờ sông hoàng hôn có mây, cầu Rồng, thuyền đèn lồng.
 - Đánh giá sao trung bình ảnh hưởng lượng khách. Có ngày đêm với đèn sáng buổi tối, người đi đường, xe máy, shipper giao hàng khi nhập nguyên liệu.
 - Tốc độ 1×/2×/3×, tạm dừng, thu gọn khay để xem quán rộng hơn, âm thanh bật/tắt, tự lưu trên máy (`localStorage`).
