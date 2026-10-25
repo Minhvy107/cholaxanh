@@ -3971,7 +3971,7 @@ window.openCorp=function(tab){ if(!S) return; closeModal();
     <div class="cp-tabs">${[['map','🗺️ Bản đồ'],['biz','💼 Đầu tư'],['news',`📰 Báo${unread?` (${unread})`:''}`]].map(([k,n])=>`<button class="${C.tab===k?'on':''}" onclick="openCorp('${k}')">${n}</button>`).join('')}</div>
     ${body}<p class="muted" style="font-size:12px;margin:6px 0 0">💵 Tiền mặt: ${fmtS(S.money)} · lãi tập đoàn cộng vào cuối mỗi ngày.</p>
     <div class="row" style="margin-top:6px"><button class="primary" onclick="closeModal()">Đóng</button></div>`); };
-function cpAfter(n){ autosaveSoft(); refreshAll(); sfx('reward'); modal(cpPaper(n)+`<div class="row" style="margin-top:10px"><button class="primary" onclick="openCorp()">🏢 Về tập đoàn</button></div>`); }
+function cpAfter(n){ autosave(); /* khoản mua lớn: lưu ngay cả khi tiệm đang mở cửa */ refreshAll(); sfx('reward'); modal(cpPaper(n)+`<div class="row" style="margin-top:10px"><button class="primary" onclick="openCorp()">🏢 Về tập đoàn</button></div>`); }
 function cpDomCheck(d,before){ if(!before&&cpDom(d)) cpNews('dom',{d}); }
 window.cpBuy=function(i){ const C=cpState(), x=C.sl[i]; if(!x||x.t!=='riv') return; const p=cpRivPrice(x);
   if(S.money<p) return toast(`💵 Cần ${fmtS(p)} để mua lại ${x.name}`);
@@ -4448,6 +4448,31 @@ window.gemSwapOk=function(g){ const o=GEM_SWAP.find(x=>x[0]===g); if(!o||S.gems<
 /* ====== ☁️ Mã lưu ngắn: lưu bản game lên máy chủ, đổi lấy mã 8 ký tự ====== */
 const fmtCode=c=>c.slice(0,4)+'-'+c.slice(4);
 async function cloudSave(){ if(!PAY_CFG.api) throw new Error('no api'); const r=await fetch(PAY_CFG.api.replace(/\/$/,'')+'/save',{method:'POST',headers:{'content-type':'text/plain'},body:packState()}); if(!r.ok) throw new Error('HTTP '+r.status); return (await r.json()).code; }
+/* 🔑 Mã lưu tự cập nhật ("mã tài khoản"): mỗi tiệm tự có 1 mã; game gửi bản mới lên máy chủ tối đa 20 phút/lần + khi rời app.
+   Đổi máy / trình duyệt / lỡ mất bản lưu: nhập mã là lấy lại đúng tiệm mới nhất. rev tăng dần: máy cũ hơn không ghi đè máy mới hơn. */
+const CLOUD_EVERY=20*60e3, CLOUD_HIDE=3*60e3;
+const CLOUD={busy:false,last:0,dirty:false};
+const cloudApi=()=>PAY_CFG.api&&!TESTMODE?PAY_CFG.api.replace(/\/$/,''):'';
+async function cloudSync(force,hide){ if(!S||!cloudApi()||S.over||CLOUD.busy) return; const now=Date.now();
+  if(!force&&now-CLOUD.last<CLOUD_EVERY){ CLOUD.dirty=true; return; }
+  CLOUD.busy=true; CLOUD.last=now; CLOUD.dirty=false;
+  try{
+    if(!S.cloud){ const code=await cloudSave(); S.cloud={code,rev:0,t:Date.now()}; saveLocal(); toast(`🔑 Mã lưu tiệm của bạn: ${fmtCode(code)} · xem ở ☰ Menu → 💾 Lưu game`); return; }
+    const rev=(S.cloud.rev|0)+1, body=JSON.stringify({...S,cloud:{code:S.cloud.code,rev,t:Date.now()}});
+    const r=await fetch(cloudApi()+'/save/'+S.cloud.code,{method:'PUT',headers:{'content-type':'text/plain'},body,keepalive:!!hide&&body.length<60000});
+    if(r.ok){ S.cloud.rev=rev; S.cloud.t=Date.now(); delete S.cloud.conflict; saveLocal(); return; }
+    const d=await r.json().catch(()=>({}));
+    if(r.status===404||d.error==='nosync'){ S.cloud=null; CLOUD.busy=false; return await cloudSync(true); }   // mã cũ/hết hạn → tạo mã mới
+    if(d.error==='stale'&&!S.cloud.conflict){ S.cloud.conflict={rev:d.rev,day:d.day,t:d.t}; saveLocal();
+      toast(`🔑 Mã ${fmtCode(S.cloud.code)} vừa được cập nhật ở máy khác (ngày ${d.day}). Vào ☰ Menu → 💾 Lưu game để chọn bản dùng tiếp`); }
+  }catch(e){ CLOUD.dirty=true; }
+  finally{ CLOUD.busy=false; } }
+document.addEventListener('visibilitychange',()=>{ if(document.hidden&&S&&(CLOUD.dirty||!S.cloud)&&Date.now()-CLOUD.last>CLOUD_HIDE) cloudSync(true,true); });
+window.cloudUseThis=function(){ if(!S||!S.cloud||!S.cloud.conflict) return; S.cloud.rev=S.cloud.conflict.rev; delete S.cloud.conflict; CLOUD.last=0; saveLocal();
+  cloudSync(true).then(()=>{ toast(S.cloud&&!S.cloud.conflict?'☁️ Đã cập nhật mã bằng bản trên máy này':'Chưa cập nhật được, thử lại sau'); openSaves(false); }); };
+window.cloudTakeNew=function(){ if(!S||!S.cloud) return; const code=S.cloud.code; cloudLoad(code).then(st=>importState(st,code,true)).catch(()=>toast('Không tải được, kiểm tra mạng rồi thử lại')); };
+window.cloudNow=function(){ CLOUD.last=0; cloudSync(true).then(()=>{ if($('#modal').classList.contains('show')) openSaves(savesFromStart); }); };
+window.copyCode=function(c){ try{ navigator.clipboard.writeText(c).then(()=>toast('Đã chép mã'),()=>toast('Hãy ghi lại mã này')); }catch(e){ toast('Hãy ghi lại mã này'); } };
 async function cloudLoad(code){ const r=await fetch(PAY_CFG.api.replace(/\/$/,'')+'/save/'+code); if(r.status===404) throw new Error('Mã không tồn tại hoặc đã hết hạn'); if(!r.ok) throw new Error('HTTP '+r.status); return r.text(); }
 function renderReport(){
   $('#advBox').innerHTML=advHTML(S.lastAdv,false); renderLoan();
@@ -4541,15 +4566,31 @@ function unpack(raw){
   return d;
 }
 const meta=()=>({name:S.name, day:S.day, money:S.money, ts:Date.now(), theme:curTheme()||'', home:curHome()||''});
-function autosave(){ if(S) ls(SAVE_AUTO,JSON.stringify({meta:meta(),state:packState()})); }
+function saveLocal(){ if(S) ls(SAVE_AUTO,JSON.stringify({meta:meta(),state:packState()})); }
+function autosave(){ if(!S) return; saveLocal(); CLOUD.dirty=true; cloudSync(false); }
 function autosaveSoft(){ if(!R) autosave(); }
 function readSlot(key){ try{ const v=ls(key); return v?JSON.parse(v):null; }catch(e){ return null; } }
 function slotLine(m){ return m?`<b>${esc(m.name)}</b> · Ngày ${m.day} · ${fmtS(m.money)}<br><span class="muted" style="font-size:12px">${new Date(m.ts).toLocaleString('vi-VN')}</span>`:'<span class="muted">Trống</span>'; }
+// bản dự phòng: giữ bản tự lưu hiện tại trước khi nhập mã / tải ô lưu khác (khôi phục được trong 💾 Lưu game)
+const SAVE_BACKUP=TESTMODE?'clx2-test-backup':'clx2-backup';
+function saveBackup(){ const cur=readSlot(SAVE_AUTO); if(cur) ls(SAVE_BACKUP,JSON.stringify({...cur,meta:{...cur.meta,bk:Date.now()}})); }
+const stSum=d=>`<b>${esc(d.name||'?')}</b> · Ngày ${d.day} · ${fmtS(d.money||0)}${d.corp&&d.corp.sl?` · 🏢 ${d.corp.sl.filter(x=>x.t==='own').length} cửa hàng`:''}`;
+// nhập bản lưu từ mã: nếu máy này đang có tiệm tiến xa hơn thì hỏi trước; luôn giữ bản dự phòng
+function importState(st,code,sure){ let d; try{ d=unpack(st); }catch(e){ return toast('Mã sao lưu không hợp lệ'); }
+  const cur=readSlot(SAVE_AUTO); let c=null; try{ c=cur&&JSON.parse(cur.state); }catch(e){}
+  if(!sure&&c&&(c.name!==d.name||c.day>d.day||(c.cloud&&c.cloud.code===code&&(c.cloud.rev|0)>(d.cloud&&d.cloud.rev|0)))){
+    window._imp={st,code}; return modal(`<h3>⚠️ Mã này ${c.name===d.name&&c.day>d.day?'cũ hơn':'khác'} tiệm trên máy</h3>
+      <div class="card" style="margin:6px 0">📱 Trên máy này:<br>${stSum(c)}</div><div class="card" style="margin:6px 0">🔑 Trong mã ${code?fmtCode(code):''}:<br>${stSum(d)}</div>
+      <p class="muted" style="font-size:13px">Nhập mã sẽ thay tiệm trên máy bằng bản trong mã. Bản trên máy được giữ làm <b>bản dự phòng</b> (khôi phục được ở 💾 Lưu game).</p>
+      <div class="row"><button onclick="openSaves(savesFromStart)">Giữ bản trên máy</button><button class="primary" onclick="importState(_imp.st,_imp.code,true)">Dùng bản trong mã</button></div>`); }
+  saveBackup(); S=d; if(code) S.cloud={code,rev:d.cloud&&d.cloud.code===code?d.cloud.rev|0:0,t:Date.now()};
+  startPlaying(); saveLocal(); CLOUD.last=0; toast(`Đã nhập: ${S.name} – ngày ${S.day}`); }
 let savesFromStart=false;
 function openSaves(fromStart){
   savesFromStart=fromStart;
   const auto=readSlot(SAVE_AUTO);
-  let html=`<h3>💾 Sao lưu game</h3>
+  const cl=S&&!fromStart&&S.cloud, cf=cl&&cl.conflict;
+  let html=`<h3>💾 Sao lưu game</h3>${S&&!fromStart&&cloudApi()?`<div class="card" style="border-color:#f2b84b"><b>🔑 Mã lưu tiệm của bạn</b>${cl?`<div class="savecode">${fmtCode(cl.code)}</div><div class="desc muted" style="font-size:12.5px">Tự cập nhật · lần cuối ${cl.t?new Date(cl.t).toLocaleString('vi-VN'):'chưa'}. Ghi lại mã này: đổi máy, đổi trình duyệt hay lỡ mất bản lưu thì nhập mã là lấy lại tiệm.</div>`+(cf?`<div class="why" style="background:#fff4d6;border-radius:10px;padding:8px;font-size:13px;margin-top:6px">⚠️ Mã này đã được cập nhật ở máy khác (ngày ${cf.day}, ${new Date(cf.t).toLocaleString('vi-VN')}), mới hơn bản trên máy này.</div><div class="foot"><button onclick="cloudTakeNew()">⬇️ Lấy bản ngày ${cf.day}</button><button class="primary" onclick="cloudUseThis()">⬆️ Dùng máy này</button></div>`:`<div class="foot"><button onclick="copyCode('${fmtCode(cl.code)}')">📋 Chép mã</button><button onclick="cloudNow()">☁️ Cập nhật ngay</button></div>`):`<div class="desc muted">Chưa có mã (cần mạng).</div><div class="foot"><button class="primary" onclick="cloudNow()">Tạo mã</button></div>`}</div>`:''}
     <p class="muted" style="font-size:13px">Lưu thời điểm đang chơi vào một ô để quay lại sau. Chỉ lưu được khi tiệm đang đóng cửa.</p>
     <div class="col">
     <div class="card"><div>🔄 Tự động lưu: ${slotLine(auto?.meta)}</div>${auto?`<div class="foot"><button data-load="${SAVE_AUTO}">Tải</button></div>`:''}</div>`;
@@ -4560,10 +4601,12 @@ function openSaves(fromStart){
       ${!fromStart&&S?(lockSlot?`<button data-unslot="slot${i}">🔒 Mở ô (${UNLOCKS['slot'+i].price}💎)</button>`:`<button class="primary" data-saveto="${i}">${s?'Ghi đè':'Lưu vào đây'}</button>`):''}
       ${s?`<button data-load="${SAVE_SLOT(i)}">Tải</button><button class="danger" data-del="${i}">Xóa</button>`:''}</div></div>`;
   }
-  html+=`<div class="card"><b>📲 Chuyển sang máy khác</b><div class="desc muted">${S&&!fromStart?'Bấm <b>Tạo mã</b> để nhận mã 8 ký tự (giữ 30 ngày). ':''}Trên máy mới: mở game → <b>Tải bản lưu</b> → gõ mã → <b>Nhập mã</b>.</div>
+  const bk=readSlot(SAVE_BACKUP);
+  if(bk) html+=`<div class="card"><div>♻️ Bản dự phòng (trước lần nhập mã / tải gần nhất): ${slotLine(bk.meta)}</div><div class="foot"><button data-restore="1">Khôi phục</button></div></div>`;
+  html+=`<div class="card"><b>📲 Chuyển sang máy khác</b><div class="desc muted">Trên máy mới: mở game → <b>Tải bản lưu</b> → gõ mã → <b>Nhập mã</b>. Mã của tiệm tự cập nhật khi bạn chơi (giữ 90 ngày kể từ lần chơi gần nhất).</div>
     <div id="codeOut"></div>
     <input type="text" id="codeBox" placeholder="Nhập mã, ví dụ 7K2P-9QXA" autocomplete="off" autocapitalize="characters" spellcheck="false">
-    <div class="foot">${S&&!fromStart?'<button class="primary" data-export="1">Tạo mã</button>':''}<button data-import="1">Nhập mã</button></div></div>
+    <div class="foot">${S&&!fromStart&&!cloudApi()?'<button class="primary" data-export="1">Tạo mã</button>':''}<button data-import="1">Nhập mã</button></div></div>
     <div class="row"><button data-close="1">Đóng</button></div></div>`;
   modal(html);
 }
@@ -4572,7 +4615,8 @@ $('#modalBox').addEventListener('click',e=>{
   if(b.dataset.close) closeModal();
   else if(b.dataset.unslot) askUnlock(b.dataset.unslot,()=>openSaves(false));
   else if(b.dataset.saveto){ ls(SAVE_SLOT(b.dataset.saveto),JSON.stringify({meta:meta(),state:packState()})); autosave(); toast(`Đã lưu vào ô ${b.dataset.saveto}`); openSaves(false); }
-  else if(b.dataset.load){ const s=readSlot(b.dataset.load); if(!s) return; try{ S=unpack(s.state); startPlaying(); toast(`Đã tải: ${S.name} – ngày ${S.day}`); }catch(err){ toast('Bản lưu bị lỗi, không tải được'); } }
+  else if(b.dataset.load){ const s=readSlot(b.dataset.load); if(!s) return; try{ unpack(s.state); if(b.dataset.load!==SAVE_AUTO) saveBackup(); S=unpack(s.state); startPlaying(); toast(`Đã tải: ${S.name} – ngày ${S.day}`); }catch(err){ toast('Bản lưu bị lỗi, không tải được'); } }
+  else if(b.dataset.restore){ const bk=readSlot(SAVE_BACKUP); if(!bk) return; try{ unpack(bk.state); const cur=readSlot(SAVE_AUTO); S=unpack(bk.state); if(cur) ls(SAVE_BACKUP,JSON.stringify(cur)); startPlaying(); saveLocal(); toast(`♻️ Đã khôi phục: ${S.name} – ngày ${S.day}`); }catch(err){ toast('Bản dự phòng bị lỗi'); } }
   else if(b.dataset.del){ ls(SAVE_SLOT(b.dataset.del),null); openSaves(savesFromStart); }
   else if(b.dataset.export){
     const out=$('#codeOut'); b.disabled=true; b.textContent='Đang tạo…';
@@ -4583,7 +4627,7 @@ $('#modalBox').addEventListener('click',e=>{
   }
   else if(b.dataset.import){
     const raw=$('#codeBox').value.trim(), short=raw.toUpperCase().replace(/[^A-Z0-9]/g,'');
-    const done=st=>{ S=unpack(st); startPlaying(); autosave(); toast(`Đã nhập: ${S.name} – ngày ${S.day}`); };
+    const done=st=>importState(st,short.length===8&&raw.length<=10?short:'');
     if(!raw) return toast('Hãy nhập mã trước');
     if(short.length===8&&raw.length<=10){ b.disabled=true; b.textContent='Đang tải…';
       cloudLoad(short).then(done).catch(err=>toast(err.message&&err.message.startsWith('Mã')?err.message:'Không tải được, kiểm tra mạng rồi thử lại')).finally(()=>{ b.disabled=false; b.textContent='Nhập mã'; }); }
@@ -5967,7 +6011,7 @@ function startPlaying(){
   selCat=CAT_KEYS[0];
   renderChips(); gotoTab('store'); refreshAll();
   $('#log').innerHTML=''; logMsg(`🏪 ${S.name} – ngày ${S.day}. Nhập hàng rồi mở cửa nhé!`,'ok');
-  setTimeout(lbCheckRewards,2500); passLogin(); statPing();
+  setTimeout(lbCheckRewards,2500); passLogin(); statPing(); setTimeout(()=>{ if(S&&!S.cloud) cloudSync(true); },4000);
   { const was=S.festNote; festMorning(); if(S.festNote&&S.festNote!==was){ const n=S.festNote; setTimeout(()=>toast('🎪 '+n.replace(/<[^>]+>/g,'').slice(0,90)),1200); } }
   newsOnStart();
 }
@@ -6001,7 +6045,7 @@ $('#nameIdeas').innerHTML=IDEAS.map(n=>`<button class="sm">${n}</button>`).join(
 $('#nameIdeas').addEventListener('click',e=>{ const b=e.target.closest('button'); if(b) $('#shopName').value=b.textContent; });
 $('#stGo').addEventListener('click',()=>{
   const name=$('#shopName').value.trim().slice(0,28)||'Tạp hóa Lá Xanh';
-  newGame(name); autosave(); startPlaying();
+  saveBackup(); newGame(name); autosave(); startPlaying();
   if($('#wantTut').checked) setTimeout(startTut,300);
 });
 $('#shopName').addEventListener('keydown',e=>{ if(e.key==='Enter') $('#stGo').click(); });
