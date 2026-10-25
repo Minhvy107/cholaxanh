@@ -28,7 +28,7 @@ const DONE_TTL = 90 * 24 * 3600;    // lưu đơn đã trả 90 ngày để đ�
 function cors(env) {
   return {
     'access-control-allow-origin': env.ALLOWED_ORIGIN || '*',
-    'access-control-allow-methods': 'GET,POST,OPTIONS',
+    'access-control-allow-methods': 'GET,POST,PUT,OPTIONS',
     'access-control-allow-headers': 'content-type',
   };
 }
@@ -209,6 +209,11 @@ ${guilds.length ? `<table><tr><th>Hội</th><th>Thành viên</th><th>Tuần này
   return json(env, { error: 'not_found' }, 404);
 }
 
+const SAVE_DAYS = 90;   // mã lưu giữ 90 ngày kể từ lần cập nhật gần nhất
+// thông tin tóm tắt lưu kèm bản game (KV metadata ≤ 1KB) để trang quản trị tìm lại bản lưu theo tên tiệm / mã người chơi
+const saveMeta = (d, rev) => ({ rev, t: Date.now(), day: d.day | 0, name: String(d.name || '').slice(0, 40), pid: String(d.pid || '').slice(0, 8),
+  money: Math.round(Number(d.money) || 0), corp: d.corp && Array.isArray(d.corp.sl) ? d.corp.sl.filter(x => x && x.t === 'own').length : 0, tier: d.tier | 0 });
+
 export default {
   // Bọc mọi lỗi (vd. vượt hạn mức KV) thành JSON có CORS, để game hiện đúng lỗi thay vì "Load failed"
   async fetch(req, env) {
@@ -280,25 +285,38 @@ async function handle(req, env) {
       return json(env, { gems: o.gems });
     }
 
-    // Mã lưu ngắn: lưu bản game (JSON) 30 ngày, trả về mã 8 ký tự
+    // Mã lưu: lưu bản game (JSON), trả về mã 8 ký tự. Mã tạo từ bản này tự cập nhật được (PUT) nên dùng như "mã tài khoản":
+    // game gửi bản mới định kỳ, mỗi lần gia hạn thêm SAVE_DAYS ngày. rev tăng dần để máy cũ không ghi đè bản mới hơn của máy khác.
     if (req.method === 'POST' && path === '/save') {
       const text = await req.text();
       if (text.length > 600000) return json(env, { error: 'too_large' }, 413);
-      try { const d = JSON.parse(text); if (!d || !d.market || !d.day) throw 0; } catch (e) { return json(env, { error: 'bad_save' }, 400); }
+      let d; try { d = JSON.parse(text); if (!d || !d.market || !d.day) throw 0; } catch (e) { return json(env, { error: 'bad_save' }, 400); }
       const A = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
       let code = '';
       for (let i = 0; i < 5; i++) {
         code = Array.from(crypto.getRandomValues(new Uint8Array(8)), b => A[b % 32]).join('');
         if (!(await env.ORDERS.get('save:' + code))) break;
       }
-      await env.ORDERS.put('save:' + code, text, { expirationTtl: 30 * 24 * 3600 });
-      return json(env, { code, days: 30 });
+      await env.ORDERS.put('save:' + code, text, { expirationTtl: SAVE_DAYS * 86400, metadata: saveMeta(d, 0) });
+      return json(env, { code, days: SAVE_DAYS, sync: 1 });
     }
     m = path.match(/^\/save\/([A-Z0-9]{8})$/);
     if (req.method === 'GET' && m) {
       const raw = await env.ORDERS.get('save:' + m[1]);
       if (!raw) return json(env, { error: 'missing' }, 404);
       return new Response(raw, { headers: { 'content-type': 'application/json', ...cors(env) } });
+    }
+    if (req.method === 'PUT' && m) {
+      const text = await req.text();
+      if (text.length > 600000) return json(env, { error: 'too_large' }, 413);
+      let d; try { d = JSON.parse(text); if (!d || !d.market || !d.day || !d.cloud || d.cloud.code !== m[1]) throw 0; } catch (e) { return json(env, { error: 'bad_save' }, 400); }
+      const cur = await env.ORDERS.getWithMetadata('save:' + m[1]);
+      if (!cur.value) return json(env, { error: 'missing' }, 404);
+      if (!cur.metadata || cur.metadata.rev == null) return json(env, { error: 'nosync' }, 409);   // mã tạo trước khi có tự cập nhật
+      const rev = Math.floor(Number(d.cloud.rev) || 0);
+      if (rev <= cur.metadata.rev) return json(env, { error: 'stale', rev: cur.metadata.rev, day: cur.metadata.day, t: cur.metadata.t }, 409);
+      await env.ORDERS.put('save:' + m[1], text, { expirationTtl: SAVE_DAYS * 86400, metadata: saveMeta(d, rev) });
+      return json(env, { ok: 1, rev, days: SAVE_DAYS });
     }
 
     // 🏆 Bảng xếp hạng: chỉ tiệm kinh doanh từ LB_MIN_DAY ngày, xếp theo tổng vốn; có bảng tuần/tháng (giờ VN) và thưởng top 10

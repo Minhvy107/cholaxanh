@@ -16,6 +16,7 @@ const LV = { '': 0, ok: 0, warn: 1, bad: 2 };
 const fm = n => n >= 1e9 ? (n / 1e9).toFixed(2).replace('.', ',') + ' tỷ' : String(Math.round(n / 1e5) / 10).replace('.', ',') + 'tr';
 
 export const histKey = pid => 'lbh:' + pid;
+const norm = s => String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D').toLowerCase().trim();
 
 // Mức cờ hiện tại: lý do mới nhất sau lần duyệt gần nhất
 export function histFlag(h) {
@@ -101,6 +102,23 @@ export async function handleAdmin(req, env, url, path, { json, safeEq, periodInf
     await KV.put('lbban', JSON.stringify(bans.slice(-200)));
     return json({ ok: true, flag: histFlag(h), ban: !!h.ban });
   }
+  // 🔎 Tìm bản lưu (mã lưu) theo tên tiệm / mã người chơi / mã lưu: giúp người chơi lấy lại tiệm khi lỡ nhập mã cũ hoặc đổi máy
+  if (req.method === 'GET' && path === '/admin/saves') {
+    const q = norm(url.searchParams.get('q') || ''); if (q.length < 2) return json({ error: 'short' }, 400);
+    const out = []; let cursor, pages = 0, fetched = 0;
+    do {
+      const r = await KV.list({ prefix: 'save:', cursor, limit: 1000 }); cursor = r.list_complete ? null : r.cursor; pages++;
+      for (const k of r.keys) {
+        const code = k.name.slice(5); let md = k.metadata;
+        if (!md && fetched < 300) { fetched++; try { const d = JSON.parse((await KV.get(k.name)) || 'null'); if (d) md = { old: 1, day: d.day | 0, name: String(d.name || ''), pid: String(d.pid || ''), money: Math.round(+d.money || 0), corp: d.corp && d.corp.sl ? d.corp.sl.filter(x => x.t === 'own').length : 0, tier: d.tier | 0 }; } catch (e) {} }
+        if (!md) continue;
+        if (norm(md.name).includes(q) || norm(md.pid) === q || norm(code) === q.replace(/-/g, ''))
+          out.push({ code, ...md, t: md.t || (k.expiration ? k.expiration * 1000 - 30 * 86400e3 : null), exp: k.expiration ? k.expiration * 1000 : null });
+      }
+    } while (cursor && pages < 10);
+    out.sort((a, b) => (b.t || 0) - (a.t || 0));
+    return json({ q, list: out.slice(0, 60) });
+  }
   return json({ error: 'not_found' }, 404);
 }
 
@@ -142,7 +160,9 @@ const tg=r=>r.ban?'<span class="tag bad">🚫 Đã gỡ</span>':(!r.n&&!r.flag?T
 async function api(p,o={}){const r=await fetch(p,{...o,headers:{'content-type':'application/json','x-admin-key':KEY}});if(r.status===401)throw new Error('auth');const d=await r.json();if(d.error==='no_key')throw new Error('no_key');return d}
 async function go(){const v=$('pw').value.trim();if(v)KEY=v;$('lerr').textContent='';try{await load();try{sessionStorage.setItem('clx-admin',KEY)}catch(e){};$('login').hidden=true;$('main').hidden=false}catch(e){$('lerr').textContent=e.message==='no_key'?'Máy chủ chưa đặt ADMIN_KEY.':e.message==='auth'?'Sai mật khẩu.':'Lỗi kết nối: '+e.message}}
 function logout(){KEY='';try{sessionStorage.removeItem('clx-admin')}catch(e){};location.reload()}
-function tabs(nFlag){$('tabs').innerHTML=[['week','Tuần'],['month','Tháng'],['all','Mọi thời đại'],['flag','⚠️ Bị gắn cờ'+(nFlag!=null?' ('+nFlag+')':'')]].map(([k,l])=>'<button class="'+(BOARD===k?'on':'')+'" onclick="BOARD=\\''+k+'\\';load()">'+l+'</button>').join('')}
+function tabs(nFlag){$('tabs').innerHTML=[['week','Tuần'],['month','Tháng'],['all','Mọi thời đại'],['flag','⚠️ Bị gắn cờ'+(nFlag!=null?' ('+nFlag+')':'')]].map(([k,l])=>'<button class="'+(BOARD===k?'on':'')+'" onclick="BOARD=\\''+k+'\\';load()">'+l+'</button>').join('')+'<button class="'+(BOARD==='saves'?'on':'')+'" onclick="savesUI()">🔎 Tìm bản lưu</button>'}
+function savesUI(){BOARD='saves';tabs(null);$('bans').innerHTML='';$('list').innerHTML='<div class="sub">Tìm theo <b>tên tiệm</b>, <b>mã người chơi</b> (6 ký tự, xem ở BXH) hoặc <b>mã lưu</b>. Gửi lại cho người chơi mã có ngày game cao nhất → họ vào Tải bản lưu → Nhập mã.</div><form class="login" onsubmit="event.preventDefault();findSaves()"><input id="sq" placeholder="Tên tiệm hoặc mã"><button>Tìm</button></form><div id="sres"></div>'}
+async function findSaves(){const q=$('sq').value.trim();if(q.length<2)return;$('sres').innerHTML='<div class="empty">Đang tìm…</div>';try{const d=await api('/admin/saves?q='+encodeURIComponent(q));$('sres').innerHTML=d.list.length?'<table><tr><th>Mã lưu</th><th>Tiệm</th><th>Ngày</th><th>Tiền</th><th class="hide-s">Tập đoàn</th><th>Cập nhật</th></tr>'+d.list.map(r=>'<tr><td><b>'+r.code.slice(0,4)+'-'+r.code.slice(4)+'</b>'+(r.rev!=null?' <span class="tag ok">tự cập nhật</span>':'')+'</td><td>'+esc(r.name)+'<br><small style="color:var(--mut)">'+esc(r.pid||'')+'</small></td><td>'+r.day+'</td><td>'+fm(r.money||0)+'</td><td class="hide-s">'+(r.corp||0)+'/18</td><td>'+dt(r.t)+'</td></tr>').join('')+'</table>':'<div class="empty">Không thấy bản lưu nào khớp.</div>'}catch(e){$('sres').innerHTML='<div class="err">Lỗi: '+esc(e.message)+'</div>'}}
 async function load(){const d=await api('/admin/lb?board='+BOARD);let nf=null;if(BOARD!=='flag'){try{nf=(await api('/admin/lb?board=flag')).list.length}catch(e){}}else nf=d.list.length;tabs(nf);
 $('list').innerHTML=d.list.length?d.list.map((r,i)=>'<div class="row" onclick="det(\\''+r.pid+'\\')"><div class="rk">'+(i+1)+'</div><div class="nm"><b>'+esc(r.shop)+'</b> '+tg(r)+'<small>Mã '+r.pid+' · Ngày '+r.day+' · ⭐'+(r.stars||'–')+' · 💚'+r.rep+' · '+r.n+' lần gửi</small></div><div class="w">'+fm(r.worth)+'</div></div>').join(''):'<div class="empty">Chưa có tiệm nào'+(BOARD==='flag'?' bị gắn cờ 🎉':'')+'.</div>';
 $('bans').innerHTML=d.bans&&d.bans.length?'<div class="card"><b>🚫 Tiệm đã gỡ khỏi BXH</b>'+d.bans.map(b=>'<div class="row" onclick="det(\\''+b.pid+'\\')"><div class="nm"><b>'+esc(b.shop||b.pid)+'</b><small>Mã '+b.pid+' · gỡ lúc '+dt(b.at)+'</small></div></div>').join('')+'</div>':''}
